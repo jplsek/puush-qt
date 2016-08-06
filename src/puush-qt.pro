@@ -22,5 +22,10 @@ FORMS    += \
 RESOURCES += \
     systray.qrc
 
-target.path = /usr/local/bin/
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+}
+
+target.path = $$PREFIX/bin
+
 INSTALLS += target
