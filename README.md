@@ -4,6 +4,8 @@ A GUI frontend for puush on Linux. This will create a system tray icon and conta
 
 ... This is also my first "real" qt project, so keep that in mind.
 
+![Screenshot](screenshot.png)
+
 ## Installing
 TODO
 
