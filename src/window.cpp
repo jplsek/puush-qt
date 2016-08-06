@@ -48,8 +48,10 @@ Window::Window() {
 }
 
 void Window::setDefaults() {
+    if (!s.contains("key"))
+        s.setValue("key", "");
     if (!s.contains("quality"))
-        s.setValue("quality", "90");
+        s.setValue("quality", 90);
     if (!s.contains("save-path"))
         s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
     if (!s.contains("save-name"))
@@ -266,7 +268,7 @@ void Window::openSettings() {
 }
 
 bool Window::isLoggedIn() {
-    if (s.contains("key"))
+    if (s.value("key", "") != "")
         return true;
 
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
