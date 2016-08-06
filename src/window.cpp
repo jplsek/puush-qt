@@ -387,9 +387,11 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
     connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
 
-    QDir root = QDir::root();
-    root.mkpath(getSavePath());
-    QFile::copy(fileName, getSaveName());
+    if(s.value("save-enabled").toBool()){
+        QDir root = QDir::root();
+        root.mkpath(getSavePath());
+        QFile::copy(fileName, getSaveName());
+    }
 }
 
 void Window::puushDone(int returnCode, QString output) {
