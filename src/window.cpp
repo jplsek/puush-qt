@@ -55,7 +55,7 @@ void Window::setDefaults() {
     if (!s.contains("save-path"))
         s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
     if (!s.contains("save-name"))
-        s.setValue("save-name", "Screenshot-yyyy-MM-dd_hh-mm-ss");
+        s.setValue("save-name", "ss-yyyy-MM-dd_hh-mm-ss");
 }
 
 void Window::setVisible(bool visible) {
@@ -157,6 +157,8 @@ void Window::createGroupBoxes() {
     passwordEdit->setEchoMode(QLineEdit::Password);
 
     authMessage = new QLabel();
+    if(s.value("key") == "")
+        authMessage->setText("Not logged in");
 
     submitButton = new QPushButton(tr("Submit"));
     submitButton->setDefault(true);
@@ -304,7 +306,7 @@ QString Window::getSavePath(){
 }
 
 QString Window::getSaveName() {
-    QString saveName = "Screenshot-";
+    QString saveName = "ss-";
     saveName += QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
     return getSavePath() + "/" + saveName;
 }
@@ -384,6 +386,7 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
     connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
 
+    QDir::mkpath(getSavePath());
     QFile::copy(fileName, getSaveName());
 }
 
@@ -405,15 +408,15 @@ void Window::puushDone(int returnCode, QString output) {
 
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
 
-    // show error to user
+    // code can only be 0 = success, or these errors.
     if (code == "-1") {
         trayIcon->showMessage(tr("Error!"), tr("Uploading failed. Have you authenticated?"), icon);
         return;
     } else if (code == "-2") {
         trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."), icon);
         return;
-    } else {
-        trayIcon->showMessage(tr("Error!"), tr("Uploading failed due to unknown reason."), icon);
+    } else if(code == "-3"){
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed due invalid md5."), icon);
         return;
     }
 
@@ -447,7 +450,7 @@ void Window::resetSettings(){
     s.setValue("quality", 90);
     s.setValue("save-enabled", true);
     s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    s.setValue("save-name", "Screenshot-yyyy-MM-dd_hh-mm-ss");
+    s.setValue("save-name", "ss-yyyy-MM-dd_hh-mm-ss");
 
     qualitySlider->setValue(s.value("quality").toInt());
     saveEnabled->setChecked(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
