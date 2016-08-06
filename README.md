@@ -7,11 +7,12 @@ A GUI frontend for puush on Linux. This will create a system tray icon and conta
 ![Screenshot](screenshot.png)
 
 ## Installing
-TODO
+Arch Linux users can install this from the AUR with `puush-qt`.  
+At the moment other users can compile this manually.
 
 ## Dependencies
 `curl scrot`  
-`qt4` or `qt5`
+`qt4-base` or `qt5-base`
 
 ## Compiling
 * Open the .pro file with qt-creator, else you can compile via command line:
