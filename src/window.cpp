@@ -2,6 +2,9 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QFormLayout>
+#include <QHBoxLayout>
+#include <QSpacerItem>
 #include <QProcess>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -14,12 +17,11 @@ QString puushUrl = "https://puush.me/api/";
 
 Window::Window() {
     setDefaults();
-    createMessageGroupBox();
+    createGroupBoxes();
 
     createActions();
     createTrayIcon();
 
-    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
     connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(messageClicked()));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
@@ -27,9 +29,17 @@ Window::Window() {
     setTrayIcon(":/images/icon.svg.png");
     setAppIcon(":/images/icon.svg.png");
 
+    resetButton = new QPushButton(tr("Reset Settings"));
+    resetButton->setDefault(true);
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(messageGroupBox);
+    mainLayout->addWidget(authGroupBox);
+    mainLayout->addWidget(puushGroupBox);
+    mainLayout->addWidget(saveGroupBox);
+    mainLayout->addWidget(resetButton);
     setLayout(mainLayout);
+
+    createSettingsSlots();
 
     trayIcon->show();
 
@@ -40,6 +50,10 @@ Window::Window() {
 void Window::setDefaults() {
     if (!s.contains("quality"))
         s.setValue("quality", "90");
+    if (!s.contains("save-path"))
+        s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    if (!s.contains("save-name"))
+        s.setValue("save-name", "Screenshot-yyyy-MM-dd_hh-mm-ss");
 }
 
 void Window::setVisible(bool visible) {
@@ -76,10 +90,11 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 void Window::submitInfo() {
     s.setValue("email", emailEdit->text());
 
-    QString email = emailEdit->text();
+    QString email    = emailEdit->text();
     QString password = passwordEdit->text();
 
     QNetworkAccessManager *nm = new QNetworkAccessManager(this);
+
     QUrlQuery postData;
     postData.addQueryItem("e", QUrl::toPercentEncoding(email));
     postData.addQueryItem("p", QUrl::toPercentEncoding(password));
@@ -90,23 +105,32 @@ void Window::submitInfo() {
     connect(authReply, SIGNAL(finished()), this, SLOT(authDone()));
 }
 
+void Window::logout(){
+    s.setValue("key", "");
+    authMessage->setText(tr("Logged out"));
+}
+
 void Window::authDone() {
-    QString output = authReply->readAll();
-    authReply->deleteLater();
-    //qDebug() << output;
-
-    const char *text = "";
-
-    if (output == "-1") {
-        text = "Error sending credentials!";
-    } else {
-        text = "Authentication sucesssful!";
-        QStringList pieces = output.split(",");
-        QString key = pieces[1];
-        s.setValue("key", key);
+    if(authReply->error() != QNetworkReply::NoError){
+        authMessage->setText(tr("Error sending auth info: ") + authReply->errorString());
+        return;
     }
 
-    authMessage->setText(tr(text));
+    QString output = authReply->readAll();
+    authReply->deleteLater();
+
+    if (output == "-1") {
+        authMessage->setText(tr("Invalid credentials or error sending them!"));
+    } else {
+        authMessage->setText(tr("Authentication sucesssful!"));
+        QStringList pieces = output.split(",");
+        if(pieces.length() > 1){
+            QString key = pieces[1];
+            s.setValue("key", key);
+        } else {
+            authMessage->setText(tr("Error: Malformed response from Puush"));
+        }
+    }
 }
 
 void Window::messageClicked() {
@@ -118,18 +142,15 @@ void Window::messageClicked() {
     }
 }
 
-void Window::createMessageGroupBox() {
-    messageGroupBox = new QGroupBox(tr("Settings"));
+void Window::createGroupBoxes() {
+    authGroupBox  = new QGroupBox(tr("Authentication"));
+    puushGroupBox = new QGroupBox(tr("Puush Settings"));
+    saveGroupBox  = new QGroupBox(tr("Local Save Settings"));
 
-    emailLabel = new QLabel(tr("Email:"));
+    // Auth Settings
 
-    if (s.contains("email")) {
-        emailEdit = new QLineEdit(s.value("email").toString());
-    } else {
-        emailEdit = new QLineEdit();
-    }
+    emailEdit = new QLineEdit(s.value("email", "").toString());
 
-    passwordLabel = new QLabel(tr("Password:"));
     passwordEdit = new QLineEdit();
     passwordEdit->setEchoMode(QLineEdit::Password);
 
@@ -137,16 +158,49 @@ void Window::createMessageGroupBox() {
 
     submitButton = new QPushButton(tr("Submit"));
     submitButton->setDefault(true);
+    logoutButton = new QPushButton(tr("Logout"));
+    logoutButton->setDefault(true);
 
-    QGridLayout *messageLayout = new QGridLayout;
-    messageLayout->addWidget(emailLabel, 0, 0);
-    messageLayout->addWidget(emailEdit, 0, 1, 1, 4);
-    messageLayout->addWidget(passwordLabel, 1, 0);
-    messageLayout->addWidget(passwordEdit, 1, 1, 1, 4);
-    messageLayout->addWidget(authMessage, 2, 0, 1, 2);
-    messageLayout->addWidget(submitButton, 5, 4);
+    QHBoxLayout *buttonPair = new QHBoxLayout();
+    buttonPair->addWidget(logoutButton);
+    buttonPair->addWidget(submitButton);
 
-    messageGroupBox->setLayout(messageLayout);
+    QFormLayout *authLayout = new QFormLayout();
+    authLayout->addRow(tr("Email:"),    emailEdit);
+    authLayout->addRow(tr("Password:"), passwordEdit);
+    authLayout->addRow(authMessage);
+    authLayout->addRow(buttonPair);
+
+    // Puush settings
+
+    qualitySlider = new QSlider(Qt::Horizontal);
+    qualitySlider->setRange(0, 100);
+    qualitySlider->setTickPosition(QSlider::TicksBelow);
+    qualitySlider->setTickInterval(10);
+    qualitySlider->setValue(s.value("quality", 90).toInt());
+
+    QFormLayout *puushLayout = new QFormLayout();
+    puushLayout->addRow(tr("Quality:"), qualitySlider);
+
+    // Save settings
+
+    saveEnabled = new QCheckBox("Save screenshot to file");
+    savePathEdit = new QLineEdit(s.value("save-path").toString());
+    saveNameEdit = new QLineEdit(s.value("save-name").toString());
+
+    saveEnabled->setCheckState(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
+    savePathEdit->setEnabled(s.value("save-enabled").toBool());
+    // saveNameEdit->setEnabled(s.value("save-enabled").toBool()); // disabled because NYI
+    saveNameEdit->setEnabled(false);
+
+    QFormLayout *saveLayout = new QFormLayout();
+    saveLayout->addRow(saveEnabled);
+    saveLayout->addRow(tr("Location:"),  savePathEdit);
+    saveLayout->addRow(tr("File Name:"), saveNameEdit);
+
+     authGroupBox->setLayout( authLayout);
+    puushGroupBox->setLayout(puushLayout);
+     saveGroupBox->setLayout( saveLayout);
 }
 
 void Window::createActions() {
@@ -159,7 +213,7 @@ void Window::createActions() {
     selectAreaAction = new QAction(tr("&Select area"), this);
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
-    activeAction = new QAction(tr("&Ative window"), this);
+    activeAction = new QAction(tr("&Active window"), this);
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshot()));
 
     settingsAction = new QAction(tr("S&ettings..."), this);
@@ -167,6 +221,22 @@ void Window::createActions() {
 
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+    openSaveDirectoryAction = new QAction(tr("&Open screenshot directory"), this);
+    connect(openSaveDirectoryAction, SIGNAL(triggered()), this, SLOT(openSaveDirectory()));
+}
+
+void Window::createSettingsSlots(){
+    connect(submitButton,  SIGNAL(clicked()),         this, SLOT(submitInfo()));
+    connect(logoutButton,  SIGNAL(clicked()),         this, SLOT(logout()));
+
+    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
+
+    connect(saveEnabled,   SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
+    connect(savePathEdit,  SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
+    connect(saveNameEdit,  SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
+
+    connect(resetButton,   SIGNAL(clicked()),         this, SLOT(resetSettings()));
 }
 
 void Window::createTrayIcon() {
@@ -178,7 +248,12 @@ void Window::createTrayIcon() {
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(settingsAction);
     trayIconMenu->addSeparator();
+    trayIconMenu->addAction(openSaveDirectoryAction);
+    trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
+
+    if(s.value("save-path").toString().isEmpty())
+        openSaveDirectoryAction->setDisabled(true);
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -215,6 +290,21 @@ void Window::uploadFile() {
 
 QString Window::getFileName() {
     return "/tmp/ss-" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
+}
+
+QString Window::getSavePath(){
+    QString path = s.value("save-path").toString();
+    if(path.startsWith('~')){
+        path.remove(0, 1); // remove "~"
+        path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
+    }
+    return path;
+}
+
+QString Window::getSaveName() {
+    QString saveName = "Screenshot-";
+    saveName += QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
+    return getSavePath() + "/" + saveName;
 }
 
 void Window::fullScreenScreenshot() {
@@ -262,6 +352,20 @@ void Window::updateActiveMessage() {
     --numTime;
 }
 
+// note: this fails with ~user
+void Window::openSaveDirectory() {
+    bool response = true;
+    if(s.contains("save-path")){
+        QString path = getSavePath();
+        response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    }
+
+    if (!response) {
+        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
+        trayIcon->showMessage(tr("Error!"), tr("Error opening save directory"), icon);
+    }
+}
+
 void Window::puushStarted() {
     setTrayIcon(":/images/icon-uploading.svg.png");
 }
@@ -277,6 +381,8 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
 
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
     connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+
+    QFile::copy(fileName, getSaveName());
 }
 
 void Window::puushDone(int returnCode, QString output) {
@@ -285,8 +391,6 @@ void Window::puushDone(int returnCode, QString output) {
         trayIcon->showMessage(tr("Error!"), output, icon);
         return;
     }
-
-    //qDebug() << output;
 
     QStringList pieces = output.split(",");
     QString code = pieces[0];
@@ -301,10 +405,13 @@ void Window::puushDone(int returnCode, QString output) {
 
     // show error to user
     if (code == "-1") {
-        trayIcon->showMessage(tr("Error!"), tr("Error uploading file. Have you authenticated?"), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. Have you authenticated?"), icon);
         return;
     } else if (code == "-2") {
-        trayIcon->showMessage(tr("Error!"), tr("Error uploading file. This might be a bug with puush-qt."), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."), icon);
+        return;
+    } else {
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed due to unknown reason."), icon);
         return;
     }
 
@@ -313,4 +420,35 @@ void Window::puushDone(int returnCode, QString output) {
     clipboard->setText(url);
 
     trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
+}
+
+void Window::qualityChanged(int val){
+    s.setValue("quality", val);
+}
+
+void Window::saveEnabledChanged(int val){
+    // 0 = unchecked, 1 = unchecked & disabled?, 2 = checked, 3 = checked & disabled?
+    s.setValue("save-enabled", val == 2);
+    savePathEdit->setEnabled(val == 2);
+    // saveNameEdit->setEnabled(val == 2); // disabled because NYI
+}
+
+void Window::savePathChanged(){
+    s.setValue("save-path", savePathEdit->text());
+}
+
+void Window::saveNameChanged(){
+    // s.setValue("save-name", saveNameEdit->text()); //disabled because NYI
+}
+
+void Window::resetSettings(){
+    s.setValue("quality", 90);
+    s.setValue("save-enabled", true);
+    s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    s.setValue("save-name", "Screenshot-yyyy-MM-dd_hh-mm-ss");
+
+    qualitySlider->setValue(s.value("quality").toInt());
+    saveEnabled->setChecked(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
+    savePathEdit->setText(s.value("save-path").toString());
+    saveNameEdit->setText(s.value("save-name").toString());
 }

@@ -1,14 +1,12 @@
 puush-qt
 ========
-A GUI frontend for puush on Linux. This will create a system tray icon and contains similar options to puush from Windows (not all features are, nor probably be implemented).
-
-... This is also my first "real" qt project, so keep that in mind.
+A GUI frontend for puush on Linux. This will create a system tray icon and contains similar options to puush from Windows (not all features are, nor probably will be implemented).
 
 ![Screenshot](screenshot.png)
 
 ## Installing
 Arch Linux users can install this from the AUR with `puush-qt`.  
-At the moment other users can compile this manually.
+If you aren't on Arch, see [Compiling](#compiling) below.
 
 ## Dependencies
 `curl scrot`  
@@ -31,6 +29,8 @@ There are a few quirks with this application.
 1. You must manually select a window after clicking the "screenshot active window" button.  
 2. The active window screenshot may include extra "padding" and contain the backgroud, etc. This is probably from the window shadow or from other things.  
 3. The cursor may not change when clicking "select area screenshot", just  click and drag, and it should work.
+
+Passwords are not stored. They are forgotten after getting the api key from Puush.
 
 ## License
 BSD Clause 3

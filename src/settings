@@ -1,0 +1,20 @@
+This is a list of all the settings stored, and their defaults
+
+Authentication
+    email
+        email used for puush account.
+    password
+        NOT STORED. This is used once to get an api key.
+    key
+        The auth key given by puush on successfull authentication.
+
+Puush settings
+    quality 90
+
+Local save settings
+    save-enabled true
+    save-path "~/Pictures"
+        Path to save files in.
+    save-name "Screenshot-%D-%T"
+        Name to save screenshots as.
+

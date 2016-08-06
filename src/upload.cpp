@@ -4,8 +4,6 @@
 
 #include "upload.h"
 
-QString url = "https://puush.me/api/";
-
 Upload::Upload(QString fileName) {
     QSettings s;
 
@@ -18,9 +16,10 @@ Upload::Upload(QString fileName) {
     connect(uploadProcess, SIGNAL(started()), this, SLOT(uploadStarted()));
     connect(uploadProcess, SIGNAL(finished(int)), this, SLOT(uploadDone(int)));
 
-    uploadProcess->start(
-                "curl", QStringList() <<
-                url + "up" << "-Ss" << "-F" << "k=" + key << "-F" << "z=poop" << "-F" << "f=@" + fileName);
+    uploadProcess->start("curl",
+                         QStringList() << puushUrl + "up" << "-Ss" << "-F"
+                                       << "k=" + key << "-F" << "z=poop"
+                                       << "-F" << "f=@" + fileName);
 }
 
 void Upload::uploadStarted() {

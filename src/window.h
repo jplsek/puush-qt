@@ -5,15 +5,17 @@
 #include <QDialog>
 #include <QLabel>
 #include <QAction>
+#include <QCheckBox>
 #include <QGroupBox>
-#include <QTextEdit>
-#include <QPushButton>
 #include <QLineEdit>
 #include <QMenu>
+#include <QPushButton>
+#include <QTextEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QProcess>
 #include <QSettings>
+#include <QSlider>
 #include <QTimer>
 #include <QNetworkAccessManager>
 
@@ -33,6 +35,7 @@ private slots:
     void setAppIcon(QString);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void submitInfo();
+    void logout();
     void messageClicked();
     void openSettings();
     void uploadFile();
@@ -44,25 +47,43 @@ private slots:
     void screenshotDone(int, QString, QString);
     void authDone();
     void updateActiveMessage();
+    void openSaveDirectory();
+
+    void qualityChanged(int);
+    void saveEnabledChanged(int);
+    void savePathChanged();
+    void saveNameChanged();
+
+    void resetSettings();
 
 private:
-    void createMessageGroupBox();
+    void createGroupBoxes();
     void createActions();
+    void createSettingsSlots();
     void createTrayIcon();
     void setDefaults();
     bool isLoggedIn();
 
     QGroupBox *iconGroupBox;
 
-    QGroupBox *messageGroupBox;
-    QPushButton *submitButton;
+    QGroupBox *authGroupBox;
+    QGroupBox *saveGroupBox;
+    QGroupBox *puushGroupBox;
 
-    QLabel *emailLabel;
-    QLabel *passwordLabel;
+    QPushButton *submitButton;
+    QPushButton *logoutButton;
+    QPushButton *resetButton;
+
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
-
     QLabel *authMessage;
+
+    QLabel *saveEnabledLabel;
+    QCheckBox *saveEnabled;
+    QLineEdit *savePathEdit;
+    QLineEdit *saveNameEdit;
+
+    QSlider *qualitySlider;
 
     QAction *uploadAction;
     QAction *fullScreenAction;
@@ -70,6 +91,7 @@ private:
     QAction *activeAction;
 
     QAction *settingsAction;
+    QAction *openSaveDirectoryAction;
     QAction *quitAction;
 
     QSystemTrayIcon *trayIcon;
@@ -84,6 +106,8 @@ private:
     QSettings s;
 
     QString getFileName();
+    QString getSavePath();
+    QString getSaveName();
 
     int numTime = 0;
 };

@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QProcess>
 
+extern QString puushUrl;
+
 class Upload : public QObject {
     Q_OBJECT
 
