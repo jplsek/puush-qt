@@ -159,6 +159,8 @@ void Window::createGroupBoxes() {
     authMessage = new QLabel();
     if(s.value("key") == "")
         authMessage->setText("Not logged in");
+    else
+        authMessage->setText("Logged in");
 
     submitButton = new QPushButton(tr("Submit"));
     submitButton->setDefault(true);
@@ -208,25 +210,25 @@ void Window::createGroupBoxes() {
 }
 
 void Window::createActions() {
-    uploadAction = new QAction(tr("&Upload..."), this);
+    uploadAction = new QAction(tr("&Upload File..."), this);
     connect(uploadAction, SIGNAL(triggered()), this, SLOT(uploadFile()));
 
-    fullScreenAction = new QAction(tr("&Full screen"), this);
+    fullScreenAction = new QAction(tr("Capture &Desktop"), this);
     connect(fullScreenAction, SIGNAL(triggered()), this, SLOT(fullScreenScreenshot()));
 
-    selectAreaAction = new QAction(tr("&Select area"), this);
+    selectAreaAction = new QAction(tr("Capture &Area"), this);
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
-    activeAction = new QAction(tr("&Active window"), this);
+    activeAction = new QAction(tr("Capture &Current Window"), this);
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshot()));
 
-    settingsAction = new QAction(tr("S&ettings..."), this);
+    settingsAction = new QAction(tr("&Settings..."), this);
     connect(settingsAction, SIGNAL(triggered()), this, SLOT(openSettings()));
 
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-    openSaveDirectoryAction = new QAction(tr("&Open screenshot directory"), this);
+    openSaveDirectoryAction = new QAction(tr("&Open Screenshot Directory"), this);
     connect(openSaveDirectoryAction, SIGNAL(triggered()), this, SLOT(openSaveDirectory()));
 }
 
@@ -273,8 +275,7 @@ bool Window::isLoggedIn() {
     if (s.value("key", "") != "")
         return true;
 
-    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-    trayIcon->showMessage(tr("API Key Not Set"), tr("Have you authenticated?"), icon);
+    openSettings();
 
     return false;
 }
