@@ -48,8 +48,6 @@ Window::Window() {
 }
 
 void Window::setDefaults() {
-    if (!s.contains("key"))
-        s.setValue("key", "");
     if (!s.contains("quality"))
         s.setValue("quality", 90);
     if (!s.contains("save-path"))
@@ -127,7 +125,7 @@ void Window::submitInfo() {
  * @brief Window::submitInfo
  */
 void Window::logout(){
-    s.setValue("key", "");
+    s.remove("key");
     authMessage->setText(tr("Logged out"));
 }
 
@@ -184,7 +182,7 @@ void Window::createGroupBoxes() {
     passwordEdit->setEchoMode(QLineEdit::Password);
 
     authMessage = new QLabel();
-    if(s.value("key") == "")
+    if (!s.contains("key"))
         authMessage->setText("Not logged in");
     else
         authMessage->setText("Logged in");
@@ -313,7 +311,7 @@ void Window::openSettings() {
  * @return
  */
 bool Window::isLoggedIn() {
-    if (s.value("key", "") != "")
+    if (s.contains("key"))
         return true;
 
     openSettings();
