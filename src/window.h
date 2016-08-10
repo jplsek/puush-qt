@@ -53,6 +53,7 @@ private slots:
     void saveEnabledChanged(int);
     void savePathChanged();
     void saveNameChanged();
+    void openSavePath();
 
     void resetSettings();
 
@@ -63,6 +64,7 @@ private:
     void createTrayIcon();
     void setDefaults();
     bool isLoggedIn();
+    void setSavePath(QString);
 
     QGroupBox *iconGroupBox;
 
@@ -73,6 +75,7 @@ private:
     QPushButton *submitButton;
     QPushButton *logoutButton;
     QPushButton *resetButton;
+    QPushButton *selectSavePathButton;
 
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;

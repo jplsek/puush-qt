@@ -69,11 +69,21 @@ void Window::closeEvent(QCloseEvent *event) {
     }
 }
 
+/**
+ * Set the tray icon
+ * @brief Window::setTrayIcon
+ * @param image
+ */
 void Window::setTrayIcon(QString image) {
     QIcon icon = QIcon(image), tr("Icon");
     trayIcon->setIcon(icon);
 }
 
+/**
+ * Set the window icon.
+ * @brief Window::setAppIcon
+ * @param image
+ */
 void Window::setAppIcon(QString image) {
     QIcon icon = QIcon(image), tr("Icon");
     setWindowIcon(icon);
@@ -81,6 +91,7 @@ void Window::setAppIcon(QString image) {
 
 void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     switch (reason) {
+    // left click
     case QSystemTrayIcon::Trigger:
         trayIconMenu->popup(QCursor::pos());
         break;
@@ -89,6 +100,10 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
+/**
+ * Event when clicking the log in button.
+ * @brief Window::submitInfo
+ */
 void Window::submitInfo() {
     s.setValue("email", emailEdit->text());
 
@@ -107,11 +122,19 @@ void Window::submitInfo() {
     connect(authReply, SIGNAL(finished()), this, SLOT(authDone()));
 }
 
+/**
+ * Event when clicking the log out button.
+ * @brief Window::submitInfo
+ */
 void Window::logout(){
     s.setValue("key", "");
     authMessage->setText(tr("Logged out"));
 }
 
+/**
+ * Event when authentication through Puush has finished.
+ * @brief Window::submitInfo
+ */
 void Window::authDone() {
     if(authReply->error() != QNetworkReply::NoError){
         authMessage->setText(tr("Error sending auth info: ") + authReply->errorString());
@@ -135,6 +158,10 @@ void Window::authDone() {
     }
 }
 
+/**
+ * Event used when clicking the message window
+ * @brief Window::messageClicked
+ */
 void Window::messageClicked() {
     bool response = QDesktopServices::openUrl(lastUrl);
 
@@ -192,21 +219,26 @@ void Window::createGroupBoxes() {
 
     saveEnabled = new QCheckBox("Save screenshot to file");
     savePathEdit = new QLineEdit(s.value("save-path").toString());
+    selectSavePathButton = new QPushButton(tr("..."));
     saveNameEdit = new QLineEdit(s.value("save-name").toString());
 
     saveEnabled->setCheckState(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
     savePathEdit->setEnabled(s.value("save-enabled").toBool());
+    selectSavePathButton->setEnabled(s.value("save-enabled").toBool());
     // saveNameEdit->setEnabled(s.value("save-enabled").toBool()); // disabled because NYI
     saveNameEdit->setEnabled(false);
 
     QFormLayout *saveLayout = new QFormLayout();
     saveLayout->addRow(saveEnabled);
-    saveLayout->addRow(tr("Location:"),  savePathEdit);
-    saveLayout->addRow(tr("File Name:"), saveNameEdit);
+    QHBoxLayout *locLayout = new QHBoxLayout();
+    locLayout->addWidget(savePathEdit);
+    locLayout->addWidget(selectSavePathButton);
+    saveLayout->addRow(tr("Location:"),  locLayout);
+    //saveLayout->addRow(tr("File Name:"), saveNameEdit);
 
-     authGroupBox->setLayout( authLayout);
+    authGroupBox-> setLayout(authLayout);
     puushGroupBox->setLayout(puushLayout);
-     saveGroupBox->setLayout( saveLayout);
+    saveGroupBox-> setLayout(saveLayout);
 }
 
 void Window::createActions() {
@@ -233,16 +265,17 @@ void Window::createActions() {
 }
 
 void Window::createSettingsSlots(){
-    connect(submitButton,  SIGNAL(clicked()),         this, SLOT(submitInfo()));
-    connect(logoutButton,  SIGNAL(clicked()),         this, SLOT(logout()));
+    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
+    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
 
     connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
 
-    connect(saveEnabled,   SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
-    connect(savePathEdit,  SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
-    connect(saveNameEdit,  SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
+    connect(saveEnabled,          SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
+    connect(savePathEdit,         SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
+    connect(selectSavePathButton, SIGNAL(clicked()),         this, SLOT(openSavePath()));
+    connect(saveNameEdit,         SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
 
-    connect(resetButton,   SIGNAL(clicked()),         this, SLOT(resetSettings()));
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
 }
 
 void Window::createTrayIcon() {
@@ -258,19 +291,27 @@ void Window::createTrayIcon() {
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
-    if(s.value("save-path").toString().isEmpty())
-        openSaveDirectoryAction->setDisabled(true);
+    openSaveDirectoryAction->setEnabled(s.value("save-enabled").toBool());
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
 }
 
+/**
+ * Open the settings window.
+ * @brief Window::openSettings
+ */
 void Window::openSettings() {
     showNormal();
     // if it's already open, it won't raise, so we force it.
     raise();
 }
 
+/**
+ * Checks if the user is logged in, and if not, display the log in window.
+ * @brief Window::isLoggedIn
+ * @return
+ */
 bool Window::isLoggedIn() {
     if (s.value("key", "") != "")
         return true;
@@ -280,6 +321,10 @@ bool Window::isLoggedIn() {
     return false;
 }
 
+/**
+ * Puush upload a file via the open file dialog.
+ * @brief Window::uploadFile
+ */
 void Window::uploadFile() {
     if (!isLoggedIn()) return;
 
@@ -293,10 +338,34 @@ void Window::uploadFile() {
     connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
 }
 
+/**
+ * Generates the temporary screenshot file names.
+ * @brief Window::getFileName
+ * @return
+ */
 QString Window::getFileName() {
     return "/tmp/ss-" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
 }
 
+/**
+ * Opens a folder dialog to set the screenshot save path.
+ * @brief Window::openSavePath
+ */
+void Window::openSavePath(){
+    QString dir = QFileDialog::getExistingDirectory(
+                this, tr("Set Screenshot Directory"),
+                QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    savePathEdit->setText(dir);
+    setSavePath(dir);
+}
+
+/**
+ * Parses the screenshot save path.
+ * @brief Window::getSavePath
+ * @return
+ */
 QString Window::getSavePath(){
     QString path = s.value("save-path").toString();
     if(path.startsWith('~')){
@@ -306,12 +375,21 @@ QString Window::getSavePath(){
     return path;
 }
 
+/**
+ * Generates the screenshot name based on the current settings.
+ * @brief Window::getSaveName
+ * @return
+ */
 QString Window::getSaveName() {
     QString saveName = "ss-";
     saveName += QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
     return getSavePath() + "/" + saveName;
 }
 
+/**
+ * Puush capture desktop screenshot.
+ * @brief Window::fullScreenScreenshot
+ */
 void Window::fullScreenScreenshot() {
     if (!isLoggedIn()) return;
 
@@ -321,6 +399,10 @@ void Window::fullScreenScreenshot() {
     ss->fullScreen();
 }
 
+/**
+ * Puush capture area screenshot.
+ * @brief Window::selectAreaScreenshot
+ */
 void Window::selectAreaScreenshot() {
     if (!isLoggedIn()) return;
 
@@ -330,6 +412,10 @@ void Window::selectAreaScreenshot() {
     ss->selectArea();
 }
 
+/**
+ * Initiate the Puush current window screenshot.
+ * @brief Window::activeWindowScreenshot
+ */
 void Window::activeWindowScreenshot() {
     if (!isLoggedIn()) return;
 
@@ -339,6 +425,11 @@ void Window::activeWindowScreenshot() {
     timer->start(1000);
 }
 
+/**
+ * Shows the countdown message leading to the current window screenshot.
+ * Once it is done, it will create the Puush current window screenshot.
+ * @brief Window::updateActiveMessage
+ */
 void Window::updateActiveMessage() {
     if (numTime < 1) {
         timer->stop();
@@ -358,6 +449,10 @@ void Window::updateActiveMessage() {
 }
 
 // note: this fails with ~user
+/**
+ * Opens the screenshot directory if the user has enabled saving local screenshots.
+ * @brief Window::openSaveDirectory
+ */
 void Window::openSaveDirectory() {
     bool response = true;
     if(s.contains("save-path")){
@@ -371,10 +466,21 @@ void Window::openSaveDirectory() {
     }
 }
 
+/**
+ * Notify the user when a Puush upload has started.
+ * @brief Window::puushStarted
+ */
 void Window::puushStarted() {
     setTrayIcon(":/images/icon-uploading.svg.png");
 }
 
+/**
+ * Initiate the upload process when the screenshot has been taken.
+ * @brief Window::screenshotDone
+ * @param returnCode
+ * @param fileName
+ * @param output
+ */
 void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     if (returnCode != 0) {
         QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
@@ -394,6 +500,12 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     }
 }
 
+/**
+ * Notify the user when the upload to Puush has been completed.
+ * @brief Window::puushDone
+ * @param returnCode
+ * @param output
+ */
 void Window::puushDone(int returnCode, QString output) {
     if (returnCode != 0) {
         QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
@@ -431,19 +543,44 @@ void Window::puushDone(int returnCode, QString output) {
     trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
 }
 
+/**
+ * Set the quality of the screenshots
+ * @brief Window::qualityChanged
+ * @param val
+ */
 void Window::qualityChanged(int val){
     s.setValue("quality", val);
 }
 
+/**
+ * Event checking when the save enabled button was clicked.
+ * @brief Window::saveEnabledChanged
+ * @param val
+ */
 void Window::saveEnabledChanged(int val){
     // 0 = unchecked, 1 = unchecked & disabled?, 2 = checked, 3 = checked & disabled?
     s.setValue("save-enabled", val == 2);
     savePathEdit->setEnabled(val == 2);
+    selectSavePathButton->setEnabled(val == 2);
+    openSaveDirectoryAction->setEnabled(val == 2);
     // saveNameEdit->setEnabled(val == 2); // disabled because NYI
 }
 
+/**
+ * Event for the path text box changing.
+ * @brief Window::savePathChanged
+ */
 void Window::savePathChanged(){
-    s.setValue("save-path", savePathEdit->text());
+    setSavePath(savePathEdit->text());
+}
+
+/**
+ * Save the save screenshot directory path to the settings.
+ * @brief Window::setSavePath
+ * @param path
+ */
+void Window::setSavePath(QString path){
+    s.setValue("save-path", path);
 }
 
 void Window::saveNameChanged(){
@@ -452,7 +589,7 @@ void Window::saveNameChanged(){
 
 void Window::resetSettings(){
     s.setValue("quality", 90);
-    s.setValue("save-enabled", true);
+    s.setValue("save-enabled", false);
     s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
     s.setValue("save-name", "ss-yyyy-MM-dd_hh-mm-ss");
 
