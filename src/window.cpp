@@ -366,7 +366,7 @@ void Window::openSavePath(){
  */
 QString Window::getSavePath(){
     QString path = s.value("save-path").toString();
-    if(path.startsWith('~')){
+    if(path.startsWith("~/")){
         path.remove(0, 1); // remove "~"
         path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
     }
