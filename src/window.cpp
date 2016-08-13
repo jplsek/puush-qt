@@ -355,7 +355,8 @@ void Window::openSavePath(){
                 QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    savePathEdit->setText(dir);
+    if (dir != "") savePathEdit->setText(dir);
+
     setSavePath(dir);
 }
 
