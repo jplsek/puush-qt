@@ -9,6 +9,10 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
+#include <iostream>
+
+#include "api/apirequest.h"
+#include "api/apiauth.h"
 #include "window.h"
 #include "screenshot.h"
 #include "upload.h"
@@ -103,21 +107,14 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
  * @brief Window::submitInfo
  */
 void Window::submitInfo() {
-    s.setValue("email", emailEdit->text());
-
+    std::cout << "Window::submitInfo()" << std::endl;
     QString email    = emailEdit->text();
     QString password = passwordEdit->text();
 
-    QNetworkAccessManager *nm = new QNetworkAccessManager(this);
-
-    QUrlQuery postData;
-    postData.addQueryItem("e", QUrl::toPercentEncoding(email));
-    postData.addQueryItem("p", QUrl::toPercentEncoding(password));
-    QNetworkRequest request(QUrl(puushUrl + "auth"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    authReply = nm->post(request, postData.toString().toUtf8());
-    connect(authReply, SIGNAL(finished()), this, SLOT(authDone()));
+    ApiAuth *api = new ApiAuth(email, password);
+    QMetaObject::Connection r = connect(api, SIGNAL(done(ApiAuth *)), this, SLOT(authDone(ApiAuth *)));
+    std::cout << "submitInfo connect == " << r << std::endl;
+    api->start();
 }
 
 /**
@@ -133,27 +130,20 @@ void Window::logout(){
  * Event when authentication through Puush has finished.
  * @brief Window::submitInfo
  */
-void Window::authDone() {
-    if(authReply->error() != QNetworkReply::NoError){
-        authMessage->setText(tr("Error sending auth info: ") + authReply->errorString());
+void Window::authDone(ApiAuth *req) {
+    std::cout << "Window::authDone()" << std::endl;
+
+    if(req->failed()){
+        authMessage->setText(req->errorStr());
         return;
     }
 
-    QString output = authReply->readAll();
-    authReply->deleteLater();
+    s.setValue("key", req->apikey());
+    authMessage->setText(tr("Authentication Successfull"));
 
-    if (output == "-1") {
-        authMessage->setText(tr("Invalid credentials or error sending them!"));
-    } else {
-        authMessage->setText(tr("Authentication sucesssful!"));
-        QStringList pieces = output.split(",");
-        if(pieces.length() > 1){
-            QString key = pieces[1];
-            s.setValue("key", key);
-        } else {
-            authMessage->setText(tr("Error: Malformed response from Puush"));
-        }
-    }
+    userData = req->allData();
+
+    delete req;
 }
 
 /**
@@ -263,6 +253,8 @@ void Window::createActions() {
 }
 
 void Window::createSettingsSlots(){
+    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+
     connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
     connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
 
@@ -596,4 +588,8 @@ void Window::resetSettings(){
     saveEnabled->setChecked(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
     savePathEdit->setText(s.value("save-path").toString());
     saveNameEdit->setText(s.value("save-name").toString());
+}
+
+void Window::emailChanged(){
+    s.setValue("email", emailEdit->text());
 }

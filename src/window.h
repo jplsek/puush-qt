@@ -19,6 +19,8 @@
 #include <QTimer>
 #include <QNetworkAccessManager>
 
+#include "api/apiauth.h"
+
 class Window : public QDialog {
     Q_OBJECT
 
@@ -45,7 +47,7 @@ private slots:
     void puushStarted();
     void puushDone(int, QString);
     void screenshotDone(int, QString, QString);
-    void authDone();
+    void authDone(ApiAuth *);
     void updateActiveMessage();
     void openSaveDirectory();
 
@@ -53,6 +55,7 @@ private slots:
     void saveEnabledChanged(int);
     void savePathChanged();
     void saveNameChanged();
+    void emailChanged();
     void openSavePath();
 
     void resetSettings();
@@ -107,6 +110,7 @@ private:
     QNetworkReply *authReply;
 
     QSettings s;
+    ApiAuth::AuthData userData;
 
     QString getFileName();
     QString getSavePath();
