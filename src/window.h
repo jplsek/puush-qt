@@ -166,6 +166,7 @@ private:
     QPushButton *logoutButton;
     QPushButton *resetButton;
     QPushButton *selectSavePathButton;
+    QPushButton *aboutQt;
 
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;

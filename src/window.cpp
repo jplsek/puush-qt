@@ -22,11 +22,8 @@ QString puushUrl = "https://puush.me/api/";
 
 Window::Window() {
     setDefaults();
-    //  - - - - - - - - - - - - - - - - - - - -
-    // new ethan stuff
     tabs = createTabs();
     connectSignals();
-    //  - - - - - - - - - - - - - - - - - - - -
 
     // createGroupBoxes();
 
@@ -53,7 +50,9 @@ Window::Window() {
     trayIcon->show();
 
     setWindowTitle(tr("puush-qt"));
-    // resize(400, 300);
+
+    // resize window based of tab layout size
+    resize(tabs->width(), height());
 }
 
 void Window::setDefaults() {
@@ -224,13 +223,35 @@ QWidget *Window::createTabHistory(){
 
 QWidget *Window::createTabAbout(){
     QWidget *w = new QWidget();
-    QVBoxLayout *qhb = new QVBoxLayout();
-    qhb->addStretch();
-    w->setLayout(qhb);
+    QGridLayout *qgl = new QGridLayout;
+
+    QLabel *image = new QLabel();
+    image->setPixmap(QPixmap(":/images/puush-qt.png"));
+
+    QLabel *title = new QLabel(QCoreApplication::applicationName());
+        title->setAlignment(Qt::AlignCenter);
+        QFont font = title->font();
+        font.setPointSize(36);
+        font.setBold(true);
+        title->setFont(font);
+    QLabel *version = new QLabel();
+        version->setText(tr("Version %1").arg(QCoreApplication::applicationVersion()));
+        version->setAlignment(Qt::AlignCenter);
+    QLabel *license = new QLabel(tr("License: BSD Clause 3"));
+        license->setAlignment(Qt::AlignCenter);
+    aboutQt = new QPushButton(tr("About Qt"));
+
+    qgl->setColumnStretch(1, 1);
+    qgl->addWidget(image, 0, 0);
+    qgl->addWidget(title, 0, 1);
+    qgl->addWidget(version, 1, 1);
+    qgl->addWidget(license, 2, 1);
+    qgl->addWidget(aboutQt, 3, 1);
+
+    w->setLayout(qgl);
     return w;
     // Made for
     // Made by
-    // Version
     // Release Date
     // Update with your package manager
 }
@@ -451,6 +472,8 @@ void Window::connectSignals(){
 
     connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
     connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
+
+    connect(aboutQt, SIGNAL(clicked(bool)), qApp, SLOT(aboutQt()));
 
     return;
 
