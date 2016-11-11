@@ -12,9 +12,9 @@ Puush settings
     quality 90
 
 Local save settings
-    save-enabled true
-    save-path "~/Pictures"
+    local-save-enabled true
+    local-save-path "~/Pictures"
         Path to save files in.
-    save-name "Screenshot-%D-%T"
+    local-save-name "Screenshot-%D-%T"
         Name to save screenshots as.
 

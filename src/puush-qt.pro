@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     api/apiauth.cpp \
     api/apidel.cpp \
     api/apihist.cpp \
-    api/apithumb.cpp
+    api/apithumb.cpp \
+    settings.cpp
 
 HEADERS  += \
     window.h \
@@ -23,10 +24,13 @@ HEADERS  += \
     api/apiauth.h \
     api/apidel.h \
     api/apihist.h \
-    api/apithumb.h
+    api/apithumb.h \
+    settings.h
 
 RESOURCES += \
     systray.qrc
+
+OTHER_FILES += settings
 
 isEmpty(PREFIX) {
     PREFIX = /usr/local

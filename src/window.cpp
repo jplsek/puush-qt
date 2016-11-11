@@ -3,12 +3,13 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFormLayout>
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QSpacerItem>
 #include <QProcess>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-
+#include <QTabWidget>
+#include <QRadioButton>
 #include <iostream>
 
 #include "api/apirequest.h"
@@ -21,7 +22,13 @@ QString puushUrl = "https://puush.me/api/";
 
 Window::Window() {
     setDefaults();
-    createGroupBoxes();
+    //  - - - - - - - - - - - - - - - - - - - -
+    // new ethan stuff
+    tabs = createTabs();
+    connectSignals();
+    //  - - - - - - - - - - - - - - - - - - - -
+
+    // createGroupBoxes();
 
     createActions();
     createTrayIcon();
@@ -37,27 +44,195 @@ Window::Window() {
     resetButton->setDefault(true);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(authGroupBox);
-    mainLayout->addWidget(puushGroupBox);
-    mainLayout->addWidget(saveGroupBox);
+    mainLayout->addWidget(tabs);
     mainLayout->addWidget(resetButton);
     setLayout(mainLayout);
 
-    createSettingsSlots();
+    // createSettingsSlots();
 
     trayIcon->show();
 
     setWindowTitle(tr("puush-qt"));
-    resize(400, 300);
+    // resize(400, 300);
 }
 
 void Window::setDefaults() {
-    if (!s.contains("quality"))
-        s.setValue("quality", 90);
-    if (!s.contains("save-path"))
-        s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    if (!s.contains("save-name"))
-        s.setValue("save-name", "ss-yyyy-MM-dd_hh-mm-ss");
+    s.setEmptyToDefaults();
+}
+
+QTabWidget *Window::createTabs(){
+    QTabWidget *tabs = new QTabWidget();
+    tabs->addTab(createTabGeneral(),  "General");
+    // tabs->addTab(createTabKeyBindings(),  "Key Bindings");
+    tabs->addTab(createTabAccount(),  "Account");
+    tabs->addTab(createTabAdvanced(), "Advanced");
+    tabs->addTab(createTabHistory(),  "History");
+    tabs->addTab(createTabAbout(),    "About");
+    return tabs;
+}
+
+QWidget *Window::createTabGeneral(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+
+    QGroupBox *puushGroup = new QGroupBox("On Successful Puush");
+    QVBoxLayout *puushLayout = new QVBoxLayout();
+
+    enablePuushSound = new QCheckBox("Play a sound");
+    enablePuushSound->setChecked(s.value(Settings::ON_PUUSH_SOUND).toBool());
+    puushLayout->addWidget(enablePuushSound);
+
+    enableLocalSave = new QCheckBox("Enable local save");
+    enableLocalSave->setChecked(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
+    puushLayout->addWidget(enableLocalSave);
+
+    localSaveLocation = new QLineEdit();
+    localSaveLocation->setText(s.value(Settings::LOCAL_SAVE_PATH).toString());
+    puushLayout->addWidget(localSaveLocation);
+
+    enableLinkToClipboard = new QCheckBox("Copy link to clipboard");
+    enableLinkToClipboard->setChecked(s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool());
+    puushLayout->addWidget(enableLinkToClipboard);
+
+    enableLinkToBrowser = new QCheckBox("Open link in browser");
+    enableLinkToBrowser->setChecked(s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool());
+    puushLayout->addWidget(enableLinkToBrowser);
+
+    puushGroup->setLayout(puushLayout);
+    qhb->addWidget(puushGroup);
+
+    QGroupBox *trayGroup = new QGroupBox("Tray Icon Behavior on Double Click");
+    QVBoxLayout *trayLayout = new QVBoxLayout();
+    trayDoubleClickSettings = new QRadioButton("Show settings window");
+    trayDoubleClickSettings->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
+    trayDoubleClickCapture  = new QRadioButton("Begin screen capture mode");
+    trayDoubleClickCapture->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE));
+    trayDoubleClickUpload   = new QRadioButton("Open upload file window");
+    trayDoubleClickUpload->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
+    trayLayout->addWidget(trayDoubleClickSettings);
+    trayLayout->addWidget(trayDoubleClickCapture);
+    trayLayout->addWidget(trayDoubleClickUpload);
+    trayGroup->setLayout(trayLayout);
+    qhb->addWidget(trayGroup);
+
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+}
+
+QWidget *Window::createTabAccount(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+
+    QGroupBox *puushGroup = new QGroupBox("Logged in");
+    QVBoxLayout *puushLayout = new QVBoxLayout();
+    puushGroup->setLayout(puushLayout);
+    qhb->addWidget(puushGroup);
+
+    QGroupBox *trayGroup = new QGroupBox("Not logged in");
+    QVBoxLayout *trayLayout = new QVBoxLayout();
+    QLabel *trayLabel = new QLabel("On double-click ...");
+    // trayDoubleClickSettings = new QRadioButton("Show settings window");
+    // trayDoubleClickCapture  = new QRadioButton("Begin screen capture mode");
+    // trayDoubleClickUpload   = new QRadioButton("Open upload file window");
+    trayGroup->setLayout(trayLayout);
+    qhb->addWidget(trayGroup);
+    // Logged in
+        // Logged in as:
+        // API Key:
+        // Account type:
+        // Expiry Date:
+        // Disk Usage:
+        // My Account (button that opens page /login/go/?k=APIKEY)
+        // Logout
+    // not logged in
+        // You need to log in before you can make full use of puush ...
+        // Email:
+        // Password:
+        // Login
+        // Forgot password (link goes to ...https://puush.me/reset_password)
+        // sign up for free account
+
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+}
+
+QWidget *Window::createTabAdvanced(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+
+    QGroupBox *screenBox = new QGroupBox("Screen Capture Quality");
+    QVBoxLayout *screenLayout = new QVBoxLayout();
+        compressionAlways = new QRadioButton("Always use PNG (no lossy compression)");
+        compressionSmart  = new QRadioButton("Smart (use JPG unless PNG is smaller)");
+        compressionAlways->setChecked(s.radio_value_is(Settings::COMPRESSION_PHILOSOPHY, Settings::PNG_ALWAYS));
+        compressionSmart->setChecked(s.radio_value_is(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
+        compressionAlways->setEnabled(false);
+        compressionSmart->setEnabled(false);
+        screenLayout->addWidget(compressionAlways);
+        screenLayout->addWidget(compressionSmart);
+        screenBox->setLayout(screenLayout);
+    QGroupBox *contextBox = new QGroupBox("Context Menu");
+    QVBoxLayout *contextLayout = new QVBoxLayout();
+        contextShowExplorerContext = new QCheckBox("Show file explorer context menu items");
+        contextShowExplorerContext->setChecked(s.value(Settings::ENABLE_EXPLORER_CONTEXT_MENU).toBool());
+        contextShowExplorerContext->setEnabled(false);
+        contextLayout->addWidget(contextShowExplorerContext);
+        contextBox->setLayout(contextLayout);
+    QGroupBox *fullscreenBox = new QGroupBox("Fullscreen Capture");
+    QVBoxLayout *fullscreenLayout = new QVBoxLayout();
+        fullscreenCaptureAll     = new QRadioButton("Capture all screens");
+        fullscreenCaptureCursor  = new QRadioButton("Capture screen containing mouse cursor");
+        fullscreenCapturePrimary = new QRadioButton("Always capture primary screen");
+        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS));
+        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP));
+        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP));
+        fullscreenLayout->addWidget(fullscreenCaptureAll);
+        fullscreenLayout->addWidget(fullscreenCaptureCursor);
+        fullscreenLayout->addWidget(fullscreenCapturePrimary);
+        fullscreenBox->setLayout(fullscreenLayout);
+    QGroupBox *dangerousBox = new QGroupBox("Dangerous stuff");
+    QVBoxLayout *dangerousLayout = new QVBoxLayout();
+        dangerousExperimentalEnable = new QCheckBox("Enable experimental features");
+        dangerousExperimentalEnable->setChecked(s.value(Settings::ENABLE_EXPERIMENTAL_FEATURES).toBool());
+        dangerousExperimentalEnable->setEnabled(false);
+        dangerousNoSelectionRect = new QCheckBox("Don't draw selection rectangle");
+        dangerousNoSelectionRect->setChecked(!s.value(Settings::SHOW_SELECTION_RECTANGLE).toBool());
+        dangerousNoSelectionRect->setEnabled(false);
+        dangerousLayout->addWidget(dangerousExperimentalEnable);
+        dangerousLayout->addWidget(dangerousNoSelectionRect);
+        dangerousBox->setLayout(dangerousLayout);
+
+    qhb->addWidget(screenBox);
+    qhb->addWidget(contextBox);
+    qhb->addWidget(fullscreenBox);
+    qhb->addWidget(dangerousBox);
+
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+}
+
+QWidget *Window::createTabHistory(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+}
+
+QWidget *Window::createTabAbout(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+    // Made for
+    // Made by
+    // Version
+    // Release Date
+    // Update with your package manager
 }
 
 void Window::setVisible(bool visible) {
@@ -122,7 +297,7 @@ void Window::submitInfo() {
  * @brief Window::submitInfo
  */
 void Window::logout(){
-    s.remove("key");
+    s.setValue(Settings::ACCOUNT_API_KEY, "");
     authMessage->setText(tr("Logged out"));
 }
 
@@ -138,7 +313,7 @@ void Window::authDone(ApiAuth *req) {
         return;
     }
 
-    s.setValue("key", req->apikey());
+    s.setValue(Settings::ACCOUNT_API_KEY, req->apikey());
     authMessage->setText(tr("Authentication Successfull"));
 
     userData = req->allData();
@@ -166,13 +341,16 @@ void Window::createGroupBoxes() {
 
     // Auth Settings
 
-    emailEdit = new QLineEdit(s.value("email", "").toString());
+    if(!s.contains(Settings::ACCOUNT_EMAIL)) // FIXME this should be set as a required entry
+        s.setValue(Settings::ACCOUNT_EMAIL, "");
+
+    emailEdit = new QLineEdit(s.value(Settings::ACCOUNT_EMAIL).toString());
 
     passwordEdit = new QLineEdit();
     passwordEdit->setEchoMode(QLineEdit::Password);
 
     authMessage = new QLabel();
-    if (!s.contains("key"))
+    if (!s.contains(Settings::ACCOUNT_API_KEY))
         authMessage->setText("Not logged in");
     else
         authMessage->setText("Logged in");
@@ -182,7 +360,7 @@ void Window::createGroupBoxes() {
     logoutButton = new QPushButton(tr("Logout"));
     logoutButton->setDefault(true);
 
-    QHBoxLayout *buttonPair = new QHBoxLayout();
+    QVBoxLayout *buttonPair = new QVBoxLayout();
     buttonPair->addWidget(logoutButton);
     buttonPair->addWidget(submitButton);
 
@@ -198,7 +376,7 @@ void Window::createGroupBoxes() {
     qualitySlider->setRange(0, 100);
     qualitySlider->setTickPosition(QSlider::TicksBelow);
     qualitySlider->setTickInterval(10);
-    qualitySlider->setValue(s.value("quality", 90).toInt());
+    qualitySlider->setValue(s.value(Settings::IMAGE_QUALITY).toInt());
 
     QFormLayout *puushLayout = new QFormLayout();
     puushLayout->addRow(tr("Quality:"), qualitySlider);
@@ -206,14 +384,11 @@ void Window::createGroupBoxes() {
     // Save settings
 
     saveEnabled = new QCheckBox("Save screenshot to file");
-    savePathEdit = new QLineEdit(s.value("save-path").toString());
+    savePathEdit = new QLineEdit(s.value(Settings::LOCAL_SAVE_PATH).toString());
     selectSavePathButton = new QPushButton(tr("..."));
-    saveNameEdit = new QLineEdit(s.value("save-name").toString());
+    saveNameEdit = new QLineEdit(s.value(Settings::LOCAL_SAVE_NAME).toString());
 
-    saveEnabled->setCheckState(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
-    savePathEdit->setEnabled(s.value("save-enabled").toBool());
-    selectSavePathButton->setEnabled(s.value("save-enabled").toBool());
-    // saveNameEdit->setEnabled(s.value("save-enabled").toBool()); // disabled because NYI
+    saveEnabled->setCheckState(s.value(Settings::LOCAL_SAVE_ENABLED).toBool() ? Qt::Checked : Qt::Unchecked);
     saveNameEdit->setEnabled(false);
 
     QFormLayout *saveLayout = new QFormLayout();
@@ -252,6 +427,52 @@ void Window::createActions() {
     connect(openSaveDirectoryAction, SIGNAL(triggered()), this, SLOT(openSaveDirectory()));
 }
 
+void Window::connectSignals(){
+    connect(enablePuushSound, SIGNAL(clicked(bool)), this, SLOT(soundEnabledChanged(bool)));
+    connect(enableLocalSave, SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
+
+    connect(localSaveLocation, SIGNAL(editingFinished()), this, SLOT(localSaveLocChanged()));
+
+    connect(enableLinkToClipboard, SIGNAL(clicked(bool)), this, SLOT(enableLinkToClipboardChanged(bool)));
+    connect(enableLinkToBrowser, SIGNAL(clicked(bool)), this, SLOT(enableLinkToBrowserChanged(bool)));
+
+    connect(trayDoubleClickSettings, SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedSettingsChanged(bool)));
+    connect(trayDoubleClickCapture,  SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureChanged(bool)));
+    connect(trayDoubleClickUpload,   SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
+
+    connect(compressionAlways, SIGNAL(clicked(bool)), this, SLOT(compressionAlwaysChanged(bool)));
+    connect(compressionSmart,  SIGNAL(clicked(bool)), this, SLOT(compressionSmartChanged(bool)));
+
+    connect(contextShowExplorerContext, SIGNAL(clicked(bool)), this, SLOT(contextShowExplorerChanged(bool)));
+
+    connect(fullscreenCaptureAll,     SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureAllChanged(bool)));
+    connect(fullscreenCaptureCursor,  SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureCursorChanged(bool)));
+    connect(fullscreenCapturePrimary, SIGNAL(clicked(bool)), this, SLOT(fullscreenCapturePrimaryChanged(bool)));
+
+    connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
+    connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
+
+    return;
+
+    // Settings
+    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+
+    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
+    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+
+    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
+
+    connect(saveEnabled,          SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
+    connect(savePathEdit,         SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
+    connect(selectSavePathButton, SIGNAL(clicked()),         this, SLOT(openSavePath()));
+    connect(saveNameEdit,         SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
+
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
+
+    // Actions
+    // open account page
+}
+
 void Window::createSettingsSlots(){
     connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
 
@@ -281,7 +502,7 @@ void Window::createTrayIcon() {
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
-    openSaveDirectoryAction->setEnabled(s.value("save-enabled").toBool());
+    openSaveDirectoryAction->setEnabled(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -303,7 +524,7 @@ void Window::openSettings() {
  * @return
  */
 bool Window::isLoggedIn() {
-    if (s.contains("key"))
+    if (s.contains(Settings::ACCOUNT_API_KEY))
         return true;
 
     openSettings();
@@ -358,7 +579,7 @@ void Window::openSavePath(){
  * @return
  */
 QString Window::getSavePath(){
-    QString path = s.value("save-path").toString();
+    QString path = s.value(Settings::LOCAL_SAVE_PATH).toString();
     if(path.startsWith("~/")){
         path.remove(0, 1); // remove "~"
         path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
@@ -446,7 +667,7 @@ void Window::updateActiveMessage() {
  */
 void Window::openSaveDirectory() {
     bool response = true;
-    if(s.contains("save-path")){
+    if(s.contains(Settings::LOCAL_SAVE_PATH)){
         QString path = getSavePath();
         response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     }
@@ -484,7 +705,7 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
     connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
 
-    if(s.value("save-enabled").toBool()){
+    if(s.value(Settings::LOCAL_SAVE_ENABLED).toBool()){
         QDir root = QDir::root();
         root.mkpath(getSavePath());
         QFile::copy(fileName, getSaveName());
@@ -540,7 +761,7 @@ void Window::puushDone(int returnCode, QString output) {
  * @param val
  */
 void Window::qualityChanged(int val){
-    s.setValue("quality", val);
+    s.setValue(Settings::IMAGE_QUALITY, val);
 }
 
 /**
@@ -550,7 +771,7 @@ void Window::qualityChanged(int val){
  */
 void Window::saveEnabledChanged(int val){
     // 0 = unchecked, 1 = unchecked & disabled?, 2 = checked, 3 = checked & disabled?
-    s.setValue("save-enabled", val == 2);
+    s.setValue(Settings::LOCAL_SAVE_ENABLED, val == 2);
     savePathEdit->setEnabled(val == 2);
     selectSavePathButton->setEnabled(val == 2);
     openSaveDirectoryAction->setEnabled(val == 2);
@@ -571,25 +792,94 @@ void Window::savePathChanged(){
  * @param path
  */
 void Window::setSavePath(QString path){
-    s.setValue("save-path", path);
+    s.setValue(Settings::LOCAL_SAVE_PATH, path);
 }
 
 void Window::saveNameChanged(){
-    // s.setValue("save-name", saveNameEdit->text()); //disabled because NYI
+    // s.setValue(Settings::LOCAL_SAVE_NAME, saveNameEdit->text()); //disabled because NYI
 }
 
 void Window::resetSettings(){
-    s.setValue("quality", 90);
-    s.setValue("save-enabled", false);
-    s.setValue("save-path", QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    s.setValue("save-name", "ss-yyyy-MM-dd_hh-mm-ss");
-
-    qualitySlider->setValue(s.value("quality").toInt());
-    saveEnabled->setChecked(s.value("save-enabled").toBool() ? Qt::Checked : Qt::Unchecked);
-    savePathEdit->setText(s.value("save-path").toString());
-    saveNameEdit->setText(s.value("save-name").toString());
+    // s.resetSettings();
 }
 
 void Window::emailChanged(){
-    s.setValue("email", emailEdit->text());
+    s.setValue(Settings::ACCOUNT_EMAIL, emailEdit->text());
+}
+
+void Window::soundEnabledChanged(bool enabled){
+    s.setValue(Settings::ON_PUUSH_SOUND, enabled);
+}
+
+void Window::enableLocalSaveChanged(bool enabled){
+    s.setValue(Settings::LOCAL_SAVE_ENABLED, enabled);
+}
+
+void Window::localSaveLocChanged(){
+    // FIXME this should have the ~/ substitution
+    s.setValue(Settings::LOCAL_SAVE_PATH, localSaveLocation->text());
+}
+
+void Window::enableLinkToClipboardChanged(bool enabled){
+    s.setValue(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD, enabled);
+}
+
+void Window::enableLinkToBrowserChanged(bool enabled){
+    s.setValue(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER, enabled);
+}
+
+// a lot of these are radio buttons, in which case the one that is checked
+// has the sole responsibility of updating the settings value
+
+void Window::trayDoubleClickedSettingsChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS);
+}
+
+void Window::trayDoubleClickedCaptureChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE);
+}
+
+void Window::trayDoubleClickedUploadChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
+}
+
+void Window::compressionAlwaysChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::COMPRESSION_PHILOSOPHY, Settings::JPG_ALWAYS);
+}
+
+void Window::compressionSmartChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER);
+}
+
+void Window::contextShowExplorerChanged(bool enabled){
+    // FIXME this needs to be done...
+    s.setValue(Settings::ENABLE_EXPLORER_CONTEXT_MENU, enabled);
+}
+
+void Window::fullscreenCaptureAllChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS);
+}
+
+void Window::fullscreenCaptureCursorChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP);
+}
+
+void Window::fullscreenCapturePrimaryChanged(bool enabled){
+    if(enabled)
+        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP);
+}
+
+void Window::dangerousExperimentalEnableChanged(bool enabled){
+    s.setValue(Settings::ENABLE_EXPERIMENTAL_FEATURES, enabled);
+}
+
+void Window::dangerousNoSelectionRectChanged(bool enabled){
+    s.setValue(Settings::SHOW_SELECTION_RECTANGLE, !enabled);
 }

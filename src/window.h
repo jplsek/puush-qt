@@ -18,8 +18,13 @@
 #include <QSlider>
 #include <QTimer>
 #include <QNetworkAccessManager>
+#include <QRadioButton>
 
 #include "api/apiauth.h"
+#include "settings.h"
+
+
+class QTabWidget;
 
 class Window : public QDialog {
     Q_OBJECT
@@ -69,6 +74,88 @@ private:
     bool isLoggedIn();
     void setSavePath(QString);
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // ethans new section
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    enum TrayAction {
+        INVALID_TRAY_ACTION = 0, // the settings should default to this
+        OPEN_SETTINGS = 1,
+        OPEN_CAPTURE  = 2,
+        OPEN_UPLOADS  = 3,
+    };
+    enum CompressionPhilosophy {
+        PNG_ALWAYS,
+        SMALLER,
+        JPG_ALWAYS,
+    };
+    enum FullscreenCaptureMode {
+        ALL_DESKTOPS,
+        CURRENT_DESKTOP, // the desktop the cursor is on
+        PRIMARY_DESKTOP,
+    };
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    QTabWidget *createTabs();
+    QWidget *createTabGeneral();
+    QWidget *createTabAccount();
+    QWidget *createTabAdvanced();
+    QWidget *createTabHistory();
+    QWidget *createTabAbout();
+
+    void connectSignals();
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    QTabWidget *tabs;
+
+    QCheckBox *enablePuushSound;
+    QCheckBox *enableLocalSave;
+    QLineEdit *localSaveLocation;
+    QCheckBox *enableLinkToClipboard;
+    QCheckBox *enableLinkToBrowser;
+
+    QRadioButton *trayDoubleClickSettings;
+    QRadioButton *trayDoubleClickCapture;
+    QRadioButton *trayDoubleClickUpload;
+
+    QRadioButton *compressionAlways;
+    QRadioButton *compressionSmart;
+
+    QCheckBox *contextShowExplorerContext;
+
+    QRadioButton *fullscreenCaptureAll;
+    QRadioButton *fullscreenCaptureCursor;
+    QRadioButton *fullscreenCapturePrimary;
+
+    QCheckBox *dangerousExperimentalEnable;
+    QCheckBox *dangerousNoSelectionRect;
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+private slots:
+    void soundEnabledChanged(bool);
+    void enableLocalSaveChanged(bool);
+
+    void localSaveLocChanged();
+
+    void enableLinkToClipboardChanged(bool);
+    void enableLinkToBrowserChanged(bool);
+
+    void trayDoubleClickedSettingsChanged(bool);
+    void trayDoubleClickedCaptureChanged(bool);
+    void trayDoubleClickedUploadChanged(bool);
+
+    void compressionAlwaysChanged(bool);
+    void compressionSmartChanged(bool);
+
+    void contextShowExplorerChanged(bool);
+
+    void fullscreenCaptureAllChanged(bool);
+    void fullscreenCaptureCursorChanged(bool);
+    void fullscreenCapturePrimaryChanged(bool);
+
+    void dangerousExperimentalEnableChanged(bool);
+    void dangerousNoSelectionRectChanged(bool);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+private:
+
     QGroupBox *iconGroupBox;
 
     QGroupBox *authGroupBox;
@@ -109,7 +196,7 @@ private:
 
     QNetworkReply *authReply;
 
-    QSettings s;
+    Settings s;
     ApiAuth::AuthData userData;
 
     QString getFileName();
