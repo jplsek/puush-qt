@@ -18,15 +18,12 @@
 #include "screenshot.h"
 #include "upload.h"
 
-QString puushUrl = "https://puush.me/api/";
+QString puushUrlBase = "https://puush.me/";
+QString puushUrl = puushUrlBase + "api/";
 
 Window::Window() {
     setDefaults();
     tabs = createTabs();
-    connectSignals();
-
-    // createGroupBoxes();
-
     createActions();
     createTrayIcon();
 
@@ -38,14 +35,11 @@ Window::Window() {
     setAppIcon(":/images/puush-qt.png");
 
     resetButton = new QPushButton(tr("Reset Settings"));
-    resetButton->setDefault(true);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(tabs);
     mainLayout->addWidget(resetButton);
     setLayout(mainLayout);
-
-    // createSettingsSlots();
 
     trayIcon->show();
 
@@ -53,6 +47,8 @@ Window::Window() {
 
     // resize window based of tab layout size
     resize(tabs->width(), height());
+
+    connectSignals();
 }
 
 void Window::setDefaults() {
@@ -61,12 +57,12 @@ void Window::setDefaults() {
 
 QTabWidget *Window::createTabs(){
     QTabWidget *tabs = new QTabWidget();
-    tabs->addTab(createTabGeneral(),  "General");
-    // tabs->addTab(createTabKeyBindings(),  "Key Bindings");
-    tabs->addTab(createTabAccount(),  "Account");
-    tabs->addTab(createTabAdvanced(), "Advanced");
-    tabs->addTab(createTabHistory(),  "History");
-    tabs->addTab(createTabAbout(),    "About");
+    tabs->addTab(createTabGeneral(),     "General");
+    tabs->addTab(createTabKeyBindings(), "Key Bindings");
+    tabs->addTab(createTabAccount(),     "Account");
+    tabs->addTab(createTabAdvanced(),    "Advanced");
+    tabs->addTab(createTabHistory(),     "History");
+    tabs->addTab(createTabAbout(),       "About");
     return tabs;
 }
 
@@ -85,9 +81,14 @@ QWidget *Window::createTabGeneral(){
     enableLocalSave->setChecked(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
     puushLayout->addWidget(enableLocalSave);
 
-    localSaveLocation = new QLineEdit();
-    localSaveLocation->setText(s.value(Settings::LOCAL_SAVE_PATH).toString());
-    puushLayout->addWidget(localSaveLocation);
+    QWidget *saveLocation = new QWidget();
+    QHBoxLayout *saveLocationLayout = new QHBoxLayout();
+    localSaveLocation = new QLineEdit(s.value(Settings::LOCAL_SAVE_PATH).toString());
+    selectSavePathButton = new QPushButton(tr("..."));
+    saveLocationLayout->addWidget(localSaveLocation);
+    saveLocationLayout->addWidget(selectSavePathButton);
+    saveLocation->setLayout(saveLocationLayout);
+    puushLayout->addWidget(saveLocation);
 
     enableLinkToClipboard = new QCheckBox("Copy link to clipboard");
     enableLinkToClipboard->setChecked(s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool());
@@ -119,38 +120,107 @@ QWidget *Window::createTabGeneral(){
     return w;
 }
 
+QWidget *Window::createTabKeyBindings(){
+    QWidget *w = new QWidget();
+    QVBoxLayout *qhb = new QVBoxLayout();
+
+    QGroupBox *keyBindings = new QGroupBox("Key Bindings");
+    QVBoxLayout *keyBindingsLayout = new QVBoxLayout();
+    keyBindings->setLayout(keyBindingsLayout);
+
+    QLabel *tmp = new QLabel(tr("Not implemented..."));
+
+    keyBindingsLayout->addWidget(tmp);
+
+    qhb->addWidget(keyBindings);
+
+    qhb->addStretch();
+    w->setLayout(qhb);
+    return w;
+}
+
 QWidget *Window::createTabAccount(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
 
-    QGroupBox *puushGroup = new QGroupBox("Logged in");
-    QVBoxLayout *puushLayout = new QVBoxLayout();
-    puushGroup->setLayout(puushLayout);
-    qhb->addWidget(puushGroup);
+    QGroupBox *account = new QGroupBox("Account Details");
+    qhb->addWidget(account);
 
-    QGroupBox *trayGroup = new QGroupBox("Not logged in");
-    QVBoxLayout *trayLayout = new QVBoxLayout();
-    QLabel *trayLabel = new QLabel("On double-click ...");
-    // trayDoubleClickSettings = new QRadioButton("Show settings window");
-    // trayDoubleClickCapture  = new QRadioButton("Begin screen capture mode");
-    // trayDoubleClickUpload   = new QRadioButton("Open upload file window");
-    trayGroup->setLayout(trayLayout);
-    qhb->addWidget(trayGroup);
-    // Logged in
-        // Logged in as:
-        // API Key:
-        // Account type:
-        // Expiry Date:
-        // Disk Usage:
-        // My Account (button that opens page /login/go/?k=APIKEY)
-        // Logout
-    // not logged in
-        // You need to log in before you can make full use of puush ...
-        // Email:
-        // Password:
-        // Login
-        // Forgot password (link goes to ...https://puush.me/reset_password)
-        // sign up for free account
+    myAccount = new QPushButton(tr("My Account"));
+    emailEdit = new QLineEdit();
+    passwordEdit = new QLineEdit();
+    submitButton = new QPushButton(tr("Submit"));
+    logoutButton = new QPushButton(tr("Logout"));
+
+    // TODO update this automatically when user logs in and out
+    if (s.value(Settings::ACCOUNT_API_KEY).toString() != "") {
+        QGridLayout *qgl = new QGridLayout;
+
+        QLabel *email = new QLabel(tr("Logged in as: "));
+            email->setAlignment(Qt::AlignRight);
+        QLabel *emailInfo = new QLabel(s.value(Settings::ACCOUNT_EMAIL).toString());
+        QLabel *apiKey = new QLabel(tr("API Key: "));
+            apiKey->setAlignment(Qt::AlignRight);
+        QLabel *apiKeyInfo = new QLabel(s.value(Settings::ACCOUNT_EMAIL).toString());
+        QLabel *type = new QLabel(tr("Account Type: "));
+            type->setAlignment(Qt::AlignRight);
+        QLabel *typeInfo = new QLabel(tr("Not Implemented"));
+        QLabel *expiry = new QLabel(tr("Expiry Date: "));
+            expiry->setAlignment(Qt::AlignRight);
+        QLabel *expiryInfo = new QLabel(tr("Not Implemented"));
+        QLabel *disk = new QLabel(tr("Disk Usage: "));
+            disk->setAlignment(Qt::AlignRight);
+        QLabel *diskInfo = new QLabel(tr("Not Implemented"));
+
+        qgl->addWidget(email, 0,0);
+        qgl->addWidget(emailInfo, 0, 1);
+        qgl->addWidget(apiKey, 1, 0);
+        qgl->addWidget(apiKeyInfo, 1, 1);
+        qgl->addWidget(type, 2, 0);
+        qgl->addWidget(typeInfo, 2, 1);
+        qgl->addWidget(expiry, 3, 0);
+        qgl->addWidget(expiryInfo, 3, 1);
+        qgl->addWidget(disk, 4, 0);
+        qgl->addWidget(diskInfo, 4, 1);
+        qgl->addWidget(myAccount, 5, 0);
+        qgl->addWidget(logoutButton, 5, 1);
+
+        account->setLayout(qgl);
+    } else {
+        QVBoxLayout *accountLayout = new QVBoxLayout();
+
+        QLabel *info = new QLabel(tr("You must login to use Puush. If you don't already have an account, you can register for an account below."));
+            info->setWordWrap(true);
+
+        passwordEdit->setEchoMode(QLineEdit::Password);
+
+        submitButton->setDefault(true);
+
+        QWidget *form = new QWidget();
+        QFormLayout *authLayout = new QFormLayout();
+        authLayout->addRow(tr("Email:"),    emailEdit);
+        authLayout->addRow(tr("Password:"), passwordEdit);
+
+        form->setLayout(authLayout);
+
+        QLabel *forgot = new QLabel("<a href=\"" + puushUrlBase + "reset_password\">" + tr("Forgot Password?") + "</a>");
+        forgot->setTextFormat(Qt::RichText);
+        forgot->setTextInteractionFlags(Qt::TextBrowserInteraction);
+        forgot->setOpenExternalLinks(true);
+
+        QLabel *registerAccount = new QLabel("<a href=\"" + puushUrlBase + "register\">" + tr("Register...") + "</a>");
+        registerAccount->setTextFormat(Qt::RichText);
+        registerAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
+        registerAccount->setOpenExternalLinks(true);
+
+        accountLayout->addWidget(info);
+        accountLayout->addWidget(form);
+        accountLayout->addWidget(forgot);
+        accountLayout->addWidget(submitButton);
+        accountLayout->addWidget(registerAccount);
+
+        account->setLayout(accountLayout);
+    }
 
     qhb->addStretch();
     w->setLayout(qhb);
@@ -169,8 +239,18 @@ QWidget *Window::createTabAdvanced(){
         compressionSmart->setChecked(s.radio_value_is(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
         compressionAlways->setEnabled(false);
         compressionSmart->setEnabled(false);
+        QFormLayout *qualityLayout = new QFormLayout();
+        QWidget *quality = new QWidget();
+        qualitySlider = new QSlider(Qt::Horizontal);
+        qualitySlider->setRange(0, 100);
+        qualitySlider->setTickPosition(QSlider::TicksBelow);
+        qualitySlider->setTickInterval(10);
+        qualitySlider->setValue(s.value(Settings::IMAGE_QUALITY).toInt());
+        qualityLayout->addRow(tr("Quality:"), qualitySlider);
+        quality->setLayout(qualityLayout);
         screenLayout->addWidget(compressionAlways);
         screenLayout->addWidget(compressionSmart);
+        screenLayout->addWidget(quality);
         screenBox->setLayout(screenLayout);
     QGroupBox *contextBox = new QGroupBox("Context Menu");
     QVBoxLayout *contextLayout = new QVBoxLayout();
@@ -347,7 +427,11 @@ void Window::authDone(ApiAuth *req) {
  * @brief Window::messageClicked
  */
 void Window::messageClicked() {
-    bool response = QDesktopServices::openUrl(lastUrl);
+    openUrl(lastUrl);
+}
+
+void Window::openUrl(QUrl url) {
+    bool response = QDesktopServices::openUrl(url);
 
     if (!response) {
         QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
@@ -355,77 +439,10 @@ void Window::messageClicked() {
     }
 }
 
-void Window::createGroupBoxes() {
-    authGroupBox  = new QGroupBox(tr("Authentication"));
-    puushGroupBox = new QGroupBox(tr("Puush Settings"));
-    saveGroupBox  = new QGroupBox(tr("Local Save Settings"));
-
-    // Auth Settings
-
-    if(!s.contains(Settings::ACCOUNT_EMAIL)) // FIXME this should be set as a required entry
-        s.setValue(Settings::ACCOUNT_EMAIL, "");
-
-    emailEdit = new QLineEdit(s.value(Settings::ACCOUNT_EMAIL).toString());
-
-    passwordEdit = new QLineEdit();
-    passwordEdit->setEchoMode(QLineEdit::Password);
-
-    authMessage = new QLabel();
-    if (!s.contains(Settings::ACCOUNT_API_KEY))
-        authMessage->setText("Not logged in");
-    else
-        authMessage->setText("Logged in");
-
-    submitButton = new QPushButton(tr("Submit"));
-    submitButton->setDefault(true);
-    logoutButton = new QPushButton(tr("Logout"));
-    logoutButton->setDefault(true);
-
-    QVBoxLayout *buttonPair = new QVBoxLayout();
-    buttonPair->addWidget(logoutButton);
-    buttonPair->addWidget(submitButton);
-
-    QFormLayout *authLayout = new QFormLayout();
-    authLayout->addRow(tr("Email:"),    emailEdit);
-    authLayout->addRow(tr("Password:"), passwordEdit);
-    authLayout->addRow(authMessage);
-    authLayout->addRow(buttonPair);
-
-    // Puush settings
-
-    qualitySlider = new QSlider(Qt::Horizontal);
-    qualitySlider->setRange(0, 100);
-    qualitySlider->setTickPosition(QSlider::TicksBelow);
-    qualitySlider->setTickInterval(10);
-    qualitySlider->setValue(s.value(Settings::IMAGE_QUALITY).toInt());
-
-    QFormLayout *puushLayout = new QFormLayout();
-    puushLayout->addRow(tr("Quality:"), qualitySlider);
-
-    // Save settings
-
-    saveEnabled = new QCheckBox("Save screenshot to file");
-    savePathEdit = new QLineEdit(s.value(Settings::LOCAL_SAVE_PATH).toString());
-    selectSavePathButton = new QPushButton(tr("..."));
-    saveNameEdit = new QLineEdit(s.value(Settings::LOCAL_SAVE_NAME).toString());
-
-    saveEnabled->setCheckState(s.value(Settings::LOCAL_SAVE_ENABLED).toBool() ? Qt::Checked : Qt::Unchecked);
-    saveNameEdit->setEnabled(false);
-
-    QFormLayout *saveLayout = new QFormLayout();
-    saveLayout->addRow(saveEnabled);
-    QHBoxLayout *locLayout = new QHBoxLayout();
-    locLayout->addWidget(savePathEdit);
-    locLayout->addWidget(selectSavePathButton);
-    saveLayout->addRow(tr("Location:"),  locLayout);
-    //saveLayout->addRow(tr("File Name:"), saveNameEdit);
-
-    authGroupBox-> setLayout(authLayout);
-    puushGroupBox->setLayout(puushLayout);
-    saveGroupBox-> setLayout(saveLayout);
-}
-
 void Window::createActions() {
+    myAccountAction = new QAction(tr("&My Account"), this);
+    connect(myAccountAction, SIGNAL(triggered()), this, SLOT(openAccount()));
+
     uploadAction = new QAction(tr("&Upload File..."), this);
     connect(uploadAction, SIGNAL(triggered()), this, SLOT(uploadFile()));
 
@@ -453,6 +470,7 @@ void Window::connectSignals(){
     connect(enableLocalSave, SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
 
     connect(localSaveLocation, SIGNAL(editingFinished()), this, SLOT(localSaveLocChanged()));
+    connect(selectSavePathButton, SIGNAL(clicked()), this, SLOT(openSavePath()));
 
     connect(enableLinkToClipboard, SIGNAL(clicked(bool)), this, SLOT(enableLinkToClipboardChanged(bool)));
     connect(enableLinkToBrowser, SIGNAL(clicked(bool)), this, SLOT(enableLinkToBrowserChanged(bool)));
@@ -473,47 +491,24 @@ void Window::connectSignals(){
     connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
     connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
 
+    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+
+    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
+    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
+
     connect(aboutQt, SIGNAL(clicked(bool)), qApp, SLOT(aboutQt()));
+    connect(myAccount, SIGNAL(clicked(bool)), this, SLOT(openAccount()));
 
+    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
     return;
-
-    // Settings
-    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
-
-    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
-    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
-
-    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
-
-    connect(saveEnabled,          SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
-    connect(savePathEdit,         SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
-    connect(selectSavePathButton, SIGNAL(clicked()),         this, SLOT(openSavePath()));
-    connect(saveNameEdit,         SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
-
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
-
-    // Actions
-    // open account page
-}
-
-void Window::createSettingsSlots(){
-    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
-
-    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
-    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
-
-    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
-
-    connect(saveEnabled,          SIGNAL(stateChanged(int)), this, SLOT(saveEnabledChanged(int)));
-    connect(savePathEdit,         SIGNAL(editingFinished()), this, SLOT(savePathChanged()));
-    connect(selectSavePathButton, SIGNAL(clicked()),         this, SLOT(openSavePath()));
-    connect(saveNameEdit,         SIGNAL(editingFinished()), this, SLOT(saveNameChanged()));
-
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
 }
 
 void Window::createTrayIcon() {
     trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(myAccountAction);
+    trayIconMenu->addSeparator();
     trayIconMenu->addAction(uploadAction);
     trayIconMenu->addAction(fullScreenAction);
     trayIconMenu->addAction(selectAreaAction);
@@ -532,11 +527,12 @@ void Window::createTrayIcon() {
 }
 
 /**
- * Open the settings window.
+ * Show the account login tab
  * @brief Window::openSettings
  */
 void Window::openSettings() {
     showNormal();
+
     // if it's already open, it won't raise, so we force it.
     raise();
 }
@@ -547,12 +543,20 @@ void Window::openSettings() {
  * @return
  */
 bool Window::isLoggedIn() {
-    if (s.contains(Settings::ACCOUNT_API_KEY))
+    if (s.value(Settings::ACCOUNT_API_KEY) != "")
         return true;
 
+    tabs->setCurrentIndex(2);
     openSettings();
 
     return false;
+}
+
+void Window::openAccount() {
+    if (!isLoggedIn()) return;
+
+    QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
+    openUrl(QUrl(puushUrlBase + "login/go/?k=" + key));
 }
 
 /**
@@ -591,7 +595,7 @@ void Window::openSavePath(){
                 QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    if (dir != "") savePathEdit->setText(dir);
+    if (dir != "") localSaveLocation->setText(dir);
 
     setSavePath(dir);
 }
@@ -795,7 +799,7 @@ void Window::qualityChanged(int val){
 void Window::saveEnabledChanged(int val){
     // 0 = unchecked, 1 = unchecked & disabled?, 2 = checked, 3 = checked & disabled?
     s.setValue(Settings::LOCAL_SAVE_ENABLED, val == 2);
-    savePathEdit->setEnabled(val == 2);
+    localSaveLocation->setEnabled(val == 2);
     selectSavePathButton->setEnabled(val == 2);
     openSaveDirectoryAction->setEnabled(val == 2);
     // saveNameEdit->setEnabled(val == 2); // disabled because NYI
@@ -806,7 +810,7 @@ void Window::saveEnabledChanged(int val){
  * @brief Window::savePathChanged
  */
 void Window::savePathChanged(){
-    setSavePath(savePathEdit->text());
+    setSavePath(localSaveLocation->text());
 }
 
 /**
