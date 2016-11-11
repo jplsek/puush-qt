@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=puush-qt
+GenericName=Puush Screenshot Tool
+Comment=Takes screenshots and uploads them to Puush
+Exec=puush-qt
+TryExec=puush-qt
+Icon=puush-qt
+Terminal=false
+Categories=Utility;Graphics;Qt;
+StartupNotify=false

@@ -26,8 +26,8 @@ Window::Window() {
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
-    setTrayIcon(":/images/icon.svg.png");
-    setAppIcon(":/images/icon.svg.png");
+    setTrayIcon(":/images/puush-qt.png");
+    setAppIcon(":/images/puush-qt.png");
 
     resetButton = new QPushButton(tr("Reset Settings"));
     resetButton->setDefault(true);
@@ -470,7 +470,7 @@ void Window::openSaveDirectory() {
  * @brief Window::puushStarted
  */
 void Window::puushStarted() {
-    setTrayIcon(":/images/icon-uploading.svg.png");
+    setTrayIcon(":/images/puush-qt-uploading.png");
 }
 
 /**
@@ -519,7 +519,7 @@ void Window::puushDone(int returnCode, QString output) {
     if (pieces.length() > 1)
         url = pieces[1];
 
-    setTrayIcon(":/images/icon.svg.png");
+    setTrayIcon(":/images/puush-qt.png");
 
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
 
