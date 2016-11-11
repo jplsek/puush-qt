@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/icon.svg</file>
-        <file>images/icon.svg.png</file>
-        <file>images/icon-uploading.svg.png</file>
-        <file>images/icon-uploading.svg</file>
+        <file>images/puush-qt.svg</file>
+        <file>images/puush-qt.png</file>
+        <file>images/puush-qt-uploading.png</file>
+        <file>images/puush-qt-uploading.svg</file>
     </qresource>
 </RCC>
