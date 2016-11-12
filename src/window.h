@@ -45,6 +45,7 @@ private slots:
     void logout();
     void messageClicked();
     void openSettings();
+    void openAccount();
     void uploadFile();
     void fullScreenScreenshot();
     void selectAreaScreenshot();
@@ -72,6 +73,7 @@ private:
     void createTrayIcon();
     void setDefaults();
     bool isLoggedIn();
+    void openUrl(QUrl);
     void setSavePath(QString);
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -93,17 +95,18 @@ private:
         CURRENT_DESKTOP, // the desktop the cursor is on
         PRIMARY_DESKTOP,
     };
-
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     QTabWidget *createTabs();
     QWidget *createTabGeneral();
+    QWidget *createTabKeyBindings();
     QWidget *createTabAccount();
     QWidget *createTabAdvanced();
     QWidget *createTabHistory();
     QWidget *createTabAbout();
 
     void connectSignals();
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     QTabWidget *tabs;
 
     QCheckBox *enablePuushSound;
@@ -128,6 +131,7 @@ private:
     QCheckBox *dangerousExperimentalEnable;
     QCheckBox *dangerousNoSelectionRect;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 private slots:
     void soundEnabledChanged(bool);
     void enableLocalSaveChanged(bool);
@@ -167,6 +171,7 @@ private:
     QPushButton *resetButton;
     QPushButton *selectSavePathButton;
     QPushButton *aboutQt;
+    QPushButton *myAccount;
 
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
@@ -174,11 +179,11 @@ private:
 
     QLabel *saveEnabledLabel;
     QCheckBox *saveEnabled;
-    QLineEdit *savePathEdit;
     QLineEdit *saveNameEdit;
 
     QSlider *qualitySlider;
 
+    QAction *myAccountAction;
     QAction *uploadAction;
     QAction *fullScreenAction;
     QAction *selectAreaAction;
