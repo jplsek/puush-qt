@@ -25,8 +25,6 @@ Window::Window() {
     tabs = createTabs();
     connectSignals();
 
-    // createGroupBoxes();
-
     createActions();
     createTrayIcon();
 
@@ -45,13 +43,11 @@ Window::Window() {
     mainLayout->addWidget(resetButton);
     setLayout(mainLayout);
 
-    // createSettingsSlots();
-
     trayIcon->show();
 
     setWindowTitle(tr("puush-qt"));
 
-    // resize window based of tab layout size
+    // resize window based on tab layout size
     resize(tabs->width(), height());
 }
 
@@ -62,7 +58,7 @@ void Window::setDefaults() {
 QTabWidget *Window::createTabs(){
     QTabWidget *tabs = new QTabWidget();
     tabs->addTab(createTabGeneral(),  "General");
-    // tabs->addTab(createTabKeyBindings(),  "Key Bindings");
+    // tabs->addTab(createTabKeyBindings(),  "Key Bindings"); // this should be handled by a library that interfaces with the desktop environment
     tabs->addTab(createTabAccount(),  "Account");
     tabs->addTab(createTabAdvanced(), "Advanced");
     tabs->addTab(createTabHistory(),  "History");
@@ -172,6 +168,7 @@ QWidget *Window::createTabAdvanced(){
         screenLayout->addWidget(compressionAlways);
         screenLayout->addWidget(compressionSmart);
         screenBox->setLayout(screenLayout);
+
     QGroupBox *contextBox = new QGroupBox("Context Menu");
     QVBoxLayout *contextLayout = new QVBoxLayout();
         contextShowExplorerContext = new QCheckBox("Show file explorer context menu items");
@@ -179,6 +176,7 @@ QWidget *Window::createTabAdvanced(){
         contextShowExplorerContext->setEnabled(false);
         contextLayout->addWidget(contextShowExplorerContext);
         contextBox->setLayout(contextLayout);
+
     QGroupBox *fullscreenBox = new QGroupBox("Fullscreen Capture");
     QVBoxLayout *fullscreenLayout = new QVBoxLayout();
         fullscreenCaptureAll     = new QRadioButton("Capture all screens");
@@ -191,6 +189,7 @@ QWidget *Window::createTabAdvanced(){
         fullscreenLayout->addWidget(fullscreenCaptureCursor);
         fullscreenLayout->addWidget(fullscreenCapturePrimary);
         fullscreenBox->setLayout(fullscreenLayout);
+
     QGroupBox *dangerousBox = new QGroupBox("Dangerous stuff");
     QVBoxLayout *dangerousLayout = new QVBoxLayout();
         dangerousExperimentalEnable = new QCheckBox("Enable experimental features");
@@ -223,37 +222,44 @@ QWidget *Window::createTabHistory(){
 
 QWidget *Window::createTabAbout(){
     QWidget *w = new QWidget();
-    QGridLayout *qgl = new QGridLayout;
+    QGridLayout *qgl = new QGridLayout();
 
     QLabel *image = new QLabel();
     image->setPixmap(QPixmap(":/images/puush-qt.png"));
 
     QLabel *title = new QLabel(QCoreApplication::applicationName());
-        title->setAlignment(Qt::AlignCenter);
-        QFont font = title->font();
-        font.setPointSize(36);
-        font.setBold(true);
-        title->setFont(font);
+    title->setAlignment(Qt::AlignCenter);
+    QFont font = title->font();
+    font.setPointSize(36);
+    font.setBold(true);
+    title->setFont(font);
+
     QLabel *version = new QLabel();
-        version->setText(tr("Version %1").arg(QCoreApplication::applicationVersion()));
-        version->setAlignment(Qt::AlignCenter);
-    QLabel *license = new QLabel(tr("License: BSD Clause 3"));
-        license->setAlignment(Qt::AlignCenter);
+    version->setText(tr("Version %1").arg(QCoreApplication::applicationVersion()));
+    version->setAlignment(Qt::AlignCenter);
+
+    QLabel *settingsVersion = new QLabel();
+    settingsVersion->setText(tr("Settings file version: ") + s.value(Settings::SETTINGS_VERSION).toString());
+    settingsVersion->setAlignment(Qt::AlignCenter);
+
+    QLabel *license = new QLabel(tr("License: BSD 3-Clause"));
+    license->setAlignment(Qt::AlignCenter);
+
     aboutQt = new QPushButton(tr("About Qt"));
 
-    qgl->setColumnStretch(1, 1);
     qgl->addWidget(image, 0, 0);
     qgl->addWidget(title, 0, 1);
     qgl->addWidget(version, 1, 1);
-    qgl->addWidget(license, 2, 1);
-    qgl->addWidget(aboutQt, 3, 1);
+    qgl->addWidget(settingsVersion, 2, 1);
+    qgl->addWidget(license, 3, 1);
+    // qgl->addWidget(<spacer>, 4, 1);
+    qgl->addWidget(aboutQt, 5, 1);
+
+    qgl->setColumnStretch(1, 1); // make the column with info take up as much space as possible
+    qgl->setRowStretch(4, 1); // add space between the version info and the "about qt" button
 
     w->setLayout(qgl);
     return w;
-    // Made for
-    // Made by
-    // Release Date
-    // Update with your package manager
 }
 
 void Window::setVisible(bool visible) {
