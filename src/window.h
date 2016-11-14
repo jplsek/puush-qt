@@ -76,6 +76,9 @@ private:
     void openUrl(QUrl);
     void setSavePath(QString);
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // ethans new section
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     enum TrayAction {
         INVALID_TRAY_ACTION = 0, // the settings should default to this
         OPEN_SETTINGS = 1,
@@ -92,6 +95,7 @@ private:
         CURRENT_DESKTOP, // the desktop the cursor is on
         PRIMARY_DESKTOP,
     };
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     QTabWidget *createTabs();
     QWidget *createTabGeneral();
@@ -126,6 +130,7 @@ private:
 
     QCheckBox *dangerousExperimentalEnable;
     QCheckBox *dangerousNoSelectionRect;
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 private slots:
     void soundEnabledChanged(bool);
@@ -151,6 +156,7 @@ private slots:
 
     void dangerousExperimentalEnableChanged(bool);
     void dangerousNoSelectionRectChanged(bool);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 private:
 

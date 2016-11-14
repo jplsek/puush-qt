@@ -5,8 +5,6 @@
 #include <QString>
 #include <QVariant>
 
-#include <iostream>
-
 // generic format of this is <option what/when> <value>
 // These values should not change; as it will break peoples saved settings.
 const QString Settings::setting_names[] = {
@@ -72,7 +70,6 @@ void Settings::setValue(Setting s, QVariant val){
 }
 
 bool Settings::radio_value_is(Setting s, RadioValue v){
-    std::cout << "s == " << s << "; v == " << v << std::endl;
     return this->s.value(setting_names[s]).toString() == radio_values[v];
 }
 
