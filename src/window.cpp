@@ -694,7 +694,7 @@ void Window::updateActiveMessage() {
  */
 void Window::openSaveDirectory() {
     bool response = true;
-    if(s.contains(Settings::LOCAL_SAVE_PATH)){
+    if(s.value(Settings::LOCAL_SAVE_PATH).toString() != ""){
         QString path = getSavePath();
         response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     }
