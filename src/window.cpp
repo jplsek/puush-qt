@@ -10,6 +10,7 @@
 #include <QNetworkReply>
 #include <QTabWidget>
 #include <QRadioButton>
+#include <QStackedLayout>
 #include <iostream>
 
 #include "api/apirequest.h"
@@ -145,6 +146,8 @@ QWidget *Window::createTabAccount(){
     QVBoxLayout *qhb = new QVBoxLayout();
 
     QGroupBox *account = new QGroupBox("Account Details");
+    accountBox = new QStackedLayout();
+    account->setLayout(accountBox);
     qhb->addWidget(account);
 
     myAccount = new QPushButton(tr("My Account"));
@@ -153,79 +156,136 @@ QWidget *Window::createTabAccount(){
     submitButton = new QPushButton(tr("Submit"));
     logoutButton = new QPushButton(tr("Logout"));
 
-    // TODO update this automatically when user logs in and out
-    if (s.value(Settings::ACCOUNT_API_KEY).toString() != "") {
-        QGridLayout *qgl = new QGridLayout;
+    createLoginBox();
+    createLoggedinBox();
 
-        QLabel *email = new QLabel(tr("Logged in as: "));
-            email->setAlignment(Qt::AlignRight);
-        QLabel *emailInfo = new QLabel(s.value(Settings::ACCOUNT_EMAIL).toString());
-        QLabel *apiKey = new QLabel(tr("API Key: "));
-            apiKey->setAlignment(Qt::AlignRight);
-        QLabel *apiKeyInfo = new QLabel(s.value(Settings::ACCOUNT_EMAIL).toString());
-        QLabel *type = new QLabel(tr("Account Type: "));
-            type->setAlignment(Qt::AlignRight);
-        QLabel *typeInfo = new QLabel(tr("Not Implemented"));
-        QLabel *expiry = new QLabel(tr("Expiry Date: "));
-            expiry->setAlignment(Qt::AlignRight);
-        QLabel *expiryInfo = new QLabel(tr("Not Implemented"));
-        QLabel *disk = new QLabel(tr("Disk Usage: "));
-            disk->setAlignment(Qt::AlignRight);
-        QLabel *diskInfo = new QLabel(tr("Not Implemented"));
-
-        qgl->addWidget(email, 0,0);
-        qgl->addWidget(emailInfo, 0, 1);
-        qgl->addWidget(apiKey, 1, 0);
-        qgl->addWidget(apiKeyInfo, 1, 1);
-        qgl->addWidget(type, 2, 0);
-        qgl->addWidget(typeInfo, 2, 1);
-        qgl->addWidget(expiry, 3, 0);
-        qgl->addWidget(expiryInfo, 3, 1);
-        qgl->addWidget(disk, 4, 0);
-        qgl->addWidget(diskInfo, 4, 1);
-        qgl->addWidget(myAccount, 5, 0);
-        qgl->addWidget(logoutButton, 5, 1);
-
-        account->setLayout(qgl);
+    if (s.value(Settings::ACCOUNT_API_KEY).toString() == "") {
+        selectLoginBox();
     } else {
-        QVBoxLayout *accountLayout = new QVBoxLayout();
-
-        QLabel *info = new QLabel(tr("You must login to use Puush. If you don't already have an account, you can register for an account below."));
-            info->setWordWrap(true);
-
-        passwordEdit->setEchoMode(QLineEdit::Password);
-
-        submitButton->setDefault(true);
-
-        QWidget *form = new QWidget();
-        QFormLayout *authLayout = new QFormLayout();
-        authLayout->addRow(tr("Email:"),    emailEdit);
-        authLayout->addRow(tr("Password:"), passwordEdit);
-
-        form->setLayout(authLayout);
-
-        QLabel *forgot = new QLabel("<a href=\"" + puushUrlBase + "reset_password\">" + tr("Forgot Password?") + "</a>");
-        forgot->setTextFormat(Qt::RichText);
-        forgot->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        forgot->setOpenExternalLinks(true);
-
-        QLabel *registerAccount = new QLabel("<a href=\"" + puushUrlBase + "register\">" + tr("Register...") + "</a>");
-        registerAccount->setTextFormat(Qt::RichText);
-        registerAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        registerAccount->setOpenExternalLinks(true);
-
-        accountLayout->addWidget(info);
-        accountLayout->addWidget(form);
-        accountLayout->addWidget(forgot);
-        accountLayout->addWidget(submitButton);
-        accountLayout->addWidget(registerAccount);
-
-        account->setLayout(accountLayout);
+        selectLoggedinBox();
     }
+
+    // only used for errors
+    authMessage = new QLabel();
+    authMessage->setStyleSheet("QLabel { color: red; }");
+    qhb->addWidget(authMessage);
 
     qhb->addStretch();
     w->setLayout(qhb);
     return w;
+}
+
+void Window::createLoggedinBox() {
+    QWidget *loggedinBox = new QWidget();
+    QGridLayout *qgl = new QGridLayout;
+
+    // I force align top because of a top/bottom alignment bug while using QStackedLayout
+    // The bug causes the rows to be too high
+
+    QLabel *email = new QLabel(tr("Logged in as: "));
+    email->setAlignment(Qt::AlignRight);
+
+    emailLabel = new QLabel();
+    emailLabel->setAlignment(Qt::AlignTop);
+
+    QLabel *apiKey = new QLabel(tr("API Key: "));
+    apiKey->setAlignment(Qt::AlignRight);
+
+    apiKeyLabel = new QLabel();
+    apiKeyLabel->setAlignment(Qt::AlignTop);
+
+    QLabel *type = new QLabel(tr("Account Type: "));
+    type->setAlignment(Qt::AlignRight);
+
+    accountTypeLabel = new QLabel();
+    accountTypeLabel->setAlignment(Qt::AlignTop);
+
+    QLabel *expiry = new QLabel(tr("Expiry Date: "));
+    expiry->setAlignment(Qt::AlignRight);
+
+    expiryLabel = new QLabel();
+    expiryLabel->setAlignment(Qt::AlignTop);
+
+    QLabel *disk = new QLabel(tr("Disk Usage: "));
+    disk->setAlignment(Qt::AlignRight);
+
+    diskLabel = new QLabel();
+    diskLabel->setAlignment(Qt::AlignTop);
+
+    qgl->addWidget(email, 0,0);
+    qgl->addWidget(emailLabel, 0, 1);
+    qgl->addWidget(apiKey, 1, 0);
+    qgl->addWidget(apiKeyLabel, 1, 1);
+    qgl->addWidget(type, 2, 0);
+    qgl->addWidget(accountTypeLabel, 2, 1);
+    qgl->addWidget(expiry, 3, 0);
+    qgl->addWidget(expiryLabel, 3, 1);
+    qgl->addWidget(disk, 4, 0);
+    qgl->addWidget(diskLabel, 4, 1);
+    qgl->addWidget(myAccount, 5, 0);
+    qgl->addWidget(logoutButton, 5, 1);
+
+    loggedinBox->setLayout(qgl);
+    accountBox->addWidget(loggedinBox);
+}
+
+void Window::createLoginBox() {
+    QWidget *loginBox = new QWidget();
+    QVBoxLayout *accountLayout = new QVBoxLayout();
+
+    QLabel *info = new QLabel(tr("You must login to use Puush. If you don't already have an account, you can register for an account below."));
+        info->setWordWrap(true);
+
+    passwordEdit->setEchoMode(QLineEdit::Password);
+
+    submitButton->setDefault(true);
+
+    QWidget *form = new QWidget();
+    QFormLayout *authLayout = new QFormLayout();
+    authLayout->addRow(tr("Email:"),    emailEdit);
+    authLayout->addRow(tr("Password:"), passwordEdit);
+
+    form->setLayout(authLayout);
+
+    QLabel *forgot = new QLabel("<a href=\"" + puushUrlBase + "reset_password\">" + tr("Forgot Password?") + "</a>");
+    forgot->setTextFormat(Qt::RichText);
+    forgot->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    forgot->setOpenExternalLinks(true);
+
+    QLabel *registerAccount = new QLabel("<a href=\"" + puushUrlBase + "register\">" + tr("Register...") + "</a>");
+    registerAccount->setTextFormat(Qt::RichText);
+    registerAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    registerAccount->setOpenExternalLinks(true);
+
+    accountLayout->addWidget(info);
+    accountLayout->addWidget(form);
+    accountLayout->addWidget(forgot);
+    accountLayout->addWidget(submitButton);
+    accountLayout->addWidget(registerAccount);
+
+    loginBox->setLayout(accountLayout);
+    accountBox->addWidget(loginBox);
+}
+
+void Window::selectLoginBox() {
+    accountBox->setCurrentIndex(0);
+}
+
+/**
+ * Select the logged in box and update all values
+ * @brief Window::selectLoggedinBox
+ */
+void Window::selectLoggedinBox() {
+    accountBox->setCurrentIndex(1);
+
+    // "clear" password from memory after signing in
+    passwordEdit->setText("");
+
+    emailLabel->setText(s.value(Settings::ACCOUNT_EMAIL).toString());
+    apiKeyLabel->setText(s.value(Settings::ACCOUNT_API_KEY).toString());
+    accountTypeLabel->setText("Not Implemented");
+    expiryLabel->setText("Not Implemented");
+    diskLabel->setText("Not Implemented");
 }
 
 QWidget *Window::createTabAdvanced(){
@@ -300,6 +360,17 @@ QWidget *Window::createTabAdvanced(){
 QWidget *Window::createTabHistory(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
+
+    QGroupBox *history = new QGroupBox("History");
+    QVBoxLayout *historyLayout = new QVBoxLayout();
+    history->setLayout(historyLayout);
+
+    QLabel *tmp = new QLabel(tr("Not implemented..."));
+
+    historyLayout->addWidget(tmp);
+
+    qhb->addWidget(history);
+
     qhb->addStretch();
     w->setLayout(qhb);
     return w;
@@ -410,7 +481,7 @@ void Window::submitInfo() {
  */
 void Window::logout(){
     s.setValue(Settings::ACCOUNT_API_KEY, "");
-    authMessage->setText(tr("Logged out"));
+    selectLoginBox();
 }
 
 /**
@@ -425,12 +496,15 @@ void Window::authDone(ApiAuth *req) {
         return;
     }
 
+    authMessage->setText("");
+
     s.setValue(Settings::ACCOUNT_API_KEY, req->apikey());
-    authMessage->setText(tr("Authentication Successfull"));
 
     userData = req->allData();
 
     delete req;
+
+    selectLoggedinBox();
 }
 
 /**
@@ -502,6 +576,7 @@ void Window::connectSignals(){
     connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
     connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
 
+    // save email, so even if the login is unsuccesful, the email can be loaded after an application restart
     connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
 
     connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));

@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QRadioButton>
+#include <QStackedLayout>
 
 #include "api/apiauth.h"
 #include "settings.h"
@@ -75,6 +76,10 @@ private:
     bool isLoggedIn();
     void openUrl(QUrl);
     void setSavePath(QString);
+    void createLoginBox();
+    void createLoggedinBox();
+    void selectLoginBox();
+    void selectLoggedinBox();
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // ethans new section
@@ -131,6 +136,7 @@ private:
     QCheckBox *dangerousExperimentalEnable;
     QCheckBox *dangerousNoSelectionRect;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    QStackedLayout *accountBox;
 
 private slots:
     void soundEnabledChanged(bool);
@@ -176,6 +182,11 @@ private:
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
     QLabel *authMessage;
+    QLabel *emailLabel;
+    QLabel *apiKeyLabel;
+    QLabel *accountTypeLabel;
+    QLabel *expiryLabel;
+    QLabel *diskLabel;
 
     QLabel *saveEnabledLabel;
     QCheckBox *saveEnabled;
