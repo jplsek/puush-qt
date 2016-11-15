@@ -14,6 +14,8 @@
 
 #include "api/apirequest.h"
 #include "api/apiauth.h"
+#include "api/apihist.h"
+
 #include "window.h"
 #include "screenshot.h"
 #include "upload.h"
@@ -300,6 +302,10 @@ QWidget *Window::createTabAdvanced(){
 QWidget *Window::createTabHistory(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
+
+    getHistoryButton = new QPushButton(tr("get history"));
+    qhb->addWidget(getHistoryButton);
+
     qhb->addStretch();
     w->setLayout(qhb);
     return w;
@@ -477,6 +483,7 @@ void Window::createActions() {
 }
 
 void Window::connectSignals(){
+    // General
     connect(enablePuushSound, SIGNAL(clicked(bool)), this, SLOT(soundEnabledChanged(bool)));
     connect(enableLocalSave, SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
 
@@ -490,8 +497,21 @@ void Window::connectSignals(){
     connect(trayDoubleClickCapture,  SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureChanged(bool)));
     connect(trayDoubleClickUpload,   SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
 
+    // Key Bindings
+
+    // Account
+    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+
+    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
+    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+
+    connect(myAccount, SIGNAL(clicked(bool)), this, SLOT(openAccount()));
+
+    // Advanced
     connect(compressionAlways, SIGNAL(clicked(bool)), this, SLOT(compressionAlwaysChanged(bool)));
     connect(compressionSmart,  SIGNAL(clicked(bool)), this, SLOT(compressionSmartChanged(bool)));
+
+    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
 
     connect(contextShowExplorerContext, SIGNAL(clicked(bool)), this, SLOT(contextShowExplorerChanged(bool)));
 
@@ -502,18 +522,13 @@ void Window::connectSignals(){
     connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
     connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
 
-    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
-
-    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
-    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
-
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
 
-    connect(aboutQt, SIGNAL(clicked(bool)), qApp, SLOT(aboutQt()));
-    connect(myAccount, SIGNAL(clicked(bool)), this, SLOT(openAccount()));
+    // History
+    connect(getHistoryButton, SIGNAL(clicked(bool)), this, SLOT(getHistory()));
 
-    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
-    return;
+    // About
+    connect(aboutQt, SIGNAL(clicked(bool)), qApp, SLOT(aboutQt()));
 }
 
 void Window::createTrayIcon() {
@@ -839,6 +854,20 @@ void Window::saveNameChanged(){
 
 void Window::resetSettings(){
     // s.resetSettings();
+}
+
+void Window::getHistory(){
+    if(s.value(Settings::ACCOUNT_API_KEY).toString() == "")
+        return;
+
+    ApiHist *api = new ApiHist(s.value(Settings::ACCOUNT_API_KEY).toString());
+    QMetaObject::Connection r = connect(api, SIGNAL(done(ApiHist *)), this, SLOT(getHistoryDone(ApiAuth *)));
+    std::cout << "submitInfo connect == " << r << std::endl;
+    api->start();
+}
+
+void Window::getHistoryDone(ApiHist *results){
+    results->allData();
 }
 
 void Window::emailChanged(){

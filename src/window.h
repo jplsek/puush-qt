@@ -21,6 +21,8 @@
 #include <QRadioButton>
 
 #include "api/apiauth.h"
+#include "api/apihist.h"
+
 #include "settings.h"
 
 
@@ -65,6 +67,11 @@ private slots:
     void openSavePath();
 
     void resetSettings();
+
+    void getHistory();
+
+public slots:
+    void getHistoryDone(ApiHist *results);
 
 private:
     void createGroupBoxes();
@@ -172,6 +179,8 @@ private:
     QPushButton *selectSavePathButton;
     QPushButton *aboutQt;
     QPushButton *myAccount;
+
+    QPushButton *getHistoryButton;
 
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
