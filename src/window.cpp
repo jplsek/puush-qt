@@ -678,7 +678,7 @@ QString Window::getFileName() {
 void Window::openSavePath(){
     QString dir = QFileDialog::getExistingDirectory(
                 this, tr("Set Screenshot Directory"),
-                QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+                s.value(Settings::LOCAL_SAVE_PATH).toString(),
                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     if (dir != "") localSaveLocation->setText(dir);
@@ -693,10 +693,12 @@ void Window::openSavePath(){
  */
 QString Window::getSavePath(){
     QString path = s.value(Settings::LOCAL_SAVE_PATH).toString();
+
     if(path.startsWith("~/")){
         path.remove(0, 1); // remove "~"
         path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
     }
+
     return path;
 }
 
@@ -773,17 +775,14 @@ void Window::updateActiveMessage() {
     --numTime;
 }
 
-// note: this fails with ~user
 /**
  * Opens the screenshot directory if the user has enabled saving local screenshots.
  * @brief Window::openSaveDirectory
  */
 void Window::openSaveDirectory() {
-    bool response = true;
-    if(s.value(Settings::LOCAL_SAVE_PATH).toString() != ""){
-        QString path = getSavePath();
-        response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-    }
+    QString path = getSavePath();
+
+    bool response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 
     if (!response) {
         QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
@@ -861,11 +860,15 @@ void Window::puushDone(int returnCode, QString output) {
         return;
     }
 
-    QClipboard *clipboard = QApplication::clipboard();
-    lastUrl = QUrl(url);
-    clipboard->setText(url);
+    if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
+        QClipboard *clipboard = QApplication::clipboard();
+        lastUrl = QUrl(url);
+        clipboard->setText(url);
 
-    trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
+        trayIcon->showMessage(tr("Success!"), url, icon);
+    } else {
+        trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
+    }
 }
 
 /**
@@ -892,19 +895,18 @@ void Window::saveEnabledChanged(int val){
 }
 
 /**
- * Event for the path text box changing.
- * @brief Window::savePathChanged
- */
-void Window::savePathChanged(){
-    setSavePath(localSaveLocation->text());
-}
-
-/**
  * Save the save screenshot directory path to the settings.
  * @brief Window::setSavePath
  * @param path
  */
 void Window::setSavePath(QString path){
+    if(path.startsWith("~/")){
+        path.remove(0, 1); // remove "~"
+        path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
+        // update input with the new path
+        localSaveLocation->setText(path);
+    }
+
     s.setValue(Settings::LOCAL_SAVE_PATH, path);
 }
 
@@ -926,11 +928,12 @@ void Window::soundEnabledChanged(bool enabled){
 
 void Window::enableLocalSaveChanged(bool enabled){
     s.setValue(Settings::LOCAL_SAVE_ENABLED, enabled);
+    localSaveLocation->setEnabled(enabled);
+    selectSavePathButton->setEnabled(enabled);
 }
 
 void Window::localSaveLocChanged(){
-    // FIXME this should have the ~/ substitution
-    s.setValue(Settings::LOCAL_SAVE_PATH, localSaveLocation->text());
+    setSavePath(localSaveLocation->text());
 }
 
 void Window::enableLinkToClipboardChanged(bool enabled){

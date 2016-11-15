@@ -100,7 +100,7 @@ void Settings::setEmptyToDefaults(){
 
    if(!s.contains(setting_names[LOCAL_SAVE_ENABLED]))
        s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
-   if(!s.contains(setting_names[LOCAL_SAVE_PATH]))
+   if(!s.contains(setting_names[LOCAL_SAVE_PATH]) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
        s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
    if(!s.contains(setting_names[LOCAL_SAVE_NAME]))
        s.setValue(setting_names[LOCAL_SAVE_NAME], "ss-yyyy-MM-dd_hh-mm-ss");

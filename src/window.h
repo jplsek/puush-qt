@@ -60,7 +60,6 @@ private slots:
 
     void qualityChanged(int);
     void saveEnabledChanged(int);
-    void savePathChanged();
     void saveNameChanged();
     void emailChanged();
     void openSavePath();
