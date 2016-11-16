@@ -64,12 +64,15 @@ public:
     QVariant value(Setting s);
     bool contains(Setting s);
     void setValue(Setting s, QVariant val);
+    void setRadioValue(Setting s, RadioValue val);
 
-    bool radio_value_is(Setting s, RadioValue v);
+    bool radioValueIs(Setting s, RadioValue v);
 
     const static QString radio_values[];
 
-    void resetSettings();
+    void resetGeneralSettings();
+    void resetAdvancedSettings();
+
     void setEmptyToDefaults();
 
 private:

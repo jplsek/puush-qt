@@ -52,9 +52,17 @@ const QString Settings::radio_values[] = {
     [Settings::RadioValue::PRIMARY_DESKTOP] = "primary-desktop",
 };
 
-const QString Settings::CURRENT_SETTINGS_VERSION = "2016-11-11-01"; // YYYY-MM-DD-revision
+const QString Settings::CURRENT_SETTINGS_VERSION = "2016-11-15-01"; // YYYY-MM-DD-revision
 
-Settings::Settings(){}
+Settings::Settings(){
+    if(s.value(setting_names[SETTINGS_VERSION]).toString() != CURRENT_SETTINGS_VERSION){
+        // FIXME: show 'popup' saying some settings may have been reset due to settings key/value changes
+        // <ok ill check> <bother me later>
+        // if they say ok, then update the settings version. otherwise dont so this will be run again.
+        // For now, just update it as jeremy and I know whats up.
+        s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
+    }
+}
 
 
 QVariant Settings::value(Setting s){
@@ -69,11 +77,38 @@ void Settings::setValue(Setting s, QVariant val){
     this->s.setValue(setting_names[s], val);
 }
 
-bool Settings::radio_value_is(Setting s, RadioValue v){
+void Settings::setRadioValue(Setting s, RadioValue val){
+    this->s.setValue(setting_names[s], radio_values[val]);
+}
+
+bool Settings::radioValueIs(Setting s, RadioValue v){
     return this->s.value(setting_names[s]).toString() == radio_values[v];
 }
 
-void Settings::resetSettings(){
+void Settings::resetGeneralSettings(){
+   s.setValue(setting_names[ON_PUUSH_SOUND], false);
+   s.setValue(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD], true);
+   s.setValue(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER], false);
+
+   s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
+   s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+   s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss)");
+
+   s.setValue(setting_names[TRAY_CLICK_ACTION], radio_values[OPEN_SETTINGS]);
+}
+
+void Settings::resetAdvancedSettings(){
+   s.setValue(setting_names[COMPRESSION_PHILOSOPHY], radio_values[PNG_ALWAYS]);
+
+   s.setValue(setting_names[ENABLE_EXPLORER_CONTEXT_MENU], false);
+
+   s.setValue(setting_names[FULLSCREEN_CAPTURE_MODE], radio_values[ALL_DESKTOPS]);
+
+   s.setValue(setting_names[ENABLE_EXPERIMENTAL_FEATURES], false);
+
+   s.setValue(setting_names[SHOW_SELECTION_RECTANGLE], true);
+
+   s.setValue(setting_names[IMAGE_QUALITY], 90);
 }
 
 void Settings::setEmptyToDefaults(){
@@ -100,10 +135,10 @@ void Settings::setEmptyToDefaults(){
 
    if(!s.contains(setting_names[LOCAL_SAVE_ENABLED]))
        s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
-   if(!s.contains(setting_names[LOCAL_SAVE_PATH]))
+   if(!s.contains(setting_names[LOCAL_SAVE_PATH]) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
        s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
    if(!s.contains(setting_names[LOCAL_SAVE_NAME]))
-       s.setValue(setting_names[LOCAL_SAVE_NAME], "ss-yyyy-MM-dd_hh-mm-ss");
+       s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss");
 
    if(!s.contains(setting_names[TRAY_CLICK_ACTION]))
        s.setValue(setting_names[TRAY_CLICK_ACTION], OPEN_SETTINGS);

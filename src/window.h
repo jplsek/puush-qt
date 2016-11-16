@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QRadioButton>
+#include <QStackedLayout>
 
 #include "api/apiauth.h"
 #include "api/apihist.h"
@@ -61,17 +62,15 @@ private slots:
 
     void qualityChanged(int);
     void saveEnabledChanged(int);
-    void savePathChanged();
     void saveNameChanged();
     void emailChanged();
     void openSavePath();
 
-    void resetSettings();
+    void resetGeneralSettings();
+    void resetAdvancedSettings();
 
     void getHistory();
-
-public slots:
-    void getHistoryDone(ApiHist *results);
+    void getHistoryDone(ApiHist *);
 
 private:
     void createGroupBoxes();
@@ -82,6 +81,10 @@ private:
     bool isLoggedIn();
     void openUrl(QUrl);
     void setSavePath(QString);
+    void createLoginBox();
+    void createLoggedinBox();
+    void selectLoginBox();
+    void selectLoggedinBox();
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // ethans new section
@@ -138,6 +141,7 @@ private:
     QCheckBox *dangerousExperimentalEnable;
     QCheckBox *dangerousNoSelectionRect;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    QStackedLayout *accountBox;
 
 private slots:
     void soundEnabledChanged(bool);
@@ -175,7 +179,8 @@ private:
 
     QPushButton *submitButton;
     QPushButton *logoutButton;
-    QPushButton *resetButton;
+    QPushButton *resetGeneralButton;
+    QPushButton *resetAdvancedButton;
     QPushButton *selectSavePathButton;
     QPushButton *aboutQt;
     QPushButton *myAccount;
@@ -185,6 +190,11 @@ private:
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
     QLabel *authMessage;
+    QLabel *emailLabel;
+    QLabel *apiKeyLabel;
+    QLabel *accountTypeLabel;
+    QLabel *expiryLabel;
+    QLabel *diskLabel;
 
     QLabel *saveEnabledLabel;
     QCheckBox *saveEnabled;
