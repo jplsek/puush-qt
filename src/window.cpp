@@ -16,15 +16,15 @@
 
 #include "api/apirequest.h"
 #include "api/apiauth.h"
+#include "api/apihist.h"
+
 #include "window.h"
 #include "screenshot.h"
 #include "upload.h"
 
-QString puushUrlBase = "https://puush.me/";
-QString puushUrl = puushUrlBase + "api/";
-
 Window::Window() {
-    setDefaults();
+    s.setEmptyToDefaults();
+
     tabs = createTabs();
 
     createActions();
@@ -37,11 +37,8 @@ Window::Window() {
     setTrayIcon(":/images/puush-qt.png");
     setAppIcon(":/images/puush-qt.png");
 
-    resetButton = new QPushButton(tr("Reset Settings"));
-
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(tabs);
-    mainLayout->addWidget(resetButton);
     setLayout(mainLayout);
 
     trayIcon->show();
@@ -52,10 +49,6 @@ Window::Window() {
     resize(tabs->width(), height());
 
     connectSignals();
-}
-
-void Window::setDefaults() {
-    s.setEmptyToDefaults();
 }
 
 QTabWidget *Window::createTabs(){
@@ -107,11 +100,11 @@ QWidget *Window::createTabGeneral(){
     QGroupBox *trayGroup = new QGroupBox("Tray Icon Behavior on Double Click");
     QVBoxLayout *trayLayout = new QVBoxLayout();
     trayDoubleClickSettings = new QRadioButton("Show settings window");
-    trayDoubleClickSettings->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
+    trayDoubleClickSettings->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
     trayDoubleClickCapture  = new QRadioButton("Begin screen capture mode");
-    trayDoubleClickCapture->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE));
+    trayDoubleClickCapture->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE));
     trayDoubleClickUpload   = new QRadioButton("Open upload file window");
-    trayDoubleClickUpload->setChecked(s.radio_value_is(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
+    trayDoubleClickUpload->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
     trayLayout->addWidget(trayDoubleClickSettings);
     trayLayout->addWidget(trayDoubleClickCapture);
     trayLayout->addWidget(trayDoubleClickUpload);
@@ -119,6 +112,10 @@ QWidget *Window::createTabGeneral(){
     qhb->addWidget(trayGroup);
 
     qhb->addStretch();
+
+    resetGeneralButton = new QPushButton("Reset General Settings");
+    qhb->addWidget(resetGeneralButton);
+
     w->setLayout(qhb);
     return w;
 }
@@ -248,12 +245,12 @@ void Window::createLoginBox() {
 
     form->setLayout(authLayout);
 
-    QLabel *forgot = new QLabel("<a href=\"" + puushUrlBase + "reset_password\">" + tr("Forgot Password?") + "</a>");
+    QLabel *forgot = new QLabel("<a href=\"" + s.value(Settings::BASE_URL).toString() + "reset_password\">" + tr("Forgot Password?") + "</a>");
     forgot->setTextFormat(Qt::RichText);
     forgot->setTextInteractionFlags(Qt::TextBrowserInteraction);
     forgot->setOpenExternalLinks(true);
 
-    QLabel *registerAccount = new QLabel("<a href=\"" + puushUrlBase + "register\">" + tr("Register...") + "</a>");
+    QLabel *registerAccount = new QLabel("<a href=\"" + s.value(Settings::BASE_URL).toString() + "register\">" + tr("Register...") + "</a>");
     registerAccount->setTextFormat(Qt::RichText);
     registerAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
     registerAccount->setOpenExternalLinks(true);
@@ -297,8 +294,8 @@ QWidget *Window::createTabAdvanced(){
     QVBoxLayout *screenLayout = new QVBoxLayout();
         compressionAlways = new QRadioButton("Always use PNG (no lossy compression)");
         compressionSmart  = new QRadioButton("Smart (use JPG unless PNG is smaller)");
-        compressionAlways->setChecked(s.radio_value_is(Settings::COMPRESSION_PHILOSOPHY, Settings::PNG_ALWAYS));
-        compressionSmart->setChecked(s.radio_value_is(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
+        compressionAlways->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::PNG_ALWAYS));
+        compressionSmart->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
         compressionAlways->setEnabled(false);
         compressionSmart->setEnabled(false);
         QFormLayout *qualityLayout = new QFormLayout();
@@ -328,9 +325,9 @@ QWidget *Window::createTabAdvanced(){
         fullscreenCaptureAll     = new QRadioButton("Capture all screens");
         fullscreenCaptureCursor  = new QRadioButton("Capture screen containing mouse cursor");
         fullscreenCapturePrimary = new QRadioButton("Always capture primary screen");
-        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS));
-        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP));
-        fullscreenCaptureAll->setChecked(s.radio_value_is(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP));
+        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS));
+        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP));
+        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP));
         fullscreenLayout->addWidget(fullscreenCaptureAll);
         fullscreenLayout->addWidget(fullscreenCaptureCursor);
         fullscreenLayout->addWidget(fullscreenCapturePrimary);
@@ -348,12 +345,15 @@ QWidget *Window::createTabAdvanced(){
         dangerousLayout->addWidget(dangerousNoSelectionRect);
         dangerousBox->setLayout(dangerousLayout);
 
+    resetAdvancedButton = new QPushButton("Reset Advanced Settings");
+
     qhb->addWidget(screenBox);
     qhb->addWidget(contextBox);
     qhb->addWidget(fullscreenBox);
     qhb->addWidget(dangerousBox);
-
     qhb->addStretch();
+    qhb->addWidget(resetAdvancedButton);
+
     w->setLayout(qhb);
     return w;
 }
@@ -367,12 +367,15 @@ QWidget *Window::createTabHistory(){
     history->setLayout(historyLayout);
 
     QLabel *tmp = new QLabel(tr("Not implemented..."));
-
     historyLayout->addWidget(tmp);
 
+    getHistoryButton = new QPushButton(tr("get history"));
+
     qhb->addWidget(history);
+    qhb->addWidget(getHistoryButton);
 
     qhb->addStretch();
+
     w->setLayout(qhb);
     return w;
 }
@@ -562,6 +565,7 @@ void Window::createActions() {
 }
 
 void Window::connectSignals(){
+    // General
     connect(enablePuushSound, SIGNAL(clicked(bool)), this, SLOT(soundEnabledChanged(bool)));
     connect(enableLocalSave, SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
 
@@ -575,8 +579,23 @@ void Window::connectSignals(){
     connect(trayDoubleClickCapture,  SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureChanged(bool)));
     connect(trayDoubleClickUpload,   SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
 
+    connect(resetGeneralButton, SIGNAL(clicked()), this, SLOT(resetGeneralSettings()));
+
+    // Key Bindings
+
+    // Account
+    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+
+    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
+    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+
+    connect(myAccount, SIGNAL(clicked(bool)), this, SLOT(openAccount()));
+
+    // Advanced
     connect(compressionAlways, SIGNAL(clicked(bool)), this, SLOT(compressionAlwaysChanged(bool)));
     connect(compressionSmart,  SIGNAL(clicked(bool)), this, SLOT(compressionSmartChanged(bool)));
+
+    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
 
     connect(contextShowExplorerContext, SIGNAL(clicked(bool)), this, SLOT(contextShowExplorerChanged(bool)));
 
@@ -587,19 +606,13 @@ void Window::connectSignals(){
     connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
     connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
 
-    // save email, so even if the login is unsuccesful, the email can be loaded after an application restart
-    connect(emailEdit, SIGNAL(editingFinished()), this, SLOT(emailChanged()));
+    connect(resetAdvancedButton, SIGNAL(clicked()), this, SLOT(resetAdvancedSettings()));
 
-    connect(submitButton, SIGNAL(clicked()), this, SLOT(submitInfo()));
-    connect(logoutButton, SIGNAL(clicked()), this, SLOT(logout()));
+    // History
+    connect(getHistoryButton, SIGNAL(clicked(bool)), this, SLOT(getHistory()));
 
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetSettings()));
-
+    // About
     connect(aboutQt, SIGNAL(clicked(bool)), qApp, SLOT(aboutQt()));
-    connect(myAccount, SIGNAL(clicked(bool)), this, SLOT(openAccount()));
-
-    connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
-    return;
 }
 
 void Window::createTrayIcon() {
@@ -653,7 +666,7 @@ void Window::openAccount() {
     if (!isLoggedIn()) return;
 
     QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
-    openUrl(QUrl(puushUrlBase + "login/go/?k=" + key));
+    openUrl(QUrl(s.value(Settings::BASE_URL).toString() + "login/go/?k=" + key));
 }
 
 /**
@@ -679,7 +692,7 @@ void Window::uploadFile() {
  * @return
  */
 QString Window::getFileName() {
-    return "/tmp/ss-" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
+    return "/tmp/" + QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
 }
 
 /**
@@ -927,8 +940,28 @@ void Window::saveNameChanged(){
     // s.setValue(Settings::LOCAL_SAVE_NAME, saveNameEdit->text()); //disabled because NYI
 }
 
-void Window::resetSettings(){
-    // s.resetSettings();
+void Window::resetGeneralSettings(){
+    s.resetGeneralSettings();
+    // FIXME: update the state of all the buttons!!!
+}
+
+void Window::resetAdvancedSettings(){
+    s.resetAdvancedSettings();
+    // FIXME: update the state of all the buttons!!!
+}
+
+void Window::getHistory(){
+    if(s.value(Settings::ACCOUNT_API_KEY).toString() == "")
+        return;
+
+    ApiHist *api = new ApiHist(s.value(Settings::ACCOUNT_API_KEY).toString());
+    QMetaObject::Connection r = connect(api, SIGNAL(done(ApiHist *)), this, SLOT(getHistoryDone(ApiAuth *)));
+    api->start();
+}
+
+void Window::getHistoryDone(ApiHist *results){
+    results->allData();
+    // add rows to a thing with each result. Note that getting a thumbnail probably requires another api request per image
 }
 
 void Window::emailChanged(){
@@ -962,27 +995,27 @@ void Window::enableLinkToBrowserChanged(bool enabled){
 
 void Window::trayDoubleClickedSettingsChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS);
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS);
 }
 
 void Window::trayDoubleClickedCaptureChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE);
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE);
 }
 
 void Window::trayDoubleClickedUploadChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
 }
 
 void Window::compressionAlwaysChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::COMPRESSION_PHILOSOPHY, Settings::JPG_ALWAYS);
+        s.setRadioValue(Settings::COMPRESSION_PHILOSOPHY, Settings::JPG_ALWAYS);
 }
 
 void Window::compressionSmartChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER);
+        s.setRadioValue(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER);
 }
 
 void Window::contextShowExplorerChanged(bool enabled){
@@ -992,17 +1025,17 @@ void Window::contextShowExplorerChanged(bool enabled){
 
 void Window::fullscreenCaptureAllChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS);
+        s.setRadioValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS);
 }
 
 void Window::fullscreenCaptureCursorChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP);
+        s.setRadioValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP);
 }
 
 void Window::fullscreenCapturePrimaryChanged(bool enabled){
     if(enabled)
-        s.setValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP);
+        s.setRadioValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP);
 }
 
 void Window::dangerousExperimentalEnableChanged(bool enabled){

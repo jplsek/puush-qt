@@ -22,6 +22,8 @@
 #include <QStackedLayout>
 
 #include "api/apiauth.h"
+#include "api/apihist.h"
+
 #include "settings.h"
 
 
@@ -64,7 +66,11 @@ private slots:
     void emailChanged();
     void openSavePath();
 
-    void resetSettings();
+    void resetGeneralSettings();
+    void resetAdvancedSettings();
+
+    void getHistory();
+    void getHistoryDone(ApiHist *);
 
 private:
     void createGroupBoxes();
@@ -174,10 +180,13 @@ private:
 
     QPushButton *submitButton;
     QPushButton *logoutButton;
-    QPushButton *resetButton;
+    QPushButton *resetGeneralButton;
+    QPushButton *resetAdvancedButton;
     QPushButton *selectSavePathButton;
     QPushButton *aboutQt;
     QPushButton *myAccount;
+
+    QPushButton *getHistoryButton;
 
     QLineEdit *emailEdit;
     QLineEdit *passwordEdit;
