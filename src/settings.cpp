@@ -119,8 +119,8 @@ void Settings::resetAdvancedSettings(){
 }
 
 void Settings::resetExtraSettings(){
-    s.setValue(setting_names[PUUSH_BASE_URL], OFFICIAL_PUUSH_BASE_URL);
-    s.setValue(setting_names[PUUSH_API_URL],  OFFICIAL_PUUSH_API_URL);
+    s.setValue(setting_names[BASE_URL], OFFICIAL_PUUSH_BASE_URL);
+    s.setValue(setting_names[API_URL],  OFFICIAL_PUUSH_API_URL);
     s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
 }
 

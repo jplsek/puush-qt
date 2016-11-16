@@ -17,7 +17,7 @@ Upload::Upload(QString fileName) {
     connect(uploadProcess, SIGNAL(finished(int)), this, SLOT(uploadDone(int)));
 
     uploadProcess->start("curl",
-                         QStringList() << puushUrl + "up" << "-Ss" << "-F"
+                         QStringList() << QString("https://puush.me/api/") + "up" << "-Ss" << "-F"
                                        << "k=" + key << "-F" << "z=poop"
                                        << "-F" << "f=@" + fileName);
 }
