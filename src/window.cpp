@@ -21,9 +21,6 @@
 #include "screenshot.h"
 #include "upload.h"
 
-QString puushUrlBase = "https://puush.me/";
-QString puushUrl = puushUrlBase + "api/";
-
 Window::Window() {
     s.setEmptyToDefaults();
 
@@ -247,12 +244,12 @@ void Window::createLoginBox() {
 
     form->setLayout(authLayout);
 
-    QLabel *forgot = new QLabel("<a href=\"" + puushUrlBase + "reset_password\">" + tr("Forgot Password?") + "</a>");
+    QLabel *forgot = new QLabel("<a href=\"" + s.value(Settings::BASE_URL).toString() + "reset_password\">" + tr("Forgot Password?") + "</a>");
     forgot->setTextFormat(Qt::RichText);
     forgot->setTextInteractionFlags(Qt::TextBrowserInteraction);
     forgot->setOpenExternalLinks(true);
 
-    QLabel *registerAccount = new QLabel("<a href=\"" + puushUrlBase + "register\">" + tr("Register...") + "</a>");
+    QLabel *registerAccount = new QLabel("<a href=\"" + s.value(Settings::BASE_URL).toString() + "register\">" + tr("Register...") + "</a>");
     registerAccount->setTextFormat(Qt::RichText);
     registerAccount->setTextInteractionFlags(Qt::TextBrowserInteraction);
     registerAccount->setOpenExternalLinks(true);
@@ -658,7 +655,7 @@ void Window::openAccount() {
     if (!isLoggedIn()) return;
 
     QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
-    openUrl(QUrl(puushUrlBase + "login/go/?k=" + key));
+    openUrl(QUrl(s.value(Settings::BASE_URL).toString() + "login/go/?k=" + key));
 }
 
 /**

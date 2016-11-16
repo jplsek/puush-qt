@@ -12,6 +12,7 @@ public:
     Settings();
 
     // generic format of this is <option what/when> <value>
+    // these numbers can change.
     enum Setting {
         NO_SETTING = 0,
         SETTINGS_VERSION = 1,
@@ -40,8 +41,12 @@ public:
         SHOW_SELECTION_RECTANGLE = 15,
 
         IMAGE_QUALITY = 16,
+
+        BASE_URL = 17,
+        API_URL = 18,
     };
 
+    // these numbers can change.
     enum RadioValue {
         // tray click action
         OPEN_SETTINGS = 0,
@@ -72,6 +77,7 @@ public:
 
     void resetGeneralSettings();
     void resetAdvancedSettings();
+    void resetExtraSettings();
 
     void setEmptyToDefaults();
 

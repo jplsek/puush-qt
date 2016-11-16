@@ -5,6 +5,10 @@
 #include <QString>
 #include <QVariant>
 
+const QString OFFICIAL_PUUSH_BASE_URL = "https://puush.me/";
+const QString OFFICIAL_PUUSH_API_URL  = OFFICIAL_PUUSH_BASE_URL + "api/";
+
+
 // generic format of this is <option what/when> <value>
 // These values should not change; as it will break peoples saved settings.
 const QString Settings::setting_names[] = {
@@ -35,7 +39,10 @@ const QString Settings::setting_names[] = {
 
     [Settings::Setting::SHOW_SELECTION_RECTANGLE] = "show-selection-rectangle",
 
-    [Settings::Setting::IMAGE_QUALITY] = "quality"
+    [Settings::Setting::IMAGE_QUALITY] = "quality",
+
+    [Settings::Setting::BASE_URL] = "base-url",
+    [Settings::Setting::API_URL]  = "api-url",
 };
 
 const QString Settings::radio_values[] = {
@@ -52,7 +59,7 @@ const QString Settings::radio_values[] = {
     [Settings::RadioValue::PRIMARY_DESKTOP] = "primary-desktop",
 };
 
-const QString Settings::CURRENT_SETTINGS_VERSION = "2016-11-15-01"; // YYYY-MM-DD-revision
+const QString Settings::CURRENT_SETTINGS_VERSION = "2016-11-16-01"; // YYYY-MM-DD-revision
 
 Settings::Settings(){
     if(s.value(setting_names[SETTINGS_VERSION]).toString() != CURRENT_SETTINGS_VERSION){
@@ -86,78 +93,90 @@ bool Settings::radioValueIs(Setting s, RadioValue v){
 }
 
 void Settings::resetGeneralSettings(){
-   s.setValue(setting_names[ON_PUUSH_SOUND], false);
-   s.setValue(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD], true);
-   s.setValue(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER], false);
+    s.setValue(setting_names[ON_PUUSH_SOUND], false);
+    s.setValue(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD], true);
+    s.setValue(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER], false);
 
-   s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
-   s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-   s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss)");
+    s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
+    s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss)");
 
-   s.setValue(setting_names[TRAY_CLICK_ACTION], radio_values[OPEN_SETTINGS]);
+    s.setValue(setting_names[TRAY_CLICK_ACTION], radio_values[OPEN_SETTINGS]);
 }
 
 void Settings::resetAdvancedSettings(){
-   s.setValue(setting_names[COMPRESSION_PHILOSOPHY], radio_values[PNG_ALWAYS]);
+    s.setValue(setting_names[COMPRESSION_PHILOSOPHY], radio_values[PNG_ALWAYS]);
 
-   s.setValue(setting_names[ENABLE_EXPLORER_CONTEXT_MENU], false);
+    s.setValue(setting_names[ENABLE_EXPLORER_CONTEXT_MENU], false);
 
-   s.setValue(setting_names[FULLSCREEN_CAPTURE_MODE], radio_values[ALL_DESKTOPS]);
+    s.setValue(setting_names[FULLSCREEN_CAPTURE_MODE], radio_values[ALL_DESKTOPS]);
 
-   s.setValue(setting_names[ENABLE_EXPERIMENTAL_FEATURES], false);
+    s.setValue(setting_names[ENABLE_EXPERIMENTAL_FEATURES], false);
 
-   s.setValue(setting_names[SHOW_SELECTION_RECTANGLE], true);
+    s.setValue(setting_names[SHOW_SELECTION_RECTANGLE], true);
 
-   s.setValue(setting_names[IMAGE_QUALITY], 90);
+    s.setValue(setting_names[IMAGE_QUALITY], 90);
+}
+
+void Settings::resetExtraSettings(){
+    s.setValue(setting_names[PUUSH_BASE_URL], OFFICIAL_PUUSH_BASE_URL);
+    s.setValue(setting_names[PUUSH_API_URL],  OFFICIAL_PUUSH_API_URL);
+    s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
 }
 
 void Settings::setEmptyToDefaults(){
-   if(!s.contains(setting_names[IMAGE_QUALITY]))
-       s.setValue(setting_names[IMAGE_QUALITY], 90);
+    if(!s.contains(setting_names[IMAGE_QUALITY]))
+        s.setValue(setting_names[IMAGE_QUALITY], 90);
 
-   if(!s.contains(setting_names[ACCOUNT_EMAIL]))
-       s.setValue(setting_names[ACCOUNT_EMAIL], "");
+    if(!s.contains(setting_names[ACCOUNT_EMAIL]))
+        s.setValue(setting_names[ACCOUNT_EMAIL], "");
 
-   if(!s.contains(setting_names[SETTINGS_VERSION]))
-       s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
+    if(!s.contains(setting_names[SETTINGS_VERSION]))
+        s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
 
-   if(!s.contains(setting_names[ACCOUNT_API_KEY]))
-       s.setValue(setting_names[ACCOUNT_API_KEY], "");
-   if(!s.contains(setting_names[ACCOUNT_EMAIL]))
-       s.setValue(setting_names[ACCOUNT_EMAIL], "");
+    if(!s.contains(setting_names[BASE_URL]))
+        s.setValue(setting_names[BASE_URL], OFFICIAL_PUUSH_BASE_URL);
 
-   if(!s.contains(setting_names[ON_PUUSH_SOUND]))
-       s.setValue(setting_names[ON_PUUSH_SOUND], false);
-   if(!s.contains(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]))
-       s.setValue(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD], true);
-   if(!s.contains(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER]))
-       s.setValue(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER], false);
+    if(!s.contains(setting_names[API_URL]))
+        s.setValue(setting_names[API_URL],  OFFICIAL_PUUSH_API_URL);
 
-   if(!s.contains(setting_names[LOCAL_SAVE_ENABLED]))
-       s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
-   if(!s.contains(setting_names[LOCAL_SAVE_PATH]) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
-       s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-   if(!s.contains(setting_names[LOCAL_SAVE_NAME]))
-       s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss");
+    if(!s.contains(setting_names[ACCOUNT_API_KEY]))
+        s.setValue(setting_names[ACCOUNT_API_KEY], "");
+    if(!s.contains(setting_names[ACCOUNT_EMAIL]))
+        s.setValue(setting_names[ACCOUNT_EMAIL], "");
 
-   if(!s.contains(setting_names[TRAY_CLICK_ACTION]))
-       s.setValue(setting_names[TRAY_CLICK_ACTION], OPEN_SETTINGS);
+    if(!s.contains(setting_names[ON_PUUSH_SOUND]))
+        s.setValue(setting_names[ON_PUUSH_SOUND], false);
+    if(!s.contains(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]))
+        s.setValue(setting_names[ON_PUUSH_COPY_LINK_TO_CLIPBOARD], true);
+    if(!s.contains(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER]))
+        s.setValue(setting_names[ON_PUUSH_OPEN_LINK_IN_BROWSER], false);
 
-   if(!s.contains(setting_names[COMPRESSION_PHILOSOPHY]))
-       s.setValue(setting_names[COMPRESSION_PHILOSOPHY], PNG_ALWAYS);
+    if(!s.contains(setting_names[LOCAL_SAVE_ENABLED]))
+        s.setValue(setting_names[LOCAL_SAVE_ENABLED], true);
+    if(!s.contains(setting_names[LOCAL_SAVE_PATH]) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
+        s.setValue(setting_names[LOCAL_SAVE_PATH], QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    if(!s.contains(setting_names[LOCAL_SAVE_NAME]))
+        s.setValue(setting_names[LOCAL_SAVE_NAME], "'ss' (yyyy-MM-dd at hh.mm.ss");
 
-   if(!s.contains(setting_names[ENABLE_EXPLORER_CONTEXT_MENU]))
-       s.setValue(setting_names[ENABLE_EXPLORER_CONTEXT_MENU], false);
+    if(!s.contains(setting_names[TRAY_CLICK_ACTION]))
+        s.setValue(setting_names[TRAY_CLICK_ACTION], OPEN_SETTINGS);
 
-   if(!s.contains(setting_names[FULLSCREEN_CAPTURE_MODE]))
-       s.setValue(setting_names[FULLSCREEN_CAPTURE_MODE], ALL_DESKTOPS);
+    if(!s.contains(setting_names[COMPRESSION_PHILOSOPHY]))
+        s.setValue(setting_names[COMPRESSION_PHILOSOPHY], PNG_ALWAYS);
 
-   if(!s.contains(setting_names[ENABLE_EXPERIMENTAL_FEATURES]))
-       s.setValue(setting_names[ENABLE_EXPERIMENTAL_FEATURES], false);
+    if(!s.contains(setting_names[ENABLE_EXPLORER_CONTEXT_MENU]))
+        s.setValue(setting_names[ENABLE_EXPLORER_CONTEXT_MENU], false);
 
-   if(!s.contains(setting_names[SHOW_SELECTION_RECTANGLE]))
-       s.setValue(setting_names[SHOW_SELECTION_RECTANGLE], true);
+    if(!s.contains(setting_names[FULLSCREEN_CAPTURE_MODE]))
+        s.setValue(setting_names[FULLSCREEN_CAPTURE_MODE], ALL_DESKTOPS);
 
-   if(!s.contains(setting_names[IMAGE_QUALITY]))
-       s.setValue(setting_names[IMAGE_QUALITY], 90);
+    if(!s.contains(setting_names[ENABLE_EXPERIMENTAL_FEATURES]))
+        s.setValue(setting_names[ENABLE_EXPERIMENTAL_FEATURES], false);
+
+    if(!s.contains(setting_names[SHOW_SELECTION_RECTANGLE]))
+        s.setValue(setting_names[SHOW_SELECTION_RECTANGLE], true);
+
+    if(!s.contains(setting_names[IMAGE_QUALITY]))
+        s.setValue(setting_names[IMAGE_QUALITY], 90);
 }
