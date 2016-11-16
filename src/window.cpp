@@ -12,6 +12,7 @@
 #include <QRadioButton>
 #include <QStackedLayout>
 #include <iostream>
+#include <QDebug>
 
 #include "api/apirequest.h"
 #include "api/apiauth.h"
@@ -455,8 +456,18 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     case QSystemTrayIcon::Trigger:
         trayIconMenu->popup(QCursor::pos());
         break;
+    // double left click
+    case QSystemTrayIcon::DoubleClick:
+        doDoubleClickAction();
+        break;
     default:
         break;
+    }
+}
+
+void Window::doDoubleClickAction() {
+    if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
+        uploadFile();
     }
 }
 
@@ -681,9 +692,11 @@ void Window::openSavePath(){
                 s.value(Settings::LOCAL_SAVE_PATH).toString(),
                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    if (dir != "") localSaveLocation->setText(dir);
-
-    setSavePath(dir);
+    // "" if canceled
+    if (dir != "") {
+        localSaveLocation->setText(dir);
+        setSavePath(dir);
+    }
 }
 
 /**

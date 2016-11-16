@@ -79,6 +79,7 @@ private:
     void createLoggedinBox();
     void selectLoginBox();
     void selectLoggedinBox();
+    void doDoubleClickAction();
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // ethans new section
