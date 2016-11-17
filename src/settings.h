@@ -66,6 +66,11 @@ public:
 
     const static QString CURRENT_SETTINGS_VERSION;
 
+    const static QString GENERAL_GROUP_NAME;
+    const static QString ADVANCED_GROUP_NAME;
+    const static QString EXTRA_GROUP_NAME;
+    const static QString USER_INFO_GROUP_NAME;
+
     QVariant value(Setting s);
     bool contains(Setting s);
     void setValue(Setting s, QVariant val);
@@ -73,11 +78,10 @@ public:
 
     bool radioValueIs(Setting s, RadioValue v);
 
-    const static QString radio_values[];
-
     void resetGeneralSettings();
     void resetAdvancedSettings();
     void resetExtraSettings();
+    void resetUserInfoSettings();
 
     void setEmptyToDefaults();
 
@@ -85,6 +89,8 @@ private:
     QSettings s;
 
     const static QString setting_names[];
+    const static QString radio_values[];
+    const static QString groups[];
 };
 
 #endif // SETTINGS_H
