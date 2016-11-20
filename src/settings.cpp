@@ -149,7 +149,7 @@ void Settings::resetGeneralSettings(){
 
     setValue(LOCAL_SAVE_ENABLED, true);
     setValue(LOCAL_SAVE_PATH, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    setValue(LOCAL_SAVE_NAME, "'ss' (yyyy-MM-dd at hh.mm.ss)");
+    setValue(LOCAL_SAVE_NAME, "'ss' (yyyy-MM-dd hh.mm.ss)");
 
     setRadioValue(TRAY_CLICK_ACTION, OPEN_SETTINGS);
 }

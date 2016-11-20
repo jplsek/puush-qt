@@ -1,6 +1,5 @@
 #include <QtGui>
 #include <QSettings>
-#include <curl/curl.h>
 
 #include "upload.h"
 

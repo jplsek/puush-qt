@@ -53,6 +53,7 @@ private slots:
     void fullScreenScreenshot();
     void selectAreaScreenshot();
     void activeWindowScreenshot();
+    void activeWindowScreenshotTimed();
     void puushStarted();
     void puushDone(int, QString);
     void screenshotDone(int, QString, QString);
@@ -228,6 +229,7 @@ private:
     QString getSavePath();
     QString getSaveName();
 
+    int defaultSelectionTimeout = 5;
     int numTime = 0;
 };
 

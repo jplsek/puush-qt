@@ -541,7 +541,7 @@ void Window::createActions() {
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
     activeAction = new QAction(tr("Capture &Current Window"), this);
-    connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshot()));
+    connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshotTimed()));
 
     settingsAction = new QAction(tr("&Settings..."), this);
     connect(settingsAction, SIGNAL(triggered()), this, SLOT(openSettings()));
@@ -681,7 +681,7 @@ void Window::uploadFile() {
  * @return
  */
 QString Window::getFileName() {
-    return "/tmp/" + QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
+    return QDir::tempPath() + QDir::separator() + QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
 }
 
 /**
@@ -752,6 +752,19 @@ void Window::selectAreaScreenshot() {
     ss->selectArea();
 }
 
+void Window::activeWindowScreenshotTimed() {
+    if (!isLoggedIn()) return;
+
+    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
+    trayIcon->showMessage(tr("Select a window"),
+                          tr("Taking a screenshot in ") + QString::number(defaultSelectionTimeout) + tr(" seconds..."), icon);
+
+    numTime = defaultSelectionTimeout;
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateActiveMessage()));
+    timer->start(1000);
+}
+
 /**
  * Initiate the Puush current window screenshot.
  * @brief Window::activeWindowScreenshot
@@ -759,10 +772,10 @@ void Window::selectAreaScreenshot() {
 void Window::activeWindowScreenshot() {
     if (!isLoggedIn()) return;
 
-    numTime = 5;
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateActiveMessage()));
-    timer->start(1000);
+    QString fileName = getFileName();
+    Screenshot *ss = new Screenshot(fileName);
+    connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
+    ss->activeWindow();
 }
 
 /**
@@ -773,18 +786,10 @@ void Window::activeWindowScreenshot() {
 void Window::updateActiveMessage() {
     if (numTime < 1) {
         timer->stop();
-
-        QString fileName = getFileName();
-        Screenshot *ss = new Screenshot(fileName);
-        connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
-        ss->activeWindow();
-
+        activeWindowScreenshot();
         return;
     }
 
-    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-
-    trayIcon->showMessage(tr("Select a window"), tr("Taking a screenshot in ") + QString::number(numTime), icon);
     --numTime;
 }
 
