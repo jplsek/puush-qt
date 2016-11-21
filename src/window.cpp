@@ -454,6 +454,7 @@ void Window::setAppIcon(QString image) {
 }
 
 void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+    //qDebug() << "icon activated";
     switch (reason) {
     // left click
     case QSystemTrayIcon::Trigger:
@@ -461,6 +462,7 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
         break;
     // double left click
     case QSystemTrayIcon::DoubleClick:
+        qDebug() << "dblclickA";
         doDoubleClickAction();
         break;
     default:
@@ -469,8 +471,13 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void Window::doDoubleClickAction() {
+    qDebug() << "dblclick";
     if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
         uploadFile();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS)) {
+        openSettings();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE)) {
+
     }
 }
 
