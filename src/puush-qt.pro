@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     api/apidel.cpp \
     api/apihist.cpp \
     api/apithumb.cpp \
-    settings.cpp
+    settings.cpp \
+    transparentwindow.cpp
 
 HEADERS  += \
     window.h \
@@ -25,7 +26,8 @@ HEADERS  += \
     api/apidel.h \
     api/apihist.h \
     api/apithumb.h \
-    settings.h
+    settings.h \
+    transparentwindow.h
 
 RESOURCES += \
     systray.qrc

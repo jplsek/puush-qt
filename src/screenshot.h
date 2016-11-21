@@ -3,7 +3,12 @@
 
 #include <QString>
 #include <QProcess>
+#include <QRect>
+#include <QPoint>
+#include <QPixmap>
 #include <QSettings>
+
+#include "transparentwindow.h"
 
 class Screenshot : public QObject {
     Q_OBJECT
@@ -13,12 +18,14 @@ public:
     void selectArea();
     void fullScreen();
     void activeWindow();
+    void croppedScreenshot(QRect);
 
 signals:
     int finished(int, QString, QString);
 
 private slots:
     void screenshotDone(int);
+    void selectionDone(QRect);
 
 private:
     QSettings s;
@@ -27,6 +34,12 @@ private:
     QString quality;
 
     QProcess *screenshotProcess;
+
+    TransparentWindow *tw;
+
+    QPixmap desktop();
+    QPixmap screen(int);
+    void save(QPixmap);
 };
 
 #endif
