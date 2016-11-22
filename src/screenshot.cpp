@@ -26,8 +26,20 @@ Screenshot::Screenshot(QString fileName) {
  * @brief Screenshot::selectArea
  */
 void Screenshot::selectArea() {
+    // even though the "transparent window" is "cross platform" some desktop environments don't allow windows to cover their panels, so we will just use scrot
+    #if defined(Q_OS_LINUX)
+
+    screenshotProcess = new QProcess();
+    screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-s" << fn);
+
+    connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
+
+    #else
+
     tw = new TransparentWindow();
     connect(tw, SIGNAL(finished(QRect, QPoint, QPoint)), this, SLOT(selectionDone(QRect)));
+
+    #endif
 }
 
 void Screenshot::selectionDone(QRect selection) {
@@ -53,6 +65,12 @@ void Screenshot::croppedScreenshot(QRect selection) {
  */
 void Screenshot::fullScreen() {
     // TODO check settings to take a screenshot a screen or the whole desktop
+
+    // wait 1 second before taking a screenshot because of desktop animations, etc
+    QTimer::singleShot(1000, this, SLOT(fullScreenAfterTimer()));
+}
+
+void Screenshot::fullScreenAfterTimer() {
     QPixmap screenshot = desktop();
 
     if (screenshot.width() == 0 && screenshot.height() == 0)
@@ -109,18 +127,24 @@ void Screenshot::activeWindow() {
     QRect qr(r.left, r.top, r.right - r.left, r.bottom - r.top);
     croppedScreenshot(qr);
 
-    #else
+    #elif defined(Q_OS_LINUX)
 
     screenshotProcess = new QProcess();
     screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-u" << fn);
 
     connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
 
+    #else
+
+    finished(-1, fn, tr("Your operating system is not supported!"));
+
     #endif
 }
 
 void Screenshot::screenshotDone(int returnCode) {
-    QString output = screenshotProcess->readAll();
+    QString output = screenshotProcess->readAllStandardOutput();
+    QString error = screenshotProcess->readAllStandardError();
+    QString all = output + error;
     screenshotProcess->deleteLater();
-    finished(returnCode, fn, output);
+    finished(returnCode, fn, all);
 }

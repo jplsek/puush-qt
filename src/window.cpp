@@ -333,24 +333,11 @@ QWidget *Window::createTabAdvanced(){
         fullscreenLayout->addWidget(fullscreenCapturePrimary);
         fullscreenBox->setLayout(fullscreenLayout);
 
-    QGroupBox *dangerousBox = new QGroupBox("Dangerous stuff");
-    QVBoxLayout *dangerousLayout = new QVBoxLayout();
-        dangerousExperimentalEnable = new QCheckBox("Enable experimental features");
-        dangerousExperimentalEnable->setChecked(s.value(Settings::ENABLE_EXPERIMENTAL_FEATURES).toBool());
-        dangerousExperimentalEnable->setEnabled(false);
-        dangerousNoSelectionRect = new QCheckBox("Don't draw selection rectangle");
-        dangerousNoSelectionRect->setChecked(!s.value(Settings::SHOW_SELECTION_RECTANGLE).toBool());
-        dangerousNoSelectionRect->setEnabled(false);
-        dangerousLayout->addWidget(dangerousExperimentalEnable);
-        dangerousLayout->addWidget(dangerousNoSelectionRect);
-        dangerousBox->setLayout(dangerousLayout);
-
     resetAdvancedButton = new QPushButton("Reset Advanced Settings");
 
     qhb->addWidget(screenBox);
     qhb->addWidget(contextBox);
     qhb->addWidget(fullscreenBox);
-    qhb->addWidget(dangerousBox);
     qhb->addStretch();
     qhb->addWidget(resetAdvancedButton);
 
@@ -602,9 +589,6 @@ void Window::connectSignals(){
     connect(fullscreenCaptureAll,     SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureAllChanged(bool)));
     connect(fullscreenCaptureCursor,  SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureCursorChanged(bool)));
     connect(fullscreenCapturePrimary, SIGNAL(clicked(bool)), this, SLOT(fullscreenCapturePrimaryChanged(bool)));
-
-    connect(dangerousExperimentalEnable, SIGNAL(clicked(bool)), this, SLOT(dangerousExperimentalEnableChanged(bool)));
-    connect(dangerousNoSelectionRect, SIGNAL(clicked(bool)), this, SLOT(dangerousNoSelectionRectChanged(bool)));
 
     connect(resetAdvancedButton, SIGNAL(clicked()), this, SLOT(resetAdvancedSettings()));
 
@@ -1041,12 +1025,4 @@ void Window::fullscreenCaptureCursorChanged(bool enabled){
 void Window::fullscreenCapturePrimaryChanged(bool enabled){
     if(enabled)
         s.setRadioValue(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP);
-}
-
-void Window::dangerousExperimentalEnableChanged(bool enabled){
-    s.setValue(Settings::ENABLE_EXPERIMENTAL_FEATURES, enabled);
-}
-
-void Window::dangerousNoSelectionRectChanged(bool enabled){
-    s.setValue(Settings::SHOW_SELECTION_RECTANGLE, !enabled);
 }

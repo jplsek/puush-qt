@@ -140,8 +140,6 @@ private:
     QRadioButton *fullscreenCaptureCursor;
     QRadioButton *fullscreenCapturePrimary;
 
-    QCheckBox *dangerousExperimentalEnable;
-    QCheckBox *dangerousNoSelectionRect;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     QStackedLayout *accountBox;
 
@@ -166,9 +164,6 @@ private slots:
     void fullscreenCaptureAllChanged(bool);
     void fullscreenCaptureCursorChanged(bool);
     void fullscreenCapturePrimaryChanged(bool);
-
-    void dangerousExperimentalEnableChanged(bool);
-    void dangerousNoSelectionRectChanged(bool);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 private:

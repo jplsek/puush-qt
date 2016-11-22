@@ -26,6 +26,7 @@ signals:
 private slots:
     void screenshotDone(int);
     void selectionDone(QRect);
+    void fullScreenAfterTimer();
 
 private:
     QSettings s;
