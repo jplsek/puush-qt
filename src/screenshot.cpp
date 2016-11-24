@@ -18,7 +18,7 @@
 
 Screenshot::Screenshot(QString fileName) {
     fn = fileName;
-    quality = s.value("quality").toString();
+    quality = s.value(Settings::IMAGE_QUALITY).toString();
 }
 
 /**
@@ -71,15 +71,43 @@ void Screenshot::fullScreen() {
 }
 
 void Screenshot::fullScreenAfterTimer() {
-    QPixmap screenshot = desktop();
+    // if this is still 0, 0 by the end, we just take a screenshot of the whole desktop
+    QPixmap screenshot(0, 0);
+    QString message = "";
 
-    if (screenshot.width() == 0 && screenshot.height() == 0)
-        return;
+    if (s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS)) {
+        screenshot = desktop();
+    } else if (s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP)) {
+        screenshot = primaryScreen();
+    } else if (s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP)) {
+        // TODO test that this works
+        // find out where the mouse is, and base it from that
+        QDesktopWidget *desktop = QApplication::desktop();
+        QPoint p = desktop->mapFromGlobal(QCursor::pos());
 
-    save(screenshot);
+        for (QScreen *s : QGuiApplication::screens()) {
+            QRect r = s->geometry();
+            if (r.contains(p)) {
+                screenshot = screen(s);
+                break;
+            }
+        }
+
+        message = tr("Screen not found within cursor!");
+    } else {
+        message = tr("Option not recognized!");
+    }
+
+    if (screenshot.width() == 0 && screenshot.height() == 0) {
+        message = message + "Taking a screenshot of the whole desktop instead...";
+        qDebug() << message;
+        screenshot = desktop();
+    }
+
+    save(screenshot, message);
 }
 
-void Screenshot::save(QPixmap screenshot) {
+void Screenshot::save(QPixmap screenshot, QString message) {
     // TODO we can now tell whether to use PNG or JPEG with save(filename, filetype) (our advanced settings).
     // By default, it uses the suffix of the file name.
     if (!screenshot.save(fn)) {
@@ -89,7 +117,7 @@ void Screenshot::save(QPixmap screenshot) {
 
     qDebug() << fn;
 
-    finished(0, fn, "");
+    finished(0, fn, message);
 }
 
 QPixmap Screenshot::desktop() {
@@ -100,15 +128,23 @@ QPixmap Screenshot::desktop() {
     return QPixmap::grabWindow(desktop->winId(), 0, 0, desktop->width(), desktop->height());
 }
 
-QPixmap Screenshot::screen(int i) {
-    QScreen *screen = QGuiApplication::screens()[i];
+QPixmap Screenshot::primaryScreen() {
+    QScreen *screen = QApplication::primaryScreen();
+    return screen->grabWindow(0);
+}
 
+QPixmap Screenshot::screen(QScreen *screen) {
     if (!screen) {
         finished(-1, fn, tr("Can't find a screen!"));
         return QPixmap(0, 0);
     }
 
     return screen->grabWindow(0);
+}
+
+QPixmap Screenshot::screen(int i) {
+    QScreen *s = QGuiApplication::screens()[i];
+    return screen(s);
 }
 
 /**

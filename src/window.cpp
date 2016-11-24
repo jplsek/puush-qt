@@ -884,6 +884,10 @@ void Window::puushDone(int returnCode, QString output) {
     } else {
         trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
     }
+
+    if (s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool()) {
+        openUrl(url);
+    }
 }
 
 /**

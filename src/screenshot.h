@@ -6,9 +6,11 @@
 #include <QRect>
 #include <QPoint>
 #include <QPixmap>
+#include <QScreen>
 #include <QSettings>
 
 #include "transparentwindow.h"
+#include "settings.h"
 
 class Screenshot : public QObject {
     Q_OBJECT
@@ -29,7 +31,7 @@ private slots:
     void fullScreenAfterTimer();
 
 private:
-    QSettings s;
+    Settings s;
 
     QString fn;
     QString quality;
@@ -39,8 +41,10 @@ private:
     TransparentWindow *tw;
 
     QPixmap desktop();
+    QPixmap primaryScreen();
     QPixmap screen(int);
-    void save(QPixmap);
+    QPixmap screen(QScreen*);
+    void save(QPixmap, QString = "");
 };
 
 #endif
