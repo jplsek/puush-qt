@@ -94,8 +94,7 @@ private:
     enum TrayAction {
         INVALID_TRAY_ACTION = 0, // the settings should default to this
         OPEN_SETTINGS = 1,
-        OPEN_CAPTURE  = 2,
-        OPEN_UPLOADS  = 3,
+        OPEN_UPLOADS  = 2,
     };
     enum CompressionPhilosophy {
         PNG_ALWAYS,
@@ -128,13 +127,10 @@ private:
     QCheckBox *enableLinkToBrowser;
 
     QRadioButton *trayDoubleClickSettings;
-    QRadioButton *trayDoubleClickCapture;
     QRadioButton *trayDoubleClickUpload;
 
     QRadioButton *compressionAlways;
     QRadioButton *compressionSmart;
-
-    QCheckBox *contextShowExplorerContext;
 
     QRadioButton *fullscreenCaptureAll;
     QRadioButton *fullscreenCaptureCursor;
@@ -153,13 +149,10 @@ private slots:
     void enableLinkToBrowserChanged(bool);
 
     void trayDoubleClickedSettingsChanged(bool);
-    void trayDoubleClickedCaptureChanged(bool);
     void trayDoubleClickedUploadChanged(bool);
 
     void compressionAlwaysChanged(bool);
     void compressionSmartChanged(bool);
-
-    void contextShowExplorerChanged(bool);
 
     void fullscreenCaptureAllChanged(bool);
     void fullscreenCaptureCursorChanged(bool);

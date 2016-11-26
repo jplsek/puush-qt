@@ -101,12 +101,9 @@ QWidget *Window::createTabGeneral(){
     QVBoxLayout *trayLayout = new QVBoxLayout();
     trayDoubleClickSettings = new QRadioButton("Show settings window");
     trayDoubleClickSettings->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
-    trayDoubleClickCapture  = new QRadioButton("Begin screen capture mode");
-    trayDoubleClickCapture->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE));
     trayDoubleClickUpload   = new QRadioButton("Open upload file window");
     trayDoubleClickUpload->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
     trayLayout->addWidget(trayDoubleClickSettings);
-    trayLayout->addWidget(trayDoubleClickCapture);
     trayLayout->addWidget(trayDoubleClickUpload);
     trayGroup->setLayout(trayLayout);
     qhb->addWidget(trayGroup);
@@ -312,14 +309,6 @@ QWidget *Window::createTabAdvanced(){
         screenLayout->addWidget(quality);
         screenBox->setLayout(screenLayout);
 
-    QGroupBox *contextBox = new QGroupBox("Context Menu");
-    QVBoxLayout *contextLayout = new QVBoxLayout();
-        contextShowExplorerContext = new QCheckBox("Show file explorer context menu items");
-        contextShowExplorerContext->setChecked(s.value(Settings::ENABLE_EXPLORER_CONTEXT_MENU).toBool());
-        contextShowExplorerContext->setEnabled(false);
-        contextLayout->addWidget(contextShowExplorerContext);
-        contextBox->setLayout(contextLayout);
-
     QGroupBox *fullscreenBox = new QGroupBox("Fullscreen Capture");
     QVBoxLayout *fullscreenLayout = new QVBoxLayout();
         fullscreenCaptureAll     = new QRadioButton("Capture all screens");
@@ -336,7 +325,6 @@ QWidget *Window::createTabAdvanced(){
     resetAdvancedButton = new QPushButton("Reset Advanced Settings");
 
     qhb->addWidget(screenBox);
-    qhb->addWidget(contextBox);
     qhb->addWidget(fullscreenBox);
     qhb->addStretch();
     qhb->addWidget(resetAdvancedButton);
@@ -458,6 +446,10 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 void Window::doDoubleClickAction() {
     if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
         uploadFile();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS)) {
+        openSettings();
+    } else {
+        qDebug() << "Option not recognized";
     }
 }
 
@@ -563,7 +555,6 @@ void Window::connectSignals(){
     connect(enableLinkToBrowser, SIGNAL(clicked(bool)), this, SLOT(enableLinkToBrowserChanged(bool)));
 
     connect(trayDoubleClickSettings, SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedSettingsChanged(bool)));
-    connect(trayDoubleClickCapture,  SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureChanged(bool)));
     connect(trayDoubleClickUpload,   SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
 
     connect(resetGeneralButton, SIGNAL(clicked()), this, SLOT(resetGeneralSettings()));
@@ -583,8 +574,6 @@ void Window::connectSignals(){
     connect(compressionSmart,  SIGNAL(clicked(bool)), this, SLOT(compressionSmartChanged(bool)));
 
     connect(qualitySlider, SIGNAL(valueChanged(int)), this, SLOT(qualityChanged(int)));
-
-    connect(contextShowExplorerContext, SIGNAL(clicked(bool)), this, SLOT(contextShowExplorerChanged(bool)));
 
     connect(fullscreenCaptureAll,     SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureAllChanged(bool)));
     connect(fullscreenCaptureCursor,  SIGNAL(clicked(bool)), this, SLOT(fullscreenCaptureCursorChanged(bool)));
@@ -991,11 +980,6 @@ void Window::trayDoubleClickedSettingsChanged(bool enabled){
         s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS);
 }
 
-void Window::trayDoubleClickedCaptureChanged(bool enabled){
-    if(enabled)
-        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_CAPTURE);
-}
-
 void Window::trayDoubleClickedUploadChanged(bool enabled){
     if(enabled)
         s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
@@ -1009,11 +993,6 @@ void Window::compressionAlwaysChanged(bool enabled){
 void Window::compressionSmartChanged(bool enabled){
     if(enabled)
         s.setRadioValue(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER);
-}
-
-void Window::contextShowExplorerChanged(bool enabled){
-    // FIXME this needs to be done...
-    s.setValue(Settings::ENABLE_EXPLORER_CONTEXT_MENU, enabled);
 }
 
 void Window::fullscreenCaptureAllChanged(bool enabled){
