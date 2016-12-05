@@ -8,12 +8,12 @@
 const QString OFFICIAL_PUUSH_BASE_URL = "https://puush.me/";
 const QString OFFICIAL_PUUSH_API_URL  = OFFICIAL_PUUSH_BASE_URL + "api/";
 
-const QString Settings::GENERAL_GROUP_NAME   = "general";
+const QString Settings::GENERAL_GROUP_NAME   = "basic"; // [general] -> [basic] because it was conflicting with QSettings [general]
 const QString Settings::ADVANCED_GROUP_NAME  = "advanced";
 const QString Settings::EXTRA_GROUP_NAME     = "extra";
 const QString Settings::USER_INFO_GROUP_NAME = "user-info";
 
-const QString Settings::CURRENT_SETTINGS_VERSION = "2016-11-25-00"; // YYYY-MM-DD-revision
+const QString Settings::CURRENT_SETTINGS_VERSION = "2016-12-1-01"; // YYYY-MM-DD-revision
 
 
 // generic format of this is <option what/when> <value>
@@ -39,10 +39,6 @@ const QString Settings::setting_names[] = {
     [Settings::Setting::COMPRESSION_PHILOSOPHY] = "compression-philosophy",
 
     [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = "fullscreen-capture-mode",
-
-    [Settings::Setting::ENABLE_EXPERIMENTAL_FEATURES] = "enable-experiemntal-features",
-
-    [Settings::Setting::SHOW_SELECTION_RECTANGLE] = "show-selection-rectangle",
 
     [Settings::Setting::IMAGE_QUALITY] = "quality",
 
@@ -72,10 +68,6 @@ const QString Settings::groups[] = {
 
     [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = Settings::ADVANCED_GROUP_NAME,
 
-    [Settings::Setting::ENABLE_EXPERIMENTAL_FEATURES] = Settings::ADVANCED_GROUP_NAME,
-
-    [Settings::Setting::SHOW_SELECTION_RECTANGLE] = Settings::ADVANCED_GROUP_NAME,
-
     [Settings::Setting::IMAGE_QUALITY] = Settings::ADVANCED_GROUP_NAME,
 
     [Settings::Setting::BASE_URL] = Settings::EXTRA_GROUP_NAME,
@@ -83,8 +75,13 @@ const QString Settings::groups[] = {
 };
 
 const QString Settings::radio_values[] = {
-    [Settings::RadioValue::OPEN_SETTINGS] = "open-settings",
-    [Settings::RadioValue::OPEN_UPLOADS]  = "open-uploads",
+    [Settings::RadioValue::OPEN_SETTINGS]   = "open-settings",
+    [Settings::RadioValue::OPEN_UPLOADS]    = "open-uploads",
+    [Settings::RadioValue::UPLOAD_FILE]     = "upload-file",
+    [Settings::RadioValue::CAPTURE_DESKTOP] = "capture-desktop",
+    [Settings::RadioValue::CAPTURE_AREA]    = "capture-screen",
+    [Settings::RadioValue::CAPTURE_WINDOW]  = "capture-window",
+    [Settings::RadioValue::OPEN_ACCOUNT]    = "open-account",
 
     [Settings::RadioValue::PNG_ALWAYS]         = "png-always",
     [Settings::RadioValue::JPG_ALWAYS]         = "jpg-always",
@@ -154,10 +151,6 @@ void Settings::resetAdvancedSettings(){
 
     setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
 
-    setValue(ENABLE_EXPERIMENTAL_FEATURES, false);
-
-    setValue(SHOW_SELECTION_RECTANGLE, true);
-
     setValue(IMAGE_QUALITY, 90);
 }
 
@@ -203,12 +196,6 @@ void Settings::setEmptyToDefaults(){
 
     if(!contains(FULLSCREEN_CAPTURE_MODE))
         setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
-
-    if(!contains(ENABLE_EXPERIMENTAL_FEATURES))
-        setValue(ENABLE_EXPERIMENTAL_FEATURES, false);
-
-    if(!contains(SHOW_SELECTION_RECTANGLE))
-        setValue(SHOW_SELECTION_RECTANGLE, true);
 
     if(!contains(IMAGE_QUALITY))
         setValue(IMAGE_QUALITY, 90);

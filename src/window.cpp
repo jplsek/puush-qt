@@ -53,12 +53,12 @@ Window::Window() {
 
 QTabWidget *Window::createTabs(){
     QTabWidget *tabs = new QTabWidget();
-    tabs->addTab(createTabGeneral(),     "General");
-    tabs->addTab(createTabKeyBindings(), "Key Bindings"); // this should be handled by a library that interfaces with the desktop environment
-    tabs->addTab(createTabAccount(),     "Account");
-    tabs->addTab(createTabAdvanced(),    "Advanced");
-    tabs->addTab(createTabHistory(),     "History");
-    tabs->addTab(createTabAbout(),       "About");
+    tabs->addTab(createTabGeneral(),     tr("General"));
+    tabs->addTab(createTabKeyBindings(), tr("Key Bindings")); // this should be handled by a library that interfaces with the desktop environment
+    tabs->addTab(createTabAccount(),     tr("Account"));
+    tabs->addTab(createTabAdvanced(),    tr("Advanced"));
+    tabs->addTab(createTabHistory(),     tr("History"));
+    tabs->addTab(createTabAbout(),       tr("About"));
     return tabs;
 }
 
@@ -66,62 +66,86 @@ QWidget *Window::createTabGeneral(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
 
-    QGroupBox *puushGroup = new QGroupBox("On Successful Puush");
+    QGroupBox *puushGroup = new QGroupBox(tr("On Successful Puush"));
     QVBoxLayout *puushLayout = new QVBoxLayout();
 
-    enablePuushSound = new QCheckBox("Play a sound");
-    enablePuushSound->setChecked(s.value(Settings::ON_PUUSH_SOUND).toBool());
+    enablePuushSound = new QCheckBox(tr("Play a sound"));
     puushLayout->addWidget(enablePuushSound);
 
-    enableLocalSave = new QCheckBox("Enable local save");
-    enableLocalSave->setChecked(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
+    enableLocalSave = new QCheckBox(tr("Enable local save"));
     puushLayout->addWidget(enableLocalSave);
 
     QWidget *saveLocation = new QWidget();
     QHBoxLayout *saveLocationLayout = new QHBoxLayout();
-    localSaveLocation = new QLineEdit(s.value(Settings::LOCAL_SAVE_PATH).toString());
     selectSavePathButton = new QPushButton(tr("..."));
+    localSaveLocation = new QLineEdit();
     saveLocationLayout->addWidget(localSaveLocation);
     saveLocationLayout->addWidget(selectSavePathButton);
     saveLocation->setLayout(saveLocationLayout);
     puushLayout->addWidget(saveLocation);
 
-    enableLinkToClipboard = new QCheckBox("Copy link to clipboard");
-    enableLinkToClipboard->setChecked(s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool());
+    enableLinkToClipboard = new QCheckBox(tr("Copy link to clipboard"));
     puushLayout->addWidget(enableLinkToClipboard);
 
-    enableLinkToBrowser = new QCheckBox("Open link in browser");
-    enableLinkToBrowser->setChecked(s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool());
+    enableLinkToBrowser = new QCheckBox(tr("Open link in browser"));
     puushLayout->addWidget(enableLinkToBrowser);
 
     puushGroup->setLayout(puushLayout);
     qhb->addWidget(puushGroup);
 
-    QGroupBox *trayGroup = new QGroupBox("Tray Icon Behavior on Double Click");
+    QGroupBox *trayGroup = new QGroupBox(tr("Tray Icon Behavior on Double Click"));
     QVBoxLayout *trayLayout = new QVBoxLayout();
-    trayDoubleClickSettings = new QRadioButton("Show settings window");
-    trayDoubleClickSettings->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
-    trayDoubleClickUpload   = new QRadioButton("Open upload file window");
-    trayDoubleClickUpload->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
+    trayDoubleClickSettings       = new QRadioButton(tr("Show settings window"));
+    trayDoubleClickUpload         = new QRadioButton(tr("Open screenshot directory"));
+    trayDoubleClickUploadFile     = new QRadioButton(tr("Upload file"));
+    trayDoubleClickCaptureDesktop = new QRadioButton(tr("Capture desktop"));
+    trayDoubleClickCaptureArea    = new QRadioButton(tr("Capture area"));
+    trayDoubleClickCaptureWindow  = new QRadioButton(tr("Capture current window"));
+    trayDoubleClickAccount        = new QRadioButton(tr("Open account"));
     trayLayout->addWidget(trayDoubleClickSettings);
     trayLayout->addWidget(trayDoubleClickUpload);
+    trayLayout->addWidget(trayDoubleClickUploadFile);
+    trayLayout->addWidget(trayDoubleClickCaptureDesktop);
+    trayLayout->addWidget(trayDoubleClickCaptureArea);
+    trayLayout->addWidget(trayDoubleClickCaptureWindow);
+    trayLayout->addWidget(trayDoubleClickAccount);
     trayGroup->setLayout(trayLayout);
     qhb->addWidget(trayGroup);
 
     qhb->addStretch();
 
-    resetGeneralButton = new QPushButton("Reset General Settings");
+    resetGeneralButton = new QPushButton(tr("Reset General Settings"));
     qhb->addWidget(resetGeneralButton);
 
     w->setLayout(qhb);
+
+    updateTabGeneral();
+
     return w;
+}
+
+void Window::updateTabGeneral() {
+    enablePuushSound->setChecked(s.value(Settings::ON_PUUSH_SOUND).toBool());
+    enableLocalSave->setChecked(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
+    localSaveLocation->setText(s.value(Settings::LOCAL_SAVE_PATH).toString());
+    enableLinkToClipboard->setChecked(s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool());
+    enableLinkToBrowser->setChecked(s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool());
+    trayDoubleClickSettings->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS));
+    trayDoubleClickUpload->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
+    trayDoubleClickUploadFile->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_FILE));
+    trayDoubleClickCaptureDesktop->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_DESKTOP));
+    trayDoubleClickCaptureArea->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_AREA));
+    trayDoubleClickCaptureWindow->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_WINDOW));
+    trayDoubleClickAccount->setChecked(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_ACCOUNT));
+
+    enableLocalSaveChanged(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
 }
 
 QWidget *Window::createTabKeyBindings(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
 
-    QGroupBox *keyBindings = new QGroupBox("Key Bindings");
+    QGroupBox *keyBindings = new QGroupBox(tr("Key Bindings"));
     QVBoxLayout *keyBindingsLayout = new QVBoxLayout();
     keyBindings->setLayout(keyBindingsLayout);
 
@@ -140,7 +164,7 @@ QWidget *Window::createTabAccount(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
 
-    QGroupBox *account = new QGroupBox("Account Details");
+    QGroupBox *account = new QGroupBox(tr("Account Details"));
     accountBox = new QStackedLayout();
     account->setLayout(accountBox);
     qhb->addWidget(account);
@@ -229,7 +253,7 @@ void Window::createLoginBox() {
     QVBoxLayout *accountLayout = new QVBoxLayout();
 
     QLabel *info = new QLabel(tr("You must login to use Puush. If you don't already have an account, you can register for an account below."));
-        info->setWordWrap(true);
+    info->setWordWrap(true);
 
     passwordEdit->setEchoMode(QLineEdit::Password);
 
@@ -287,42 +311,40 @@ QWidget *Window::createTabAdvanced(){
     QWidget *w = new QWidget();
     QVBoxLayout *qhb = new QVBoxLayout();
 
-    QGroupBox *screenBox = new QGroupBox("Screen Capture Quality");
+    QGroupBox *screenBox = new QGroupBox(tr("Screen Capture Quality"));
     QVBoxLayout *screenLayout = new QVBoxLayout();
-        compressionAlways = new QRadioButton("Always use PNG (no lossy compression)");
-        compressionSmart  = new QRadioButton("Smart (use JPG unless PNG is smaller)");
-        compressionAlways->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::PNG_ALWAYS));
-        compressionSmart->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
-        compressionAlways->setEnabled(false);
-        compressionSmart->setEnabled(false);
-        QFormLayout *qualityLayout = new QFormLayout();
-        QWidget *quality = new QWidget();
-        qualitySlider = new QSlider(Qt::Horizontal);
-        qualitySlider->setRange(0, 100);
-        qualitySlider->setTickPosition(QSlider::TicksBelow);
-        qualitySlider->setTickInterval(10);
-        qualitySlider->setValue(s.value(Settings::IMAGE_QUALITY).toInt());
-        qualityLayout->addRow(tr("Quality:"), qualitySlider);
-        quality->setLayout(qualityLayout);
-        screenLayout->addWidget(compressionAlways);
-        screenLayout->addWidget(compressionSmart);
-        screenLayout->addWidget(quality);
-        screenBox->setLayout(screenLayout);
+    compressionAlways = new QRadioButton(tr("Always use PNG (no lossy compression)"));
+    compressionSmart  = new QRadioButton(tr("Smart (use JPG unless PNG is smaller)"));
+    compressionAlways->setEnabled(false);
+    compressionSmart->setEnabled(false);
 
-    QGroupBox *fullscreenBox = new QGroupBox("Fullscreen Capture");
+    QFormLayout *qualityLayout = new QFormLayout();
+    QWidget *quality = new QWidget();
+    qualitySlider = new QSlider(Qt::Horizontal);
+    qualitySlider->setRange(0, 100);
+    qualitySlider->setTickPosition(QSlider::TicksBelow);
+    qualitySlider->setTickInterval(10);
+
+    qualityLayout->addRow(tr("Quality:"), qualitySlider);
+    quality->setLayout(qualityLayout);
+
+    screenLayout->addWidget(compressionAlways);
+    screenLayout->addWidget(compressionSmart);
+    screenLayout->addWidget(quality);
+    screenBox->setLayout(screenLayout);
+
+    QGroupBox *fullscreenBox = new QGroupBox(tr("Fullscreen Capture"));
     QVBoxLayout *fullscreenLayout = new QVBoxLayout();
-        fullscreenCaptureAll     = new QRadioButton("Capture all screens");
-        fullscreenCaptureCursor  = new QRadioButton("Capture screen containing mouse cursor");
-        fullscreenCapturePrimary = new QRadioButton("Always capture primary screen");
-        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS));
-        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP));
-        fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP));
-        fullscreenLayout->addWidget(fullscreenCaptureAll);
-        fullscreenLayout->addWidget(fullscreenCaptureCursor);
-        fullscreenLayout->addWidget(fullscreenCapturePrimary);
-        fullscreenBox->setLayout(fullscreenLayout);
+    fullscreenCaptureAll     = new QRadioButton(tr("Capture all screens"));
+    fullscreenCaptureCursor  = new QRadioButton(tr("Capture screen containing mouse cursor"));
+    fullscreenCapturePrimary = new QRadioButton(tr("Always capture primary screen"));
 
-    resetAdvancedButton = new QPushButton("Reset Advanced Settings");
+    fullscreenLayout->addWidget(fullscreenCaptureAll);
+    fullscreenLayout->addWidget(fullscreenCaptureCursor);
+    fullscreenLayout->addWidget(fullscreenCapturePrimary);
+    fullscreenBox->setLayout(fullscreenLayout);
+
+    resetAdvancedButton = new QPushButton(tr("Reset Advanced Settings"));
 
     qhb->addWidget(screenBox);
     qhb->addWidget(fullscreenBox);
@@ -330,7 +352,19 @@ QWidget *Window::createTabAdvanced(){
     qhb->addWidget(resetAdvancedButton);
 
     w->setLayout(qhb);
+
+    updateTabAdvanced();
+
     return w;
+}
+
+void Window::updateTabAdvanced() {
+    compressionAlways->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::PNG_ALWAYS));
+    compressionSmart->setChecked(s.radioValueIs(Settings::COMPRESSION_PHILOSOPHY, Settings::IMAGE_TYPE_SMALLER));
+    qualitySlider->setValue(s.value(Settings::IMAGE_QUALITY).toInt());
+    fullscreenCaptureAll->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::ALL_DESKTOPS));
+    fullscreenCaptureCursor->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::CURRENT_DESKTOP));
+    fullscreenCapturePrimary->setChecked(s.radioValueIs(Settings::FULLSCREEN_CAPTURE_MODE, Settings::PRIMARY_DESKTOP));
 }
 
 QWidget *Window::createTabHistory(){
@@ -445,11 +479,21 @@ void Window::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 
 void Window::doDoubleClickAction() {
     if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
-        uploadFile();
+        openSaveDirectory();
     } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS)) {
         openSettings();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_FILE)) {
+        uploadFile();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_DESKTOP)) {
+        fullScreenScreenshot();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_AREA)) {
+        selectAreaScreenshot();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_WINDOW)) {
+        activeWindowScreenshotTimed();
+    } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_ACCOUNT)) {
+        openAccount();
     } else {
-        qDebug() << "Option not recognized";
+        std::cout << "Option not recognized" << std::endl;
     }
 }
 
@@ -505,15 +549,20 @@ void Window::authDone(ApiAuth *req) {
  * @brief Window::messageClicked
  */
 void Window::messageClicked() {
+    if (lastUrl == QUrl(""))
+        return;
+
     openUrl(lastUrl);
+
+    // reset it so if an error popup comes up later, the url wont open
+    lastUrl = QUrl("");
 }
 
 void Window::openUrl(QUrl url) {
     bool response = QDesktopServices::openUrl(url);
 
     if (!response) {
-        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-        trayIcon->showMessage(tr("Error!"), tr("There was an issue opening the URL. Is your default browser set?"), icon);
+        trayIcon->showMessage(tr("Error!"), tr("There was an issue opening the URL. Is your default browser set?"), QSystemTrayIcon::MessageIcon());
     }
 }
 
@@ -546,16 +595,21 @@ void Window::createActions() {
 void Window::connectSignals(){
     // General
     connect(enablePuushSound, SIGNAL(clicked(bool)), this, SLOT(soundEnabledChanged(bool)));
-    connect(enableLocalSave, SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
+    connect(enableLocalSave,  SIGNAL(clicked(bool)), this, SLOT(enableLocalSaveChanged(bool)));
 
-    connect(localSaveLocation, SIGNAL(editingFinished()), this, SLOT(localSaveLocChanged()));
-    connect(selectSavePathButton, SIGNAL(clicked()), this, SLOT(openSavePath()));
+    connect(localSaveLocation,    SIGNAL(editingFinished()), this, SLOT(localSaveLocChanged()));
+    connect(selectSavePathButton, SIGNAL(clicked()), this, SLOT(setSaveDirectory()));
 
     connect(enableLinkToClipboard, SIGNAL(clicked(bool)), this, SLOT(enableLinkToClipboardChanged(bool)));
-    connect(enableLinkToBrowser, SIGNAL(clicked(bool)), this, SLOT(enableLinkToBrowserChanged(bool)));
+    connect(enableLinkToBrowser,   SIGNAL(clicked(bool)), this, SLOT(enableLinkToBrowserChanged(bool)));
 
-    connect(trayDoubleClickSettings, SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedSettingsChanged(bool)));
-    connect(trayDoubleClickUpload,   SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
+    connect(trayDoubleClickSettings,       SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedSettingsChanged(bool)));
+    connect(trayDoubleClickUpload,         SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadChanged(bool)));
+    connect(trayDoubleClickUploadFile,     SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedUploadFileChanged(bool)));
+    connect(trayDoubleClickCaptureDesktop, SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureDesktopChanged(bool)));
+    connect(trayDoubleClickCaptureArea,    SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureAreaChanged(bool)));
+    connect(trayDoubleClickCaptureWindow,  SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedCaptureWindowChanged(bool)));
+    connect(trayDoubleClickAccount,        SIGNAL(clicked(bool)), this, SLOT(trayDoubleClickedAccountChanged(bool)));
 
     connect(resetGeneralButton, SIGNAL(clicked()), this, SLOT(resetGeneralSettings()));
 
@@ -660,19 +714,28 @@ void Window::uploadFile() {
 }
 
 /**
- * Generates the temporary screenshot file names.
+ * Gets the file name to use for screenshots
  * @brief Window::getFileName
  * @return
  */
 QString Window::getFileName() {
-    return QDir::tempPath() + QDir::separator() + QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
+    return QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
+}
+
+/**
+ * Generates the temporary screenshot file names.
+ * @brief Window::getTempPath
+ * @return
+ */
+QString Window::getTempPath() {
+    return QDir::tempPath() + QDir::separator() + getFileName();
 }
 
 /**
  * Opens a folder dialog to set the screenshot save path.
- * @brief Window::openSavePath
+ * @brief Window::setSaveDirectory
  */
-void Window::openSavePath(){
+void Window::setSaveDirectory(){
     QString dir = QFileDialog::getExistingDirectory(
                 this, tr("Set Screenshot Directory"),
                 s.value(Settings::LOCAL_SAVE_PATH).toString(),
@@ -681,16 +744,16 @@ void Window::openSavePath(){
     // "" if canceled
     if (dir != "") {
         localSaveLocation->setText(dir);
-        setSavePath(dir);
+        setSaveDirectory(dir);
     }
 }
 
 /**
  * Parses the screenshot save path.
- * @brief Window::getSavePath
+ * @brief Window::getSaveDirectory
  * @return
  */
-QString Window::getSavePath(){
+QString Window::getSaveDirectory(){
     QString path = s.value(Settings::LOCAL_SAVE_PATH).toString();
 
     if(path.startsWith("~/")){
@@ -703,13 +766,11 @@ QString Window::getSavePath(){
 
 /**
  * Generates the screenshot name based on the current settings.
- * @brief Window::getSaveName
+ * @brief Window::getSavePath
  * @return
  */
-QString Window::getSaveName() {
-    QString saveName = "ss-";
-    saveName += QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".png";
-    return getSavePath() + "/" + saveName;
+QString Window::getSavePath() {
+    return getSaveDirectory() + "/" + getFileName();
 }
 
 /**
@@ -719,7 +780,7 @@ QString Window::getSaveName() {
 void Window::fullScreenScreenshot() {
     if (!isLoggedIn()) return;
 
-    QString fileName = getFileName();
+    QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
     connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
     ss->fullScreen();
@@ -732,7 +793,7 @@ void Window::fullScreenScreenshot() {
 void Window::selectAreaScreenshot() {
     if (!isLoggedIn()) return;
 
-    QString fileName = getFileName();
+    QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
     connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
     ss->selectArea();
@@ -741,9 +802,9 @@ void Window::selectAreaScreenshot() {
 void Window::activeWindowScreenshotTimed() {
     if (!isLoggedIn()) return;
 
-    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
     trayIcon->showMessage(tr("Select a window"),
-                          tr("Taking a screenshot in ") + QString::number(defaultSelectionTimeout) + tr(" seconds..."), icon);
+                          tr("Taking a screenshot in ") + QString::number(defaultSelectionTimeout) + tr(" seconds..."),
+                          QSystemTrayIcon::MessageIcon());
 
     numTime = defaultSelectionTimeout;
     timer = new QTimer(this);
@@ -758,7 +819,7 @@ void Window::activeWindowScreenshotTimed() {
 void Window::activeWindowScreenshot() {
     if (!isLoggedIn()) return;
 
-    QString fileName = getFileName();
+    QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
     connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
     ss->activeWindow();
@@ -784,13 +845,12 @@ void Window::updateActiveMessage() {
  * @brief Window::openSaveDirectory
  */
 void Window::openSaveDirectory() {
-    QString path = getSavePath();
+    QString path = getSaveDirectory();
 
     bool response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 
     if (!response) {
-        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-        trayIcon->showMessage(tr("Error!"), tr("Error opening save directory"), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Error opening save directory"), QSystemTrayIcon::MessageIcon());
     }
 }
 
@@ -811,8 +871,7 @@ void Window::puushStarted() {
  */
 void Window::screenshotDone(int returnCode, QString fileName, QString output) {
     if (returnCode != 0) {
-        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-        trayIcon->showMessage(tr("Error!"), output, icon);
+        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::MessageIcon());
         return;
     }
 
@@ -823,8 +882,8 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
 
     if(s.value(Settings::LOCAL_SAVE_ENABLED).toBool()){
         QDir root = QDir::root();
-        root.mkpath(getSavePath());
-        QFile::copy(fileName, getSaveName());
+        root.mkpath(getSaveDirectory());
+        QFile::copy(fileName, getSavePath());
     }
 }
 
@@ -836,8 +895,7 @@ void Window::screenshotDone(int returnCode, QString fileName, QString output) {
  */
 void Window::puushDone(int returnCode, QString output) {
     if (returnCode != 0) {
-        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
-        trayIcon->showMessage(tr("Error!"), output, icon);
+        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::MessageIcon());
         return;
     }
 
@@ -889,25 +947,11 @@ void Window::qualityChanged(int val){
 }
 
 /**
- * Event checking when the save enabled button was clicked.
- * @brief Window::saveEnabledChanged
- * @param val
- */
-void Window::saveEnabledChanged(int val){
-    // 0 = unchecked, 1 = unchecked & disabled?, 2 = checked, 3 = checked & disabled?
-    s.setValue(Settings::LOCAL_SAVE_ENABLED, val == 2);
-    localSaveLocation->setEnabled(val == 2);
-    selectSavePathButton->setEnabled(val == 2);
-    openSaveDirectoryAction->setEnabled(val == 2);
-    // saveNameEdit->setEnabled(val == 2); // disabled because NYI
-}
-
-/**
  * Save the save screenshot directory path to the settings.
- * @brief Window::setSavePath
+ * @brief Window::setSaveDirectory
  * @param path
  */
-void Window::setSavePath(QString path){
+void Window::setSaveDirectory(QString path){
     if(path.startsWith("~/")){
         path.remove(0, 1); // remove "~"
         path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
@@ -918,18 +962,14 @@ void Window::setSavePath(QString path){
     s.setValue(Settings::LOCAL_SAVE_PATH, path);
 }
 
-void Window::saveNameChanged(){
-    // s.setValue(Settings::LOCAL_SAVE_NAME, saveNameEdit->text()); //disabled because NYI
-}
-
 void Window::resetGeneralSettings(){
     s.resetGeneralSettings();
-    // FIXME: update the state of all the buttons!!!
+    updateTabGeneral();
 }
 
 void Window::resetAdvancedSettings(){
     s.resetAdvancedSettings();
-    // FIXME: update the state of all the buttons!!!
+    updateTabAdvanced();
 }
 
 void Window::getHistory(){
@@ -961,7 +1001,7 @@ void Window::enableLocalSaveChanged(bool enabled){
 }
 
 void Window::localSaveLocChanged(){
-    setSavePath(localSaveLocation->text());
+    setSaveDirectory(localSaveLocation->text());
 }
 
 void Window::enableLinkToClipboardChanged(bool enabled){
@@ -983,6 +1023,31 @@ void Window::trayDoubleClickedSettingsChanged(bool enabled){
 void Window::trayDoubleClickedUploadChanged(bool enabled){
     if(enabled)
         s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
+}
+
+void Window::trayDoubleClickedUploadFileChanged(bool enabled){
+    if(enabled)
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_FILE);
+}
+
+void Window::trayDoubleClickedCaptureDesktopChanged(bool enabled){
+    if(enabled)
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_DESKTOP);
+}
+
+void Window::trayDoubleClickedCaptureAreaChanged(bool enabled){
+    if(enabled)
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_AREA);
+}
+
+void Window::trayDoubleClickedCaptureWindowChanged(bool enabled){
+    if(enabled)
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_WINDOW);
+}
+
+void Window::trayDoubleClickedAccountChanged(bool enabled){
+    if(enabled)
+        s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_ACCOUNT);
 }
 
 void Window::compressionAlwaysChanged(bool enabled){

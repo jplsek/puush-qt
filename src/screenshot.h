@@ -7,7 +7,6 @@
 #include <QPoint>
 #include <QPixmap>
 #include <QScreen>
-#include <QSettings>
 
 #include "transparentwindow.h"
 #include "settings.h"

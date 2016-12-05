@@ -1,12 +1,12 @@
 #include <QtGui>
-#include <QSettings>
 
 #include "upload.h"
+#include "settings.h"
 
 Upload::Upload(QString fileName) {
-    QSettings s;
+    Settings s;
 
-    QString key = s.value("key").toString();
+    QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
 
     // This uses curl instead of QT because of issues getting uploading files to work.
     // I should actually use libcurl...
@@ -16,7 +16,8 @@ Upload::Upload(QString fileName) {
     connect(uploadProcess, SIGNAL(finished(int)), this, SLOT(uploadDone(int)));
 
     uploadProcess->start("curl",
-                         QStringList() << QString("https://puush.me/api/") + "up" << "-Ss" << "-F"
+                         QStringList() << s.value(Settings::API_URL).toString() + "up"
+                                       << "-Ss" << "-F"
                                        << "k=" + key << "-F" << "z=poop"
                                        << "-F" << "f=@" + fileName);
 }

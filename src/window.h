@@ -14,7 +14,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QProcess>
-#include <QSettings>
 #include <QSlider>
 #include <QTimer>
 #include <QNetworkAccessManager>
@@ -62,10 +61,8 @@ private slots:
     void openSaveDirectory();
 
     void qualityChanged(int);
-    void saveEnabledChanged(int);
-    void saveNameChanged();
     void emailChanged();
-    void openSavePath();
+    void setSaveDirectory();
 
     void resetGeneralSettings();
     void resetAdvancedSettings();
@@ -81,7 +78,7 @@ private:
     void setDefaults();
     bool isLoggedIn();
     void openUrl(QUrl);
-    void setSavePath(QString);
+    void setSaveDirectory(QString);
     void createLoginBox();
     void createLoggedinBox();
     void selectLoginBox();
@@ -128,6 +125,11 @@ private:
 
     QRadioButton *trayDoubleClickSettings;
     QRadioButton *trayDoubleClickUpload;
+    QRadioButton *trayDoubleClickUploadFile;
+    QRadioButton *trayDoubleClickCaptureDesktop;
+    QRadioButton *trayDoubleClickCaptureArea;
+    QRadioButton *trayDoubleClickCaptureWindow;
+    QRadioButton *trayDoubleClickAccount;
 
     QRadioButton *compressionAlways;
     QRadioButton *compressionSmart;
@@ -150,6 +152,11 @@ private slots:
 
     void trayDoubleClickedSettingsChanged(bool);
     void trayDoubleClickedUploadChanged(bool);
+    void trayDoubleClickedUploadFileChanged(bool);
+    void trayDoubleClickedCaptureDesktopChanged(bool);
+    void trayDoubleClickedCaptureAreaChanged(bool);
+    void trayDoubleClickedCaptureWindowChanged(bool);
+    void trayDoubleClickedAccountChanged(bool);
 
     void compressionAlwaysChanged(bool);
     void compressionSmartChanged(bool);
@@ -205,7 +212,7 @@ private:
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
 
-    QUrl lastUrl;
+    QUrl lastUrl = QUrl("");
 
     QTimer *timer;
 
@@ -215,8 +222,12 @@ private:
     ApiAuth::AuthData userData;
 
     QString getFileName();
+    QString getTempPath();
+    QString getSaveDirectory();
     QString getSavePath();
-    QString getSaveName();
+
+    void updateTabGeneral();
+    void updateTabAdvanced();
 
     int defaultSelectionTimeout = 5;
     int numTime = 0;
