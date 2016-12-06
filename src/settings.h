@@ -32,36 +32,34 @@ public:
 
         COMPRESSION_PHILOSOPHY = 11,
 
-        ENABLE_EXPLORER_CONTEXT_MENU = 12,
+        FULLSCREEN_CAPTURE_MODE = 12,
 
-        FULLSCREEN_CAPTURE_MODE = 13,
+        IMAGE_QUALITY = 13,
 
-        ENABLE_EXPERIMENTAL_FEATURES = 14,
-
-        SHOW_SELECTION_RECTANGLE = 15,
-
-        IMAGE_QUALITY = 16,
-
-        BASE_URL = 17,
-        API_URL = 18,
+        BASE_URL = 14,
+        API_URL = 15,
     };
 
     // these numbers can change.
     enum RadioValue {
         // tray click action
         OPEN_SETTINGS = 0,
-        OPEN_CAPTURE  = 1,
-        OPEN_UPLOADS  = 2,
+        OPEN_UPLOADS = 1,
+        UPLOAD_FILE = 2,
+        CAPTURE_DESKTOP = 3,
+        CAPTURE_AREA = 4,
+        CAPTURE_WINDOW = 5,
+        OPEN_ACCOUNT = 6,
 
         // compression philosophy
-        PNG_ALWAYS = 3,
-        JPG_ALWAYS = 4,
-        IMAGE_TYPE_SMALLER = 5,
+        PNG_ALWAYS = 7,
+        JPG_ALWAYS = 8,
+        IMAGE_TYPE_SMALLER = 9,
 
         // fullscreen capture mode
-        ALL_DESKTOPS = 6,
-        CURRENT_DESKTOP = 7,
-        PRIMARY_DESKTOP = 8,
+        ALL_DESKTOPS = 10,
+        CURRENT_DESKTOP = 11,
+        PRIMARY_DESKTOP = 12,
     };
 
     const static QString CURRENT_SETTINGS_VERSION;
