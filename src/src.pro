@@ -39,6 +39,9 @@ isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
 
-INSTALLS += target
+INSTALLS += target script
 
 target.path = $$PREFIX/lib
+
+script.path = $$PWD
+script.commands = $$PWD/checkShared.sh
