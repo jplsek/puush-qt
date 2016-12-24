@@ -12,6 +12,7 @@ const QString Settings::GENERAL_GROUP_NAME   = "basic"; // [general] -> [basic] 
 const QString Settings::ADVANCED_GROUP_NAME  = "advanced";
 const QString Settings::EXTRA_GROUP_NAME     = "extra";
 const QString Settings::USER_INFO_GROUP_NAME = "user-info";
+const QString Settings::BINDINGS_GROUP_NAME  = "key-bindings";
 
 const QString Settings::CURRENT_SETTINGS_VERSION = "2016-12-1-01"; // YYYY-MM-DD-revision
 
@@ -44,6 +45,11 @@ const QString Settings::setting_names[] = {
 
     [Settings::Setting::BASE_URL] = "base-url",
     [Settings::Setting::API_URL]  = "api-url",
+
+    [Settings::Settings::BINDING_UPLOAD_FILE] = "upload-file-key-binding",
+    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = "capture-desktop-key-binding",
+    [Settings::Settings::BINDING_CAPTURE_AREA] = "capture-area-key-binding",
+    [Settings::Settings::BINDING_CAPTURE_WINDOW] = "capture-window-key-binding",
 };
 
 const QString Settings::groups[] = {
@@ -72,6 +78,11 @@ const QString Settings::groups[] = {
 
     [Settings::Setting::BASE_URL] = Settings::EXTRA_GROUP_NAME,
     [Settings::Setting::API_URL]  = Settings::EXTRA_GROUP_NAME,
+
+    [Settings::Settings::BINDING_UPLOAD_FILE] = Settings::BINDINGS_GROUP_NAME,
+    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = Settings::BINDINGS_GROUP_NAME,
+    [Settings::Settings::BINDING_CAPTURE_AREA] = Settings::BINDINGS_GROUP_NAME,
+    [Settings::Settings::BINDING_CAPTURE_WINDOW] = Settings::BINDINGS_GROUP_NAME,
 };
 
 const QString Settings::radio_values[] = {
@@ -169,6 +180,15 @@ void Settings::resetUserInfoSettings(){
     s.setValue(setting_names[ACCOUNT_API_KEY],  "");
 }
 
+void Settings::resetBindingsSettings(){
+    s.endGroup();
+    s.beginGroup(BINDINGS_GROUP_NAME);
+    s.setValue(setting_names[BINDING_UPLOAD_FILE], "Ctrl+Shift+F2");
+    s.setValue(setting_names[BINDING_CAPTURE_DESKTOP], "Ctrl+Shift+F3");
+    s.setValue(setting_names[BINDING_CAPTURE_AREA], "Ctrl+Shift+F4");
+    s.setValue(setting_names[BINDING_CAPTURE_WINDOW], "Ctrl+Shift+F5");
+}
+
 void Settings::setEmptyToDefaults(){
     // General
 
@@ -216,4 +236,15 @@ void Settings::setEmptyToDefaults(){
         setValue(ACCOUNT_EMAIL, "");
     if(!contains(ACCOUNT_API_KEY))
         setValue(ACCOUNT_API_KEY, "");
+
+    // Key bindings
+
+    if(!contains(BINDING_UPLOAD_FILE))
+        setValue(BINDING_UPLOAD_FILE, "Ctrl+Shift+F2");
+    if(!contains(BINDING_CAPTURE_DESKTOP))
+        setValue(BINDING_CAPTURE_DESKTOP, "Ctrl+Shift+F3");
+    if(!contains(BINDING_CAPTURE_AREA))
+        setValue(BINDING_CAPTURE_AREA, "Ctrl+Shift+F4");
+    if(!contains(BINDING_CAPTURE_WINDOW))
+        setValue(BINDING_CAPTURE_WINDOW, "Ctrl+Shift+F5");
 }

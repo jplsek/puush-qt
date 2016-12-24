@@ -38,6 +38,11 @@ public:
 
         BASE_URL = 14,
         API_URL = 15,
+
+        BINDING_UPLOAD_FILE = 16,
+        BINDING_CAPTURE_DESKTOP = 17,
+        BINDING_CAPTURE_AREA = 18,
+        BINDING_CAPTURE_WINDOW = 19,
     };
 
     // these numbers can change.
@@ -68,6 +73,7 @@ public:
     const static QString ADVANCED_GROUP_NAME;
     const static QString EXTRA_GROUP_NAME;
     const static QString USER_INFO_GROUP_NAME;
+    const static QString BINDINGS_GROUP_NAME;
 
     QVariant value(Setting s);
     bool contains(Setting s);
@@ -80,6 +86,7 @@ public:
     void resetAdvancedSettings();
     void resetExtraSettings();
     void resetUserInfoSettings();
+    void resetBindingsSettings();
 
     void setEmptyToDefaults();
 

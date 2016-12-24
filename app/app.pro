@@ -20,9 +20,9 @@ INSTALLS += target desktop icon
 target.path = $$PREFIX/bin
 
 desktop.path = /usr/share/applications
-desktop.files += ../src/$${TARGET}.desktop
+desktop.files += $$SRC_DIR/$$TARGET.desktop
 
 icon.path = /usr/share/icons/hicolor/scalable/apps
-icon.files += ../src/images/$${TARGET}.svg
+icon.files += $$SRC_DIR/images/$$TARGET.svg
 # mostly optional, update icon cache
 unix:icon.extra += gtk-update-icon-cache /usr/share/icons/hicolor

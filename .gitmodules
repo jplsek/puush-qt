@@ -1,0 +1,3 @@
+[submodule "lib/uglobalhotkey"]
+	path = lib/uglobalhotkey
+	url = https://github.com/ckaiser/UGlobalHotkey

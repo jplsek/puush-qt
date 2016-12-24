@@ -12,13 +12,13 @@ If you aren't on Arch, see [Compiling](#compiling) below.
 `curl scrot qt5-base`
 
 ## Compiling
-* Open the .pro file with qt-creator, else you can compile via command line:
+* Open puush-qt.pro file with qt-creator, else you can compile via command line:
 
 ```
-git clone https://github.com/jplsek/puush-qt  
+git clone --recursive https://github.com/jplsek/puush-qt  
 cd puush-qt  
 mkdir build && cd build  
-qmake ../src/puush-qt.pro  
+qmake ../puush-qt.pro  
 make  
 sudo make install
 ```

@@ -22,6 +22,8 @@
 #include "screenshot.h"
 #include "upload.h"
 
+#include "uglobalhotkeys.h"
+
 Window::Window() {
     s.setEmptyToDefaults();
 
@@ -49,12 +51,18 @@ Window::Window() {
     resize(tabs->width(), height());
 
     connectSignals();
+
+    //UGlobalHotkeys *hotkeyManager = new UGlobalHotkeys();
+    //hotkeyManager->registerHotkey("Ctrl+Shift+F12");
+    //connect(hotkeyManager, &UGlobalHotkeys::activated, [=](size_t id) {
+    //    qDebug() << "Activated: " << QString::number(id);
+    //});
 }
 
 QTabWidget *Window::createTabs(){
     QTabWidget *tabs = new QTabWidget();
     tabs->addTab(createTabGeneral(),     tr("General"));
-    tabs->addTab(createTabKeyBindings(), tr("Key Bindings")); // this should be handled by a library that interfaces with the desktop environment
+    tabs->addTab(createTabKeyBindings(), tr("Key Bindings"));
     tabs->addTab(createTabAccount(),     tr("Account"));
     tabs->addTab(createTabAdvanced(),    tr("Advanced"));
     tabs->addTab(createTabHistory(),     tr("History"));

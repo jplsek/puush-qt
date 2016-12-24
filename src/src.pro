@@ -39,9 +39,13 @@ isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
 
-INSTALLS += target script
+INSTALLS += target script uglobalhotkey
 
 target.path = $$PREFIX/lib
 
+# A little bit hacky. Would love some suggestions for something more standard...
+uglobalhotkey.path = $$PREFIX/lib
+unix:uglobalhotkey.files = $$OUT_PWD/../lib/uglobalhotkey/*.so*
+
 script.path = $$PWD
-script.commands = $$PWD/checkShared.sh
+unix:script.commands = $$PWD/checkShared.sh
