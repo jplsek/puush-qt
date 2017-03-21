@@ -1,5 +1,3 @@
-include(../defaults.pri)
-
 lessThan(QT_MAJOR_VERSION, 5): error("This application requires a minimum verion of Qt 5.0")
 
 QT += core gui network widgets
@@ -49,3 +47,10 @@ unix:uglobalhotkey.files = $$OUT_PWD/../lib/uglobalhotkey/*.so*
 
 script.path = $$PWD
 unix:script.commands = $$PWD/checkShared.sh
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../lib/uglobalhotkey/release/ -lUGlobalHotkey
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../lib/uglobalhotkey/debug/ -lUGlobalHotkey
+else:unix: LIBS += -L$$OUT_PWD/../lib/uglobalhotkey/ -lUGlobalHotkey
+
+INCLUDEPATH += $$PWD/../lib/uglobalhotkey
+DEPENDPATH += $$PWD/../lib/uglobalhotkey
