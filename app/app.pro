@@ -1,15 +1,21 @@
 lessThan(QT_MAJOR_VERSION, 5): error("This application requires a minimum verion of Qt 5.0")
 
-QT += core gui network widgets
+QT += core gui network widgets qml quick
 
 TEMPLATE = app
 TARGET = puush-qt
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    systray.cpp
+
+HEADERS += systray.h
 
 isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
+
+RESOURCES += \
+    ../resources.qrc
 
 INSTALLS += target desktop icon
 

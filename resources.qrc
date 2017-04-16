@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file alias="About.qml">app/ui/About.qml</file>
+        <file alias="ApplicationWindow.qml">app/ui/ApplicationWindow.qml</file>
+        <file alias="General.qml">app/ui/General.qml</file>
+        <file alias="Account.qml">app/ui/Account.qml</file>
+        <file alias="History.qml">app/ui/History.qml</file>
+        <file alias="Advanced.qml">app/ui/Advanced.qml</file>
+        <file alias="KeyBindings.qml">app/ui/KeyBindings.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file alias="puush-qt.png">resources/images/puush-qt.png</file>
+        <file alias="puush-qt-uploading.png">resources/images/puush-qt-uploading.png</file>
+    </qresource>
+</RCC>

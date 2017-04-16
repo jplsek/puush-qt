@@ -5,7 +5,7 @@ QT += core gui network widgets
 TEMPLATE = lib
 TARGET = puush-qt
 
-SOURCES += window.cpp \
+SOURCES += \
     screenshot.cpp \
     upload.cpp \
     api/apirequest.cpp \
@@ -14,10 +14,12 @@ SOURCES += window.cpp \
     api/apihist.cpp \
     api/apithumb.cpp \
     settings.cpp \
-    transparentwindow.cpp
+    transparentwindow.cpp \
+    information.cpp \
+    authentication.cpp \
+    history.cpp
 
 HEADERS  += \
-    window.h \
     screenshot.h \
     upload.h \
     api/apirequest.h \
@@ -26,12 +28,15 @@ HEADERS  += \
     api/apihist.h \
     api/apithumb.h \
     settings.h \
-    transparentwindow.h
-
-RESOURCES += \
-    systray.qrc
+    transparentwindow.h \
+    information.h \
+    authentication.h \
+    history.h
 
 OTHER_FILES += settings
+
+RESOURCES += \
+    ../resources.qrc
 
 isEmpty(PREFIX) {
     PREFIX = /usr/local

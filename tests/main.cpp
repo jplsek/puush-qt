@@ -2,7 +2,6 @@
 #include <QSettings>
 
 #include "settings.h"
-#include "window.h"
 
 class Test: public QObject {
     Q_OBJECT

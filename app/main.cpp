@@ -1,12 +1,16 @@
-#include <QtGui>
 #include <QMessageBox>
 #include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QDebug>
 
-#include "window.h"
+#include "systray.h"
+#include "information.h"
+#include "authentication.h"
+#include "history.h"
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(systray);
+    Q_INIT_RESOURCE(resources);
 
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
@@ -26,8 +30,19 @@ int main(int argc, char *argv[])
     }
 
     QApplication::setQuitOnLastWindowClosed(false);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    Window window;
+    Systray *systray = new Systray();
+    Information *information = new Information();
+    Authentication *authentication = new Authentication();
+    History *history = new History();
+
+    QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("information", information);
+    engine.rootContext()->setContextProperty("systemTray", systray);
+    engine.rootContext()->setContextProperty("authentication", authentication);
+    engine.rootContext()->setContextProperty("history", history);
+    engine.load(QUrl(QLatin1String("qrc:/ui/ApplicationWindow.qml")));
 
     return app.exec();
 }
