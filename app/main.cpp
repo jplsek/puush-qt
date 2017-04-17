@@ -7,6 +7,7 @@
 #include "information.h"
 #include "authentication.h"
 #include "history.h"
+#include "keybindings.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,12 +37,14 @@ int main(int argc, char *argv[])
     Information *information = new Information();
     Authentication *authentication = new Authentication();
     History *history = new History();
+    KeyBindings *keybindings = new KeyBindings();
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("information", information);
     engine.rootContext()->setContextProperty("systemTray", systray);
     engine.rootContext()->setContextProperty("authentication", authentication);
     engine.rootContext()->setContextProperty("history", history);
+    engine.rootContext()->setContextProperty("keyBindings", keybindings);
     engine.load(QUrl(QLatin1String("qrc:/ui/ApplicationWindow.qml")));
 
     return app.exec();

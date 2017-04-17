@@ -24,12 +24,6 @@ Systray::Systray(QObject *parent) : QObject(parent) {
     setTrayIcon(":/images/puush-qt.png");
 
     trayIcon->show();
-
-    //UGlobalHotkeys *hotkeyManager = new UGlobalHotkeys();
-    //hotkeyManager->registerHotkey("Ctrl+Shift+F12");
-    //connect(hotkeyManager, &UGlobalHotkeys::activated, [=](size_t id) {
-    //    qDebug() << "Activated: " << QString::number(id);
-    //});
 }
 
 /**
@@ -115,7 +109,7 @@ void Systray::createActions() {
     selectAreaAction = new QAction(tr("Capture &Area"), this);
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
-    activeAction = new QAction(tr("Capture &Current Systray"), this);
+    activeAction = new QAction(tr("Capture &Current Window"), this);
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshotTimed()));
 
     settingsAction = new QAction(tr("&Settings..."), this);

@@ -43,6 +43,8 @@ public:
         BINDING_CAPTURE_DESKTOP = 17,
         BINDING_CAPTURE_AREA = 18,
         BINDING_CAPTURE_WINDOW = 19,
+        BINDING_UPLOAD_CLIPBOARD = 20,
+        BINDING_TOGGLE_PUUSH = 21,
     };
 
     // these numbers can change.
@@ -78,6 +80,7 @@ public:
     QVariant value(Setting s);
     bool contains(Setting s);
     void setValue(Setting s, QVariant val);
+    QVariant resetValue(Setting s);
     void setRadioValue(Setting s, RadioValue val);
 
     bool radioValueIs(Setting s, RadioValue v);
@@ -96,6 +99,7 @@ private:
     const static QString setting_names[];
     const static QString radio_values[];
     const static QString groups[];
+    const static QString default_values[];
 };
 
 #endif // SETTINGS_H

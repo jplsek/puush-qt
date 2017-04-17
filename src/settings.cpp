@@ -5,17 +5,11 @@
 #include <QString>
 #include <QVariant>
 
-const QString OFFICIAL_PUUSH_BASE_URL = "https://puush.me/";
-const QString OFFICIAL_PUUSH_API_URL  = OFFICIAL_PUUSH_BASE_URL + "api/";
-
 const QString Settings::GENERAL_GROUP_NAME   = "basic"; // [general] -> [basic] because it was conflicting with QSettings [general]
 const QString Settings::ADVANCED_GROUP_NAME  = "advanced";
 const QString Settings::EXTRA_GROUP_NAME     = "extra";
 const QString Settings::USER_INFO_GROUP_NAME = "user-info";
 const QString Settings::BINDINGS_GROUP_NAME  = "key-bindings";
-
-const QString Settings::CURRENT_SETTINGS_VERSION = "2016-12-1-01"; // YYYY-MM-DD-revision
-
 
 // generic format of this is <option what/when> <value>
 // These values should not change; as it will break peoples saved settings.
@@ -50,6 +44,43 @@ const QString Settings::setting_names[] = {
     [Settings::Settings::BINDING_CAPTURE_DESKTOP] = "capture-desktop-key-binding",
     [Settings::Settings::BINDING_CAPTURE_AREA] = "capture-area-key-binding",
     [Settings::Settings::BINDING_CAPTURE_WINDOW] = "capture-window-key-binding",
+    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = "upload-clipboard-key-binding",
+    [Settings::Settings::BINDING_TOGGLE_PUUSH] = "toggle-puush-key-binding",
+};
+
+const QString Settings::default_values[] = {
+    [Settings::Setting::NO_SETTING] = "",
+
+    [Settings::Setting::SETTINGS_VERSION] = "2017-16-4-00", // YYYY-MM-DD-revision
+
+    [Settings::Setting::ACCOUNT_API_KEY] = "",
+    [Settings::Setting::ACCOUNT_EMAIL] = "",
+
+    [Settings::Setting::ON_PUUSH_SOUND] = "false",
+    [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = "true",
+    [Settings::Setting::ON_PUUSH_OPEN_LINK_IN_BROWSER] = "false",
+
+    [Settings::Setting::LOCAL_SAVE_ENABLED] = "true",
+    [Settings::Setting::LOCAL_SAVE_PATH]    = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+    [Settings::Setting::LOCAL_SAVE_NAME]    = "'ss' (yyyy-MM-dd at hh.mm.ss",
+
+    [Settings::Setting::TRAY_CLICK_ACTION] = "",
+
+    [Settings::Setting::COMPRESSION_PHILOSOPHY] = "",
+
+    [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = "",
+
+    [Settings::Setting::IMAGE_QUALITY] = "90",
+
+    [Settings::Setting::BASE_URL] = "https://puush.me/",
+    [Settings::Setting::API_URL]  = "https://puush.me/api/",
+
+    [Settings::Settings::BINDING_UPLOAD_FILE] = "Ctrl+Shift+F1",
+    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = "Ctrl+Shift+F3",
+    [Settings::Settings::BINDING_CAPTURE_AREA] = "Ctrl+Shift+F4",
+    [Settings::Settings::BINDING_CAPTURE_WINDOW] = "Ctrl+Shift+F2",
+    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = "Ctrl+Shift+F5",
+    [Settings::Settings::BINDING_TOGGLE_PUUSH] = "Ctrl+Shift+F6",
 };
 
 const QString Settings::groups[] = {
@@ -83,6 +114,8 @@ const QString Settings::groups[] = {
     [Settings::Settings::BINDING_CAPTURE_DESKTOP] = Settings::BINDINGS_GROUP_NAME,
     [Settings::Settings::BINDING_CAPTURE_AREA] = Settings::BINDINGS_GROUP_NAME,
     [Settings::Settings::BINDING_CAPTURE_WINDOW] = Settings::BINDINGS_GROUP_NAME,
+    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = Settings::BINDINGS_GROUP_NAME,
+    [Settings::Settings::BINDING_TOGGLE_PUUSH] = Settings::BINDINGS_GROUP_NAME,
 };
 
 const QString Settings::radio_values[] = {
@@ -104,13 +137,13 @@ const QString Settings::radio_values[] = {
 };
 
 Settings::Settings(){
-    if(s.value(setting_names[SETTINGS_VERSION]).toString() != CURRENT_SETTINGS_VERSION){
+    if(s.value(setting_names[SETTINGS_VERSION]).toString() != default_values[SETTINGS_VERSION]){
         // FIXME: show 'popup' saying some settings may have been reset due to settings key/value changes
         // <ok ill check> <bother me later>
         // if they say ok, then update the settings version. otherwise dont so this will be run again.
         // For now, just update it as jeremy and I know whats up.
         s.beginGroup(EXTRA_GROUP_NAME);
-        s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
+        s.setValue(setting_names[SETTINGS_VERSION], default_values[SETTINGS_VERSION]);
     }
 }
 
@@ -146,13 +179,13 @@ bool Settings::radioValueIs(Setting s, RadioValue v){
 }
 
 void Settings::resetGeneralSettings(){
-    setValue(ON_PUUSH_SOUND, false);
-    setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, true);
-    setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, false);
+    setValue(ON_PUUSH_SOUND, default_values[ON_PUUSH_SOUND]);
+    setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, default_values[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]);
+    setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, default_values[ON_PUUSH_OPEN_LINK_IN_BROWSER]);
 
-    setValue(LOCAL_SAVE_ENABLED, true);
-    setValue(LOCAL_SAVE_PATH, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    setValue(LOCAL_SAVE_NAME, "'ss' (yyyy-MM-dd hh.mm.ss)");
+    setValue(LOCAL_SAVE_ENABLED, default_values[LOCAL_SAVE_ENABLED]);
+    setValue(LOCAL_SAVE_PATH, default_values[LOCAL_SAVE_PATH]);
+    setValue(LOCAL_SAVE_NAME, default_values[LOCAL_SAVE_NAME]);
 
     setRadioValue(TRAY_CLICK_ACTION, OPEN_SETTINGS);
 }
@@ -162,49 +195,58 @@ void Settings::resetAdvancedSettings(){
 
     setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
 
-    setValue(IMAGE_QUALITY, 90);
+    setValue(IMAGE_QUALITY, default_values[IMAGE_QUALITY]);
 }
 
 void Settings::resetExtraSettings(){
     s.endGroup();
     s.beginGroup(EXTRA_GROUP_NAME);
-    s.setValue(setting_names[BASE_URL], OFFICIAL_PUUSH_BASE_URL);
-    s.setValue(setting_names[API_URL],  OFFICIAL_PUUSH_API_URL);
-    s.setValue(setting_names[SETTINGS_VERSION], CURRENT_SETTINGS_VERSION);
+    s.setValue(setting_names[BASE_URL], default_values[BASE_URL]);
+    s.setValue(setting_names[API_URL],  default_values[API_URL]);
+    s.setValue(setting_names[SETTINGS_VERSION], default_values[SETTINGS_VERSION]);
 }
 
 void Settings::resetUserInfoSettings(){
     s.endGroup();
     s.beginGroup(USER_INFO_GROUP_NAME);
-    s.setValue(setting_names[ACCOUNT_EMAIL], "");
-    s.setValue(setting_names[ACCOUNT_API_KEY],  "");
+    s.setValue(setting_names[ACCOUNT_EMAIL],   default_values[ACCOUNT_EMAIL]);
+    s.setValue(setting_names[ACCOUNT_API_KEY], default_values[ACCOUNT_API_KEY]);
 }
 
 void Settings::resetBindingsSettings(){
     s.endGroup();
     s.beginGroup(BINDINGS_GROUP_NAME);
-    s.setValue(setting_names[BINDING_UPLOAD_FILE], "Ctrl+Shift+F2");
-    s.setValue(setting_names[BINDING_CAPTURE_DESKTOP], "Ctrl+Shift+F3");
-    s.setValue(setting_names[BINDING_CAPTURE_AREA], "Ctrl+Shift+F4");
-    s.setValue(setting_names[BINDING_CAPTURE_WINDOW], "Ctrl+Shift+F5");
+    s.setValue(setting_names[BINDING_UPLOAD_FILE],      default_values[BINDING_UPLOAD_FILE]);
+    s.setValue(setting_names[BINDING_CAPTURE_DESKTOP],  default_values[BINDING_CAPTURE_DESKTOP]);
+    s.setValue(setting_names[BINDING_CAPTURE_AREA],     default_values[BINDING_CAPTURE_AREA]);
+    s.setValue(setting_names[BINDING_CAPTURE_WINDOW],   default_values[BINDING_CAPTURE_WINDOW]);
+    s.setValue(setting_names[BINDING_UPLOAD_CLIPBOARD], default_values[BINDING_UPLOAD_CLIPBOARD]);
+    s.setValue(setting_names[BINDING_TOGGLE_PUUSH],     default_values[BINDING_TOGGLE_PUUSH]);
+}
+
+QVariant Settings::resetValue(Setting s){
+    this->s.endGroup();
+    this->s.beginGroup(groups[s]);
+    this->s.setValue(setting_names[s], default_values[s]);
+    return value(s);
 }
 
 void Settings::setEmptyToDefaults(){
     // General
 
     if(!contains(ON_PUUSH_SOUND))
-        setValue(ON_PUUSH_SOUND, false);
+        setValue(ON_PUUSH_SOUND, default_values[ON_PUUSH_SOUND]);
     if(!contains(ON_PUUSH_COPY_LINK_TO_CLIPBOARD))
-        setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, true);
+        setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, default_values[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]);
     if(!contains(ON_PUUSH_OPEN_LINK_IN_BROWSER))
-        setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, false);
+        setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, default_values[ON_PUUSH_OPEN_LINK_IN_BROWSER]);
 
     if(!contains(LOCAL_SAVE_ENABLED))
-        setValue(LOCAL_SAVE_ENABLED, true);
+        setValue(LOCAL_SAVE_ENABLED, default_values[LOCAL_SAVE_ENABLED]);
     if(!contains(LOCAL_SAVE_PATH) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
-        setValue(LOCAL_SAVE_PATH, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+        setValue(LOCAL_SAVE_PATH, default_values[LOCAL_SAVE_PATH]);
     if(!contains(LOCAL_SAVE_NAME))
-        setValue(LOCAL_SAVE_NAME, "'ss' (yyyy-MM-dd at hh.mm.ss");
+        setValue(LOCAL_SAVE_NAME, default_values[LOCAL_SAVE_NAME]);
 
     if(!contains(TRAY_CLICK_ACTION))
         setRadioValue(TRAY_CLICK_ACTION, OPEN_SETTINGS);
@@ -218,33 +260,37 @@ void Settings::setEmptyToDefaults(){
         setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
 
     if(!contains(IMAGE_QUALITY))
-        setValue(IMAGE_QUALITY, 90);
+        setValue(IMAGE_QUALITY, default_values[IMAGE_QUALITY]);
 
     // Extra
 
     if(!contains(SETTINGS_VERSION))
-        setValue(SETTINGS_VERSION, CURRENT_SETTINGS_VERSION);
+        setValue(SETTINGS_VERSION, default_values[SETTINGS_VERSION]);
 
     if(!contains(BASE_URL))
-        setValue(BASE_URL, OFFICIAL_PUUSH_BASE_URL);
+        setValue(BASE_URL, default_values[BASE_URL]);
     if(!contains(API_URL))
-        setValue(API_URL,  OFFICIAL_PUUSH_API_URL);
+        setValue(API_URL,  default_values[API_URL]);
 
     // User info
 
     if(!contains(ACCOUNT_EMAIL))
-        setValue(ACCOUNT_EMAIL, "");
+        setValue(ACCOUNT_EMAIL, default_values[ACCOUNT_EMAIL]);
     if(!contains(ACCOUNT_API_KEY))
-        setValue(ACCOUNT_API_KEY, "");
+        setValue(ACCOUNT_API_KEY, default_values[ACCOUNT_API_KEY]);
 
     // Key bindings
 
     if(!contains(BINDING_UPLOAD_FILE))
-        setValue(BINDING_UPLOAD_FILE, "Ctrl+Shift+F2");
+        setValue(BINDING_UPLOAD_FILE, default_values[BINDING_UPLOAD_FILE]);
     if(!contains(BINDING_CAPTURE_DESKTOP))
-        setValue(BINDING_CAPTURE_DESKTOP, "Ctrl+Shift+F3");
+        setValue(BINDING_CAPTURE_DESKTOP, default_values[BINDING_CAPTURE_DESKTOP]);
     if(!contains(BINDING_CAPTURE_AREA))
-        setValue(BINDING_CAPTURE_AREA, "Ctrl+Shift+F4");
+        setValue(BINDING_CAPTURE_AREA, default_values[BINDING_CAPTURE_AREA]);
     if(!contains(BINDING_CAPTURE_WINDOW))
-        setValue(BINDING_CAPTURE_WINDOW, "Ctrl+Shift+F5");
+        setValue(BINDING_CAPTURE_WINDOW, default_values[BINDING_CAPTURE_WINDOW]);
+    if(!contains(BINDING_UPLOAD_CLIPBOARD))
+        setValue(BINDING_UPLOAD_CLIPBOARD, default_values[BINDING_UPLOAD_CLIPBOARD]);
+    if(!contains(BINDING_TOGGLE_PUUSH))
+        setValue(BINDING_TOGGLE_PUUSH, default_values[BINDING_TOGGLE_PUUSH]);
 }

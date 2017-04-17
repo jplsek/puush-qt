@@ -5,7 +5,7 @@ import QtQuick.Window 2.0
 
 ApplicationWindow {
     id: root
-    visible: false
+    visible: true
     width: bar.implicitWidth
     height: 600
     minimumWidth: 400

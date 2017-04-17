@@ -2,11 +2,13 @@
 #include <QSettings>
 
 #include "settings.h"
+#include "keybindings.h"
 
 class Test: public QObject {
     Q_OBJECT
 private slots:
     void radioSettings();
+    void properKeybindings();
     //void fullscreenScreenshot();
     //void screenshotDoneOk(int, QString, QString);
 };
@@ -15,6 +17,19 @@ void Test::radioSettings() {
     Settings s;
     s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS);
     QVERIFY(s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS));
+}
+
+void Test::properKeybindings() {
+    KeyBindings *kb = new KeyBindings();
+    // just CTRL
+    QVERIFY(!kb->isProperBinding(0, Qt::Key_Control));
+    // just S
+    QVERIFY(!kb->isProperBinding(0, Qt::Key_S));
+    // SHIFT+CTRL hopefully this is portable...
+    QVERIFY(!kb->isProperBinding(33554432, 16777249));
+    // CTRL+S
+    QVERIFY(kb->isProperBinding(67108864, Qt::Key_S));
+    delete kb;
 }
 
 //void Test::fullscreenScreenshot() {

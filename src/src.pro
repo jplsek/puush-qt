@@ -1,6 +1,6 @@
 lessThan(QT_MAJOR_VERSION, 5): error("This application requires a minimum verion of Qt 5.0")
 
-QT += core gui network widgets
+QT += core network widgets
 
 TEMPLATE = lib
 TARGET = puush-qt
@@ -17,7 +17,8 @@ SOURCES += \
     transparentwindow.cpp \
     information.cpp \
     authentication.cpp \
-    history.cpp
+    history.cpp \
+    keybindings.cpp
 
 HEADERS  += \
     screenshot.h \
@@ -31,7 +32,8 @@ HEADERS  += \
     transparentwindow.h \
     information.h \
     authentication.h \
-    history.h
+    history.h \
+    keybindings.h
 
 OTHER_FILES += settings
 
