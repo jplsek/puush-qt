@@ -3,6 +3,17 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 Item {
+    Connections {
+        target: keyBindings
+
+        onSignalUploadFile: systemTray.uploadFile();
+        onSignalCaptureDesktop: systemTray.fullScreenScreenshot();
+        onSignalCaptureWindow: systemTray.activeWindowScreenshotTimed();
+        onSignalCaptureArea: systemTray.selectAreaScreenshot();
+        onSignalUploadClipboard: systemTray.uploadClipboard();
+        onSignalTogglePuush: systemTray.togglePuush();
+    }
+
     function handleOnPressed(item, event, fnGetKey) {
         if (event.key === Qt.Key_Escape) {
             item.text = fnGetKey()

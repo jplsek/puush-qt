@@ -100,8 +100,11 @@ void Systray::createActions() {
     myAccountAction = new QAction(tr("&My Account"), this);
     connect(myAccountAction, SIGNAL(triggered()), this, SLOT(openAccount()));
 
-    uploadAction = new QAction(tr("&Upload File..."), this);
-    connect(uploadAction, SIGNAL(triggered()), this, SLOT(uploadFile()));
+    uploadFileAction = new QAction(tr("Upload &File..."), this);
+    connect(uploadFileAction, SIGNAL(triggered()), this, SLOT(uploadFile()));
+
+    uploadClipboardAction = new QAction(tr("Upload &Clipboard"), this);
+    connect(uploadClipboardAction, SIGNAL(triggered()), this, SLOT(uploadClipboard()));
 
     fullScreenAction = new QAction(tr("Capture &Desktop"), this);
     connect(fullScreenAction, SIGNAL(triggered()), this, SLOT(fullScreenScreenshot()));
@@ -109,7 +112,7 @@ void Systray::createActions() {
     selectAreaAction = new QAction(tr("Capture &Area"), this);
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
-    activeAction = new QAction(tr("Capture &Current Window"), this);
+    activeAction = new QAction(tr("Capture Current &Window"), this);
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshotTimed()));
 
     settingsAction = new QAction(tr("&Settings..."), this);
@@ -126,7 +129,8 @@ void Systray::createTrayIcon() {
     trayIconMenu = new QMenu();
     trayIconMenu->addAction(myAccountAction);
     trayIconMenu->addSeparator();
-    trayIconMenu->addAction(uploadAction);
+    trayIconMenu->addAction(uploadFileAction);
+    trayIconMenu->addAction(uploadClipboardAction);
     trayIconMenu->addAction(fullScreenAction);
     trayIconMenu->addAction(selectAreaAction);
     trayIconMenu->addAction(activeAction);
@@ -190,6 +194,28 @@ void Systray::uploadFile() {
 }
 
 /**
+ * Puush upload the clipboard
+ * @brief Systray::uploadClipboard
+ */
+void Systray::uploadClipboard() {
+    if (!isLoggedIn()) return;
+
+    trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::MessageIcon());
+
+    QString text = QApplication::clipboard()->text();
+    qDebug() << text;
+
+    // just look for "file://" and upload it, else just upload the text itself as a text file?
+
+    //if (fileName == "") return;
+
+    //Upload *u = new Upload(fileName);
+
+    //connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
+    //connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+}
+
+/**
  * Puush capture desktop screenshot.
  * @brief Systray::fullScreenScreenshot
  */
@@ -239,6 +265,14 @@ void Systray::activeWindowScreenshot() {
     Screenshot *ss = new Screenshot(fileName);
     connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
     ss->activeWindow();
+}
+
+/**
+ * Toggle puush functionality
+ * @brief Systray::togglePuush
+ */
+void Systray::togglePuush() {
+    trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::MessageIcon());
 }
 
 /**
@@ -381,14 +415,13 @@ void Systray::puushDone(int returnCode, QString output) {
         return;
     }
 
-    if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
-        QClipboard *clipboard = QApplication::clipboard();
-        lastUrl = QUrl(url);
-        clipboard->setText(url);
+    lastUrl = QUrl(url);
 
-        trayIcon->showMessage(tr("Success!"), url, icon);
-    } else {
+    if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
+        QApplication::clipboard()->setText(url);
         trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
+    } else {
+        trayIcon->showMessage(tr("Success!"), url, icon);
     }
 
     if (s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool()) {

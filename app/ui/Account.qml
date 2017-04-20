@@ -50,6 +50,7 @@ Item {
             id: notLoggedIn
 
             Text {
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("You must login to use Puush. If you don't already have an account, you can register for an account below.")
             }
 

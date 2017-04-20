@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    app.setWindowIcon(QIcon(":/images/puush-qt.png"));
+
     QApplication::setQuitOnLastWindowClosed(false);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

@@ -53,20 +53,21 @@ public:
         OPEN_SETTINGS = 0,
         OPEN_UPLOADS = 1,
         UPLOAD_FILE = 2,
-        CAPTURE_DESKTOP = 3,
-        CAPTURE_AREA = 4,
-        CAPTURE_WINDOW = 5,
-        OPEN_ACCOUNT = 6,
+        UPLOAD_CLIPBOARD = 3,
+        CAPTURE_DESKTOP = 4,
+        CAPTURE_AREA = 5,
+        CAPTURE_WINDOW = 6,
+        OPEN_ACCOUNT = 7,
 
         // compression philosophy
-        PNG_ALWAYS = 7,
-        JPG_ALWAYS = 8,
-        IMAGE_TYPE_SMALLER = 9,
+        PNG_ALWAYS = 8,
+        JPG_ALWAYS = 9,
+        IMAGE_TYPE_SMALLER = 10,
 
         // fullscreen capture mode
-        ALL_DESKTOPS = 10,
-        CURRENT_DESKTOP = 11,
-        PRIMARY_DESKTOP = 12,
+        ALL_DESKTOPS = 11,
+        CURRENT_DESKTOP = 12,
+        PRIMARY_DESKTOP = 13,
     };
 
     const static QString CURRENT_SETTINGS_VERSION;

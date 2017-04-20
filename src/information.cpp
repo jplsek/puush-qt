@@ -53,6 +53,10 @@ bool Information::settingIsTrayClickActionUploadFile() {
     return s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_FILE);
 }
 
+bool Information::settingIsTrayClickActionUploadClipboard() {
+    return s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_CLIPBOARD);
+}
+
 bool Information::settingIsTrayClickActionCaptureDesktop() {
     return s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::CAPTURE_DESKTOP);
 }
@@ -123,6 +127,10 @@ void Information::settingSetTrayClickActionOpenUploads(bool enabled) {
 
 void Information::settingSetTrayClickActionUploadFile(bool enabled) {
     if (enabled) s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_FILE);
+}
+
+void Information::settingSetTrayClickActionUploadClipboard(bool enabled) {
+    if (enabled) s.setRadioValue(Settings::TRAY_CLICK_ACTION, Settings::UPLOAD_CLIPBOARD);
 }
 
 void Information::settingSetTrayClickActionCaptureDesktop(bool enabled) {

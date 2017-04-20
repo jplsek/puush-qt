@@ -51,7 +51,7 @@ const QString Settings::setting_names[] = {
 const QString Settings::default_values[] = {
     [Settings::Setting::NO_SETTING] = "",
 
-    [Settings::Setting::SETTINGS_VERSION] = "2017-16-4-00", // YYYY-MM-DD-revision
+    [Settings::Setting::SETTINGS_VERSION] = "2017-20-4-00", // YYYY-MM-DD-revision
 
     [Settings::Setting::ACCOUNT_API_KEY] = "",
     [Settings::Setting::ACCOUNT_EMAIL] = "",
@@ -119,13 +119,14 @@ const QString Settings::groups[] = {
 };
 
 const QString Settings::radio_values[] = {
-    [Settings::RadioValue::OPEN_SETTINGS]   = "open-settings",
-    [Settings::RadioValue::OPEN_UPLOADS]    = "open-uploads",
-    [Settings::RadioValue::UPLOAD_FILE]     = "upload-file",
-    [Settings::RadioValue::CAPTURE_DESKTOP] = "capture-desktop",
-    [Settings::RadioValue::CAPTURE_AREA]    = "capture-screen",
-    [Settings::RadioValue::CAPTURE_WINDOW]  = "capture-window",
-    [Settings::RadioValue::OPEN_ACCOUNT]    = "open-account",
+    [Settings::RadioValue::OPEN_SETTINGS]    = "open-settings",
+    [Settings::RadioValue::OPEN_UPLOADS]     = "open-uploads",
+    [Settings::RadioValue::UPLOAD_FILE]      = "upload-file",
+    [Settings::RadioValue::UPLOAD_CLIPBOARD] = "upload-clipboard",
+    [Settings::RadioValue::CAPTURE_DESKTOP]  = "capture-desktop",
+    [Settings::RadioValue::CAPTURE_AREA]     = "capture-screen",
+    [Settings::RadioValue::CAPTURE_WINDOW]   = "capture-window",
+    [Settings::RadioValue::OPEN_ACCOUNT]     = "open-account",
 
     [Settings::RadioValue::PNG_ALWAYS]         = "png-always",
     [Settings::RadioValue::JPG_ALWAYS]         = "jpg-always",

@@ -87,6 +87,12 @@ Item {
             }
 
             RadioButton {
+                text: qsTr("Upload clipboard")
+                checked: information.settingIsTrayClickActionUploadClipboard()
+                onClicked: information.settingSetTrayClickActionUploadClipboard(checked)
+            }
+
+            RadioButton {
                 text: qsTr("Capture desktop")
                 checked: information.settingIsTrayClickActionCaptureDesktop()
                 onClicked: information.settingSetTrayClickActionCaptureDesktop(checked)

@@ -10,8 +10,28 @@ KeyBindings::KeyBindings(QObject *parent) : QObject(parent) {
     hotkeyManager = new UGlobalHotkeys();
 
     connect(hotkeyManager, &UGlobalHotkeys::activated, [=](size_t id) {
-        // TODO
-        qDebug() << "Activated: " << QString::number(id);
+        switch(id) {
+        case Settings::BINDING_UPLOAD_FILE:
+            emit signalUploadFile();
+            break;
+        case Settings::BINDING_CAPTURE_DESKTOP:
+            emit signalCaptureDesktop();
+            break;
+        case Settings::BINDING_CAPTURE_AREA:
+            emit signalCaptureArea();
+            break;
+        case Settings::BINDING_CAPTURE_WINDOW:
+            emit signalCaptureWindow();
+            break;
+        case Settings::BINDING_UPLOAD_CLIPBOARD:
+            emit signalUploadClipboard();
+            break;
+        case Settings::BINDING_TOGGLE_PUUSH:
+            emit signalTogglePuush();
+            break;
+        default:
+             qDebug() << "Unknown binding: " << id;
+        }
     });
 
     registerSequence(Settings::BINDING_UPLOAD_FILE);

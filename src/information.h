@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE bool settingIsTrayClickActionOpenSettings();
     Q_INVOKABLE bool settingIsTrayClickActionOpenUploads();
     Q_INVOKABLE bool settingIsTrayClickActionUploadFile();
+    Q_INVOKABLE bool settingIsTrayClickActionUploadClipboard();
     Q_INVOKABLE bool settingIsTrayClickActionCaptureDesktop();
     Q_INVOKABLE bool settingIsTrayClickActionCaptureArea();
     Q_INVOKABLE bool settingIsTrayClickActionCaptureWindow();
@@ -48,6 +49,7 @@ public:
     Q_INVOKABLE void settingSetTrayClickActionOpenSettings(bool);
     Q_INVOKABLE void settingSetTrayClickActionOpenUploads(bool);
     Q_INVOKABLE void settingSetTrayClickActionUploadFile(bool);
+    Q_INVOKABLE void settingSetTrayClickActionUploadClipboard(bool);
     Q_INVOKABLE void settingSetTrayClickActionCaptureDesktop(bool);
     Q_INVOKABLE void settingSetTrayClickActionCaptureArea(bool);
     Q_INVOKABLE void settingSetTrayClickActionCaptureWindow(bool);

@@ -19,16 +19,20 @@ public:
 
     Q_INVOKABLE void openAccount();
 
+public slots:
+    Q_INVOKABLE void uploadFile();
+    Q_INVOKABLE void fullScreenScreenshot();
+    Q_INVOKABLE void selectAreaScreenshot();
+    Q_INVOKABLE void activeWindowScreenshot();
+    Q_INVOKABLE void activeWindowScreenshotTimed();
+    Q_INVOKABLE void uploadClipboard();
+    Q_INVOKABLE void togglePuush();
+
 private slots:
     void setTrayIcon(QString);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void messageClicked();
     void openSettings();
-    void uploadFile();
-    void fullScreenScreenshot();
-    void selectAreaScreenshot();
-    void activeWindowScreenshot();
-    void activeWindowScreenshotTimed();
 
     void puushStarted();
     void puushDone(int, QString);
@@ -67,7 +71,8 @@ private:
     void doDoubleClickAction();
 
     QAction *myAccountAction;
-    QAction *uploadAction;
+    QAction *uploadFileAction;
+    QAction *uploadClipboardAction;
     QAction *fullScreenAction;
     QAction *selectAreaAction;
     QAction *activeAction;

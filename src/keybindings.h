@@ -45,6 +45,12 @@ private:
     void registerSequence(Settings::Setting);
 
 signals:
+    void signalUploadFile();
+    void signalCaptureDesktop();
+    void signalCaptureWindow();
+    void signalCaptureArea();
+    void signalUploadClipboard();
+    void signalTogglePuush();
 
 public slots:
 };
