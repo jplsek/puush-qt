@@ -7,9 +7,9 @@ ApplicationWindow {
     id: root
     visible: true
     width: bar.implicitWidth
-    height: 600
+    height: 400
     minimumWidth: 400
-    minimumHeight: 400
+    minimumHeight: 300
     title: "puush-qt"
 
     Connections {
@@ -28,35 +28,30 @@ ApplicationWindow {
         id: bar
         x: 0
         y: 0
+        z: 10
         width: root.width
 
         TabButton {
-            id: generalTab
             text: qsTr("General")
         }
 
         TabButton {
-            id: keybindingsTab
             text: qsTr("Key Bindings")
         }
 
         TabButton {
-            id: accountTab
             text: qsTr("Account")
         }
 
         TabButton {
-            id: advancedTab
             text: qsTr("Advanced")
         }
 
         TabButton {
-            id: historyTab
             text: qsTr("History")
         }
 
         TabButton {
-            id: aboutTab
             text: qsTr("About")
         }
     }

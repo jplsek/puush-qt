@@ -7,13 +7,15 @@ Item {
         title: qsTr("History")
         anchors.fill: parent
 
-        Text {
-            text: qsTr("Not implemented...")
-        }
+        Column {
+            Text {
+                text: qsTr("Not implemented...")
+            }
 
-        Button {
-            text: qsTr("get history")
-            onClicked: history.getHistory()
+            Button {
+                text: qsTr("get history")
+                onClicked: history.getHistory()
+            }
         }
     }
 }

@@ -41,135 +41,152 @@ Item {
         }
     }
 
-    GroupBox {
-        title: qsTr("Account Details")
+    Flickable {
         anchors.fill: parent
+        contentHeight: accountBox.height
+        contentWidth: accountBox.width
 
-        Column {
-            spacing: 10
-            id: notLoggedIn
+        ScrollBar.vertical: ScrollBar {
+            hoverEnabled: true
+        }
 
-            Text {
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: qsTr("You must login to use Puush. If you don't already have an account, you can register for an account below.")
-            }
+        ScrollBar.horizontal: ScrollBar {
+            hoverEnabled: true
+        }
 
-            GridLayout {
-                columns: 2
+        GroupBox {
+            id: accountBox
+            title: qsTr("Account Details")
 
-                Label {
-                    text: "Login"
-                }
+            Column {
+                Column {
+                    spacing: 10
+                    id: notLoggedIn
 
-                TextField {
-                    id: email
-                }
+                    Text {
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                        width: parent.width
+                        text: qsTr("You must login to use Puush. If you don't already have an account, you can register for an account below.")
+                    }
 
-                Label {
-                    text: "Password"
-                }
+                    GridLayout {
+                        columns: 2
 
-                TextField {
-                    id: password
-                    echoMode: TextInput.Password
-                }
-            }
+                        Label {
+                            text: "Login"
+                        }
 
-            Text {
-                text: "<a href='" + information.getBaseUrl() + "reset_password'>" + qsTr("Forgot password?") + "</a>"
-                onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "reset_password")
+                        TextField {
+                            id: email
+                        }
 
-                MouseArea {
-                    anchors.fill: parent
-                    acceptedButtons: Qt.NoButton // we don't want to eat clicks on the Text
-                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                }
-            }
+                        Label {
+                            text: "Password"
+                        }
 
-            Row {
-                Button {
-                    text: qsTr("Submit")
-                    anchors.verticalCenter: parent.verticalCenter
-                    onClicked: {
-                        loginIndicator.running = true
-                        authentication.submitLogin(email.text, password.text)
+                        TextField {
+                            id: password
+                            echoMode: TextInput.Password
+                        }
+                    }
+
+                    Text {
+                        text: "<a href='" + information.getBaseUrl() + "reset_password'>" + qsTr("Forgot password?") + "</a>"
+                        onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "reset_password")
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton // we don't want to eat clicks on the Text
+                            cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        }
+                    }
+
+                    Row {
+                        Button {
+                            text: qsTr("Submit")
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: {
+                                loginIndicator.running = true
+                                authentication.submitLogin(email.text, password.text)
+                            }
+                        }
+
+                        BusyIndicator {
+                            id: loginIndicator
+                            running: false
+                        }
+                    }
+
+                    Text {
+                        text: "<a href='" + information.getBaseUrl() + "register'>" + qsTr("Register...") + "</a>"
+                        onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "register")
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton // we don't want to eat clicks on the Text
+                            cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        }
+                    }
+
+                    Text {
+                        id: authMessage
                     }
                 }
 
-                BusyIndicator {
-                    id: loginIndicator
-                    running: false
+                GridLayout {
+                    columns: 2
+                    id: isLoggedIn
+
+                    Text {
+                        text: qsTr("Logged in as: ")
+                    }
+
+                    Text {
+                        id: loggedInEmail
+                    }
+
+                    Text {
+                        text: qsTr("API key: ")
+                    }
+
+                    Text {
+                        id: apiKey
+                    }
+
+                    Text {
+                        text: qsTr("Account type: ")
+                    }
+
+                    Text {
+                        id: accountType
+                    }
+
+                    Text {
+                        text: qsTr("Expiry date: ")
+                    }
+
+                    Text {
+                        id: expiryDate
+                    }
+
+                    Text {
+                        text: qsTr("Disk usage: ")
+                    }
+
+                    Text {
+                        id: diskUsage
+                    }
+
+                    Button {
+                        text: qsTr("My Account")
+                        onClicked: systemTray.openAccount()
+                    }
+
+                    Button {
+                        text: qsTr("Logout")
+                        onClicked: authentication.logout()
+                    }
                 }
-            }
-
-            Text {
-                text: "<a href='" + information.getBaseUrl() + "register'>" + qsTr("Register...") + "</a>"
-                onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "register")
-
-                MouseArea {
-                    anchors.fill: parent
-                    acceptedButtons: Qt.NoButton // we don't want to eat clicks on the Text
-                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                }
-            }
-
-            Text {
-                id: authMessage
-            }
-        }
-
-        GridLayout {
-            columns: 2
-            id: isLoggedIn
-
-            Text {
-                text: qsTr("Logged in as: ")
-            }
-
-            Text {
-                id: loggedInEmail
-            }
-
-            Text {
-                text: qsTr("API key: ")
-            }
-
-            Text {
-                id: apiKey
-            }
-
-            Text {
-                text: qsTr("Account type: ")
-            }
-
-            Text {
-                id: accountType
-            }
-
-            Text {
-                text: qsTr("Expiry date: ")
-            }
-
-            Text {
-                id: expiryDate
-            }
-
-            Text {
-                text: qsTr("Disk usage: ")
-            }
-
-            Text {
-                id: diskUsage
-            }
-
-            Button {
-                text: qsTr("My Account")
-                onClicked: systemTray.openAccount()
-            }
-
-            Button {
-                text: qsTr("Logout")
-                onClicked: authentication.logout()
             }
         }
     }
