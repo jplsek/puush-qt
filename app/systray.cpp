@@ -92,7 +92,7 @@ void Systray::openUrl(QUrl url) {
     bool response = QDesktopServices::openUrl(url);
 
     if (!response) {
-        trayIcon->showMessage(tr("Error!"), tr("There was an issue opening the URL. Is your default browser set?"), QSystemTrayIcon::MessageIcon());
+        trayIcon->showMessage(tr("Error!"), tr("There was an issue opening the URL. Is your default browser set?"), QSystemTrayIcon::Warning);
     }
 }
 
@@ -164,6 +164,7 @@ bool Systray::isLoggedIn() {
     if (s.value(Settings::ACCOUNT_API_KEY) != "")
         return true;
 
+    trayIcon->showMessage("puush-qt", tr("You are not logged into Puush..."), QSystemTrayIcon::Warning);
     openSettings();
 
     return false;
@@ -200,19 +201,33 @@ void Systray::uploadFile() {
 void Systray::uploadClipboard() {
     if (!isLoggedIn()) return;
 
-    trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::MessageIcon());
-
     QString text = QApplication::clipboard()->text();
-    qDebug() << text;
 
-    // just look for "file://" and upload it, else just upload the text itself as a text file?
+    // just look for "file://" and upload it, else just upload the text itself as a text file
+    if (text.isEmpty()) {
+        return;
+    } else if (text.contains("file://")) {
+        Upload *u = new Upload(text);
 
-    //if (fileName == "") return;
+        connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
+        connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+    } else {
+        QTemporaryFile file;
+        // The file is deleted too soon before it can be uploaded since the upload is in a callback.
+        // Since it's in a temporary directory it'll get deleted eventually anyways...
+        file.setAutoRemove(false);
 
-    //Upload *u = new Upload(fileName);
+        if (file.open()) {
+            file.write(text.toLocal8Bit().data());
 
-    //connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
-    //connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+            Upload *u = new Upload(file.fileName());
+
+            connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
+            connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+        } else {
+            trayIcon->showMessage("puush-qt", tr("Error opening temporary file for writing!"), QSystemTrayIcon::Warning);
+        }
+    }
 }
 
 /**
@@ -246,7 +261,7 @@ void Systray::activeWindowScreenshotTimed() {
 
     trayIcon->showMessage(tr("Select a window"),
                           tr("Taking a screenshot in ") + QString::number(defaultSelectionTimeout) + tr(" seconds..."),
-                          QSystemTrayIcon::MessageIcon());
+                          QSystemTrayIcon::Information);
 
     numTime = defaultSelectionTimeout;
     timer = new QTimer(this);
@@ -272,7 +287,7 @@ void Systray::activeWindowScreenshot() {
  * @brief Systray::togglePuush
  */
 void Systray::togglePuush() {
-    trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::MessageIcon());
+    trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::Information);
 }
 
 /**
@@ -307,7 +322,7 @@ void Systray::puushStarted() {
  */
 void Systray::screenshotDone(int returnCode, QString fileName, QString output) {
     if (returnCode != 0) {
-        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::MessageIcon());
+        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::Warning);
         return;
     }
 
@@ -376,7 +391,7 @@ void Systray::openSaveDirectory() {
     bool response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 
     if (!response) {
-        trayIcon->showMessage(tr("Error!"), tr("Error opening save directory"), QSystemTrayIcon::MessageIcon());
+        trayIcon->showMessage(tr("Error!"), tr("Error opening save directory"), QSystemTrayIcon::Warning);
     }
 }
 
@@ -387,8 +402,11 @@ void Systray::openSaveDirectory() {
  * @param output
  */
 void Systray::puushDone(int returnCode, QString output) {
+    setTrayIcon(":/images/puush-qt.png");
+
     if (returnCode != 0) {
-        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::MessageIcon());
+        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::Warning);
+        qDebug() << "puushDone error: " << returnCode;
         return;
     }
 
@@ -399,19 +417,18 @@ void Systray::puushDone(int returnCode, QString output) {
     if (pieces.length() > 1)
         url = pieces[1];
 
-    setTrayIcon(":/images/puush-qt.png");
-
-    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
+    QSystemTrayIcon::MessageIcon warningIcon = QSystemTrayIcon::Warning;
+    QSystemTrayIcon::MessageIcon infoIcon = QSystemTrayIcon::Information;
 
     // code can only be 0 = success, or these errors.
     if (code == "-1") {
-        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. Have you authenticated?"), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. Have you authenticated?"), warningIcon);
         return;
     } else if (code == "-2") {
-        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."), warningIcon);
         return;
     } else if(code == "-3"){
-        trayIcon->showMessage(tr("Error!"), tr("Uploading failed due invalid md5."), icon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed due invalid md5."), warningIcon);
         return;
     }
 
@@ -419,9 +436,9 @@ void Systray::puushDone(int returnCode, QString output) {
 
     if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
         QApplication::clipboard()->setText(url);
-        trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), icon);
+        trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), infoIcon);
     } else {
-        trayIcon->showMessage(tr("Success!"), url, icon);
+        trayIcon->showMessage(tr("Success!"), url, infoIcon);
     }
 
     if (s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool()) {

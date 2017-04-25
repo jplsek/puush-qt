@@ -1,8 +1,6 @@
 #ifndef UPLOAD_H
 #define UPLOAD_H
 
-#include <QString>
-#include <QObject>
 #include <QProcess>
 
 extern QString puushUrl;

@@ -1,12 +1,14 @@
-#include <QtGui>
-
 #include "upload.h"
+
 #include "settings.h"
 
 Upload::Upload(QString fileName) {
     Settings s;
 
     QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
+
+    // remove file:// if it exists
+    fileName = fileName.remove("file://");
 
     // This uses curl instead of QT because of issues getting uploading files to work.
     // I should actually use libcurl...
@@ -20,6 +22,7 @@ Upload::Upload(QString fileName) {
                                        << "-Ss" << "-F"
                                        << "k=" + key << "-F" << "z=poop"
                                        << "-F" << "f=@" + fileName);
+
 }
 
 void Upload::uploadStarted() {

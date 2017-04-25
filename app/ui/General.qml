@@ -10,7 +10,7 @@ Item {
         folder: shortcuts.pictures
         selectFolder: true
         // remove the "file://" from the url
-        onAccepted: localFileLocation.text = fileUrl.toString().replace(/^(file:\/{3})/,"")
+        onAccepted: localFileLocation.text = fileUrl.toString().replace("file://", "")
     }
 
     Flickable {
@@ -37,6 +37,7 @@ Item {
                         text: qsTr("Play a sound")
                         checked: information.settingIsOnPuushSound()
                         onClicked: information.settingSetOnPuushSound(checked)
+                        enabled: false
                     }
 
                     CheckBox {
