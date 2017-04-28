@@ -9,10 +9,6 @@ QString Information::getVersion() {
     return QCoreApplication::applicationVersion();
 }
 
-QString Information::getBaseUrl() {
-    return s.value(Settings::BASE_URL).toString();
-}
-
 int Information::getQuality() {
     return s.value(Settings::IMAGE_QUALITY).toInt();
 }
@@ -31,6 +27,14 @@ bool Information::settingIsLocalSaveEnabled() {
 
 QString Information::settingGetLocalSavePath() {
     return s.value(Settings::LOCAL_SAVE_PATH).toString();
+}
+
+QString Information::settingGetPuushUrl() {
+    return s.value(Settings::BASE_URL).toString();
+}
+
+QString Information::settingGetPuushApiUrl() {
+    return s.value(Settings::API_URL).toString();
 }
 
 bool Information::settingIsOnPuushCopyLinkToClipboard() {
@@ -103,6 +107,14 @@ void Information::settingSetLocalSaveEnabled(bool enabled) {
 
 void Information::settingSetLocalSavePath(QString path) {
     s.setValue(Settings::LOCAL_SAVE_PATH, path);
+}
+
+void Information::settingSetPuushUrl(QString url) {
+    s.setValue(Settings::BASE_URL, url);
+}
+
+void Information::settingSetPuushApiUrl(QString url) {
+    s.setValue(Settings::API_URL, url);
 }
 
 void Information::setQuality(int quality) {

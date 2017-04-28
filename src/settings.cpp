@@ -62,7 +62,7 @@ const QString Settings::default_values[] = {
 
     [Settings::Setting::LOCAL_SAVE_ENABLED] = "true",
     [Settings::Setting::LOCAL_SAVE_PATH]    = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-    [Settings::Setting::LOCAL_SAVE_NAME]    = "'ss' (yyyy-MM-dd at hh.mm.ss",
+    [Settings::Setting::LOCAL_SAVE_NAME]    = "'ss' (yyyy-MM-dd 'at' hh.mm.ss)",
 
     [Settings::Setting::TRAY_CLICK_ACTION] = "",
 

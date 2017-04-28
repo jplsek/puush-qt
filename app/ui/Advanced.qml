@@ -78,6 +78,31 @@ Item {
                     }
                 }
             }
+            GroupBox {
+                title: "API Location"
+
+                GridLayout {
+                    columns: 2
+
+                    Text {
+                        text: qsTr("Puush URL: ")
+                    }
+
+                    TextField {
+                        text: information.settingGetPuushUrl()
+                        onTextChanged: information.settingSetPuushUrl(text)
+                    }
+
+                    Text {
+                        text: qsTr("Puush API URL: ")
+                    }
+
+                    TextField {
+                        text: information.settingGetPuushApiUrl()
+                        onTextChanged: information.settingSetPuushApiUrl(text)
+                    }
+                }
+            }
         }
     }
 }

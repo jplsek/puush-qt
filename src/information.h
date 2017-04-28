@@ -12,7 +12,6 @@ public:
     explicit Information(QObject *parent = 0);
 
     Q_INVOKABLE QString getVersion();
-    Q_INVOKABLE QString getBaseUrl();
     Q_INVOKABLE int getQuality();
     Q_INVOKABLE void getQtAbout();
 
@@ -38,10 +37,14 @@ public:
     Q_INVOKABLE bool settingIsFullscreenPrimaryDesktop();
 
     Q_INVOKABLE QString settingGetLocalSavePath();
+    Q_INVOKABLE QString settingGetPuushUrl();
+    Q_INVOKABLE QString settingGetPuushApiUrl();
 
     Q_INVOKABLE void settingSetOnPuushSound(bool);
     Q_INVOKABLE void settingSetLocalSaveEnabled(bool);
     Q_INVOKABLE void settingSetLocalSavePath(QString);
+    Q_INVOKABLE void settingSetPuushUrl(QString);
+    Q_INVOKABLE void settingSetPuushApiUrl(QString);
     Q_INVOKABLE void setQuality(int);
     Q_INVOKABLE void settingSetOnPuushCopyLinkToClipboard(bool);
     Q_INVOKABLE void settingSetOnPuushOpenLinkInBrowser(bool);

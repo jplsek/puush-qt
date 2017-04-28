@@ -27,6 +27,7 @@ public slots:
     Q_INVOKABLE void activeWindowScreenshotTimed();
     Q_INVOKABLE void uploadClipboard();
     Q_INVOKABLE void togglePuush();
+    Q_INVOKABLE void openSaveDirectorySetEnabled(bool);
 
 private slots:
     void setTrayIcon(QString);
@@ -35,7 +36,7 @@ private slots:
     void openSettings();
 
     void puushStarted();
-    void puushDone(int, QString);
+    void puushDone(QString);
     void screenshotDone(int, QString, QString);
     void updateActiveMessage();
 

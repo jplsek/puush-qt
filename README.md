@@ -9,7 +9,7 @@ Arch Linux users can install this from the AUR with `puush-qt`.
 If you aren't on Arch, see [Compiling](#compiling) below.
 
 ## Dependencies
-`curl scrot qt5-base`
+`scrot qt5-base`
 
 ## Compiling
 * Open puush-qt.pro file with qt-creator, else you can compile via command line:

@@ -1,5 +1,12 @@
 #include "upload.h"
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QFile>
+
 #include "settings.h"
 
 Upload::Upload(QString fileName) {
@@ -10,26 +17,43 @@ Upload::Upload(QString fileName) {
     // remove file:// if it exists
     fileName = fileName.remove("file://");
 
-    // This uses curl instead of QT because of issues getting uploading files to work.
-    // I should actually use libcurl...
-    uploadProcess = new QProcess();
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
-    connect(uploadProcess, SIGNAL(started()), this, SLOT(uploadStarted()));
-    connect(uploadProcess, SIGNAL(finished(int)), this, SLOT(uploadDone(int)));
+    QNetworkRequest request;
+    request.setUrl(QUrl(s.value(Settings::API_URL).toString() + "up"));
 
-    uploadProcess->start("curl",
-                         QStringList() << s.value(Settings::API_URL).toString() + "up"
-                                       << "-Ss" << "-F"
-                                       << "k=" + key << "-F" << "z=poop"
-                                       << "-F" << "f=@" + fileName);
+    QFile *file = new QFile(fileName);
+    file->open(QIODevice::ReadOnly);
 
+    QString bound="puushqtboundaryapirequest";
+    QByteArray postData(QString("--" + bound + "\r\n").toUtf8());
+    postData.append("Content-Disposition: form-data; name=\"k\"\r\n\r\n");
+    postData.append(key + "\r\n");
+    postData.append("--" + bound + "\r\n");
+    postData.append("Content-Disposition: form-data; name=\"z\"\r\n\r\n");
+    postData.append("poop\r\n");
+    postData.append("--" + bound + "\r\n");
+    postData.append("Content-Disposition: form-data; name=\"f\"; filename=\"");
+    postData.append(fileName);
+    postData.append("\"\r\n");
+    postData.append("Content-Type: text/xml\r\n\r\n"); //data type
+    postData.append(file->readAll());
+    postData.append("\r\n");
+    postData.append("--" + bound + "--\r\n");
+
+    delete file;
+
+    request.setRawHeader("Content-Type", QString("multipart/form-data; boundary=" + bound).toUtf8());
+    request.setRawHeader("Content-Length", QString::number(postData.length()).toUtf8());
+
+    manager->post(request, postData);
 }
 
 void Upload::uploadStarted() {
     started();
 }
 
-void Upload::uploadDone(int returnCode) {
-    finished(returnCode, uploadProcess->readAll());
-    uploadProcess->deleteLater();
+void Upload::replyFinished(QNetworkReply *reply) {
+    finished(reply->readAll());
 }

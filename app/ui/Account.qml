@@ -91,8 +91,8 @@ Item {
                     }
 
                     Text {
-                        text: "<a href='" + information.getBaseUrl() + "reset_password'>" + qsTr("Forgot password?") + "</a>"
-                        onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "reset_password")
+                        text: "<a href='" + information.settingGetPuushUrl() + "reset_password'>" + qsTr("Forgot password?") + "</a>"
+                        onLinkActivated: Qt.openUrlExternally(information.settingGetPuushUrl() + "reset_password")
 
                         MouseArea {
                             anchors.fill: parent
@@ -118,8 +118,8 @@ Item {
                     }
 
                     Text {
-                        text: "<a href='" + information.getBaseUrl() + "register'>" + qsTr("Register...") + "</a>"
-                        onLinkActivated: Qt.openUrlExternally(information.getBaseUrl() + "register")
+                        text: "<a href='" + information.settingGetPuushUrl() + "register'>" + qsTr("Register...") + "</a>"
+                        onLinkActivated: Qt.openUrlExternally(information.settingGetPuushUrl() + "register")
 
                         MouseArea {
                             anchors.fill: parent

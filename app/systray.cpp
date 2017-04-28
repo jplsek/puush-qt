@@ -141,7 +141,7 @@ void Systray::createTrayIcon() {
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
-    openSaveDirectoryAction->setEnabled(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
+    openSaveDirectorySetEnabled(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -153,6 +153,10 @@ void Systray::createTrayIcon() {
  */
 void Systray::openSettings() {
     emit signalOpenSettings();
+}
+
+void Systray::openSaveDirectorySetEnabled(bool enabled) {
+    openSaveDirectoryAction->setEnabled(enabled);
 }
 
 /**
@@ -191,7 +195,7 @@ void Systray::uploadFile() {
     Upload *u = new Upload(fileName);
 
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
-    connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+    connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
 }
 
 /**
@@ -210,7 +214,7 @@ void Systray::uploadClipboard() {
         Upload *u = new Upload(text);
 
         connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
-        connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+        connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
     } else {
         QTemporaryFile file;
         // The file is deleted too soon before it can be uploaded since the upload is in a callback.
@@ -223,9 +227,9 @@ void Systray::uploadClipboard() {
             Upload *u = new Upload(file.fileName());
 
             connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
-            connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+            connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
         } else {
-            trayIcon->showMessage("puush-qt", tr("Error opening temporary file for writing!"), QSystemTrayIcon::Warning);
+            trayIcon->showMessage("puush-qt", tr("Error opening temporary file for writing!"), QSystemTrayIcon::Critical);
         }
     }
 }
@@ -329,7 +333,7 @@ void Systray::screenshotDone(int returnCode, QString fileName, QString output) {
     Upload *u = new Upload(fileName);
 
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
-    connect(u, SIGNAL(finished(int, QString)), this, SLOT(puushDone(int, QString)));
+    connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
 
     if(s.value(Settings::LOCAL_SAVE_ENABLED).toBool()){
         QDir root = QDir::root();
@@ -401,12 +405,12 @@ void Systray::openSaveDirectory() {
  * @param returnCode
  * @param output
  */
-void Systray::puushDone(int returnCode, QString output) {
+void Systray::puushDone(QString output) {
     setTrayIcon(":/images/puush-qt.png");
 
-    if (returnCode != 0) {
-        trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::Warning);
-        qDebug() << "puushDone error: " << returnCode;
+    if (output.isEmpty() || !output.contains(",")) {
+        trayIcon->showMessage(tr("Error!"), tr("Something went wrong. Wrong URL? No internet connection?"), QSystemTrayIcon::Critical);
+        qDebug() << "puushDone error: " << output;
         return;
     }
 

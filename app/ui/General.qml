@@ -1,6 +1,5 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 Item {
@@ -44,10 +43,13 @@ Item {
                         id: localSaveCheckBox
                         text: qsTr("Enable local save")
                         checked: information.settingIsLocalSaveEnabled()
-                        onClicked: information.settingSetLocalSaveEnabled(checked)
+                        onClicked: {
+                            information.settingSetLocalSaveEnabled(checked)
+                            systemTray.openSaveDirectorySetEnabled(checked)
+                        }
                     }
 
-                    RowLayout {
+                    Row {
                         TextField {
                             id: localFileLocation
                             text: information.settingGetLocalSavePath()

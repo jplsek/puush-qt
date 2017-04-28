@@ -1,7 +1,8 @@
 #ifndef UPLOAD_H
 #define UPLOAD_H
 
-#include <QProcess>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 extern QString puushUrl;
 
@@ -12,15 +13,14 @@ public:
     Upload(QString);
 
 signals:
-    int finished(int, QString);
+    int finished(QString);
     int started();
 
 private slots:
     void uploadStarted();
-    void uploadDone(int);
+    void replyFinished(QNetworkReply*);
 
 private:
-    QProcess *uploadProcess;
 };
 
 #endif // UPLOAD_H
