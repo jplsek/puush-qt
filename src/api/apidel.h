@@ -19,11 +19,13 @@ public:
     const static QString errorStrings[];
 
 public:
-    ApiDel(const QString &apikey, const QString &id);
+    ApiDel(const QString &apiurl, const QString &apikey, const QString &id);
 
     const QString urlext();
 
     const QString errorStr();
+
+    int allData();
 
 protected:
     void done();

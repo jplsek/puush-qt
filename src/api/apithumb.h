@@ -21,7 +21,7 @@ public:
     const static QString errorStrings[];
 
 public:
-    ApiThumb(const QString &apikey, const QString &id);
+    ApiThumb(const QString &apiurl, const QString &apikey, const QString &id);
 
     const QString urlext();
 

@@ -15,6 +15,7 @@ public:
     Q_INVOKABLE void submitLogin(QString, QString);
     Q_INVOKABLE void logout();
     Q_INVOKABLE bool isLoggedIn();
+    Q_INVOKABLE void update();
 
 private:
     Settings s;

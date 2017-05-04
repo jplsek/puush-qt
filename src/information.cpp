@@ -188,3 +188,15 @@ QString Information::getEmail() {
 QString Information::getApiKey() {
     return s.value(Settings::ACCOUNT_API_KEY).toString();
 }
+
+bool Information::isPremium() {
+    return s.value(Settings::ACCOUNT_PREMIUM).toBool();
+}
+
+int Information::getPremiumExpire() {
+    return s.value(Settings::ACCOUNT_PREMIUM_EXPIRY).toInt();
+}
+
+int Information::getDiskUsage() {
+    return s.value(Settings::ACCOUNT_DISK_USAGE).toInt();
+}

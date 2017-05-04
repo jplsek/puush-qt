@@ -6,10 +6,11 @@
 #include <QMenu>
 #include <QtQuick>
 
-#include "api/apiauth.h"
 #include "api/apihist.h"
+#include "api/apidel.h"
 
 #include "settings.h"
+#include "history.h"
 
 class Systray : public QObject {
     Q_OBJECT
@@ -28,12 +29,13 @@ public slots:
     Q_INVOKABLE void uploadClipboard();
     Q_INVOKABLE void togglePuush();
     Q_INVOKABLE void openSaveDirectorySetEnabled(bool);
+    Q_INVOKABLE void updateHistory();
 
 private slots:
     void setTrayIcon(QString);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void messageClicked();
-    void openSettings();
+    void openSettings(int = 0);
 
     void puushStarted();
     void puushDone(QString);
@@ -42,11 +44,16 @@ private slots:
 
     void openSaveDirectory();
 
+    void updateHistoryMenu(QList<ApiHist::HistData>);
+    void deleteDone(ApiDel *);
+
 private:
     void createActions();
     void createTrayIcon();
-    bool isLoggedIn();
+    bool isLoggedIn(bool);
     void openUrl(QUrl);
+
+    History *history;
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // ethans new section
@@ -78,6 +85,8 @@ private:
     QAction *selectAreaAction;
     QAction *activeAction;
 
+    QMenu *historyMenu;
+
     QAction *settingsAction;
     QAction *openSaveDirectoryAction;
     QAction *quitAction;
@@ -96,11 +105,13 @@ private:
     QString getSaveDirectory();
     QString getSavePath();
 
+    void historyPlaceholder();
+
     int defaultSelectionTimeout = 5;
     int numTime = 0;
 
 signals:
-    void signalOpenSettings();
+    void signalOpenSettings(int tab);
 };
 
 #endif

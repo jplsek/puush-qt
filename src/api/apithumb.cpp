@@ -1,13 +1,10 @@
 #include "apithumb.h"
 
 #include <iostream>
+
 #include <QByteArray>
-#include <QDataStream>
-#include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QStringList>
-#include <QString>
 
 const QString ApiThumb::errorStrings[] = {
     [ApiThumb::Error::NoError] = "No Error",
@@ -15,10 +12,11 @@ const QString ApiThumb::errorStrings[] = {
     [ApiThumb::Error::ImageLoadFailed] = "Failed to read image from returned data",
 };
 
-ApiThumb::ApiThumb(const QString &apikey, const QString &id):
+ApiThumb::ApiThumb(const QString &apiurl, const QString &apikey, const QString &id):
     ApiRequest(),
     image()
 {
+    url = apiurl;
     data.addQueryItem("k", QUrl::toPercentEncoding(apikey));
     data.addQueryItem("i", QUrl::toPercentEncoding(id));
 }
@@ -28,7 +26,7 @@ const QString ApiThumb::urlext(){
 }
 
 void ApiThumb::handleResponse(){
-    std::cout << "ApiThumb::handleResponse()" << std::endl;
+    qDebug() << "ApiThumb::handleResponse()";
     if(!image.loadFromData(response, "png")){
         status = ImageLoadFailed;
     }

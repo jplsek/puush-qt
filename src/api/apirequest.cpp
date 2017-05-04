@@ -4,8 +4,6 @@
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QString>
-#include <QDataStream>
 
 ApiRequest::ApiRequest():
     data(),
@@ -14,7 +12,7 @@ ApiRequest::ApiRequest():
     status(0),
     response()
 {
-    std::cout << "ApiRequest::ApiRequest() status == " << status << std::endl;
+    qDebug() << "ApiRequest::ApiRequest() generate status == " << status;
 }
 
 ApiRequest::~ApiRequest(){
@@ -25,21 +23,21 @@ ApiRequest::~ApiRequest(){
 }
 
 void ApiRequest::start(){
-    std::cout << "ApiRequest::start()" << std::endl;
+    qDebug() << "ApiRequest::start()";
 
     QNetworkAccessManager *nm = new QNetworkAccessManager();
 
-    qnr = new QNetworkRequest(QUrl(PUUSH_API_URL_BASE + urlext()));
+    qnr = new QNetworkRequest(url + urlext());
     qnr->setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     reply = nm->post(*qnr, data.toString().toUtf8());
-    QMetaObject::Connection c = connect(reply, SIGNAL(finished()), this, SLOT(readResponse()));
+    connect(reply, SIGNAL(finished()), this, SLOT(readResponse()));
 }
 
 void ApiRequest::readResponse(){
     response = reply->readAll();
 
-    std::cout << "R: " << response.toStdString() << std::endl;
+    qDebug() << "R: " << response;
 
     // this can only happen on a failed request.
     if(response.length() == 0){
@@ -48,20 +46,18 @@ void ApiRequest::readResponse(){
         return;
     }
 
-    std::cout << "response == " << response.toStdString() << std::endl; // DEBUG
-
     if(response.length() < 4){ // assume we've got a number back.
         status = response.toInt();
     } else {
         status = 0;
     }
 
-    std::cout << "status == " << status << std::endl; // DEBUG
+    qDebug() << "status == " << status;
 
     // anything that gets parsed to a 0 is the result of a successful command. (excluding an empty case that is handled above)
     if(status != 0){
         status = abs(status); // convert from negative to a positive non-zero error index
-        std::cout << "status now " << status << std::endl;
+        qDebug() << "status now " << status;
         done();
         return;
     }

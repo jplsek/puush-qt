@@ -25,8 +25,8 @@ public:
     const static QString errorStrings[];
 
 public:
-    ApiAuth(const QString &email, const QString &password);
-    ApiAuth(const QString &apikey);
+    ApiAuth(const QString &apiurl, const QString &email, const QString &password);
+    ApiAuth(const QString &apiurl, const QString &apikey);
 
     const QString urlext();
 

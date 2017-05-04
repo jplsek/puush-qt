@@ -4,12 +4,13 @@
 #include <QDebug>
 
 #include "api/apirequest.h"
-#include "api/apiauth.h"
 #include "api/apihist.h"
+#include "api/apidel.h"
 
 #include "systray.h"
 #include "screenshot.h"
 #include "upload.h"
+#include "history.h"
 
 Systray::Systray(QObject *parent) : QObject(parent) {
     s.setEmptyToDefaults();
@@ -24,6 +25,11 @@ Systray::Systray(QObject *parent) : QObject(parent) {
     setTrayIcon(":/images/puush-qt.png");
 
     trayIcon->show();
+
+    history = new History();
+
+    connect(history, SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
+            SLOT(updateHistoryMenu(QList<ApiHist::HistData>)));
 }
 
 /**
@@ -39,13 +45,14 @@ void Systray::setTrayIcon(QString image) {
 void Systray::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     //qDebug() << "icon activated";
     switch (reason) {
-    // left click
+    // left click (and right click? doesn't work on linux?)
     case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::Context:
         trayIconMenu->popup(QCursor::pos());
+        history->getHistory();
         break;
     // double left click
     case QSystemTrayIcon::DoubleClick:
-        qDebug() << "dblclickA";
         doDoubleClickAction();
         break;
     default:
@@ -54,7 +61,6 @@ void Systray::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void Systray::doDoubleClickAction() {
-    qDebug() << "dblclick";
     if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
         openSaveDirectory();
     } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS)) {
@@ -115,6 +121,8 @@ void Systray::createActions() {
     activeAction = new QAction(tr("Capture Current &Window"), this);
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshotTimed()));
 
+    historyMenu = new QMenu(tr("&History"));
+
     settingsAction = new QAction(tr("&Settings..."), this);
     connect(settingsAction, SIGNAL(triggered()), this, SLOT(openSettings()));
 
@@ -135,11 +143,22 @@ void Systray::createTrayIcon() {
     trayIconMenu->addAction(selectAreaAction);
     trayIconMenu->addAction(activeAction);
     trayIconMenu->addSeparator();
+    trayIconMenu->addMenu(historyMenu);
+    trayIconMenu->addSeparator();
     trayIconMenu->addAction(settingsAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(openSaveDirectoryAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
+
+    historyPlaceholder();
+
+    // Doing this has really weird effects... This was to workaround the right click issue from iconActivated()
+    // But the history menu never gets updated, even though it runs through updateHistoryMenu() properly.
+    // It only updates after a left click...
+    //QAction *none = new QAction(tr("Get history"));
+    //connect(none, &QAction::triggered, [=](){ history->getHistory(); });
+    //historyMenu->addAction(none);
 
     openSaveDirectorySetEnabled(s.value(Settings::LOCAL_SAVE_ENABLED).toBool());
 
@@ -148,11 +167,11 @@ void Systray::createTrayIcon() {
 }
 
 /**
- * Show the account login tab
+ * Show the application window
  * @brief Systray::openSettings
  */
-void Systray::openSettings() {
-    emit signalOpenSettings();
+void Systray::openSettings(int tab) {
+    emit signalOpenSettings(tab);
 }
 
 void Systray::openSaveDirectorySetEnabled(bool enabled) {
@@ -164,12 +183,14 @@ void Systray::openSaveDirectorySetEnabled(bool enabled) {
  * @brief Systray::isLoggedIn
  * @return
  */
-bool Systray::isLoggedIn() {
+bool Systray::isLoggedIn(bool msg = true) {
     if (s.value(Settings::ACCOUNT_API_KEY) != "")
         return true;
 
-    trayIcon->showMessage("puush-qt", tr("You are not logged into Puush..."), QSystemTrayIcon::Warning);
-    openSettings();
+    if (msg) {
+        trayIcon->showMessage("puush-qt", tr("You are not logged into Puush..."), QSystemTrayIcon::Warning);
+        openSettings(2);
+    }
 
     return false;
 }
@@ -399,6 +420,83 @@ void Systray::openSaveDirectory() {
     }
 }
 
+void Systray::updateHistoryMenu(QList<ApiHist::HistData> historyList) {
+    qDebug() << "updateHistoryMenu";
+
+    historyMenu->clear();
+
+    if (historyList.isEmpty()) {
+        QAction *none = new QAction(tr("No history"));
+        none->setEnabled(false);
+        historyMenu->addAction(none);
+    }
+
+    for (ApiHist::HistData data : historyList) {
+        QMenu *menu = historyMenu->addMenu(data.filename);
+
+        QAction *uploaded = new QAction(tr("Uploaded: ") + data.date);
+        uploaded->setEnabled(false);
+        menu->addAction(uploaded);
+
+        QAction *views = new QAction(tr("Views: ") + QString::number(data.views));
+        views->setEnabled(false);
+        menu->addAction(views);
+
+        QAction *open = new QAction(tr("Open in browser"));
+        connect(open, &QAction::triggered, [=](){ openUrl(data.url); });
+        menu->addAction(open);
+
+        QAction *copy = new QAction(tr("Copy link to clipboard"));
+        connect(copy, &QAction::triggered, [=](){ QApplication::clipboard()->setText(data.url); });
+        menu->addAction(copy);
+
+        QAction *del = new QAction("Delete");
+        ApiDel *api = new ApiDel(s.value(Settings::API_URL).toString(), s.value(Settings::ACCOUNT_API_KEY).toString(), data.id);
+        connect(api, SIGNAL(done(ApiDel *)), this, SLOT(deleteDone(ApiDel *)));
+        connect(del, &QAction::triggered, [=](){ api->start(); });
+        menu->addAction(del);
+    }
+}
+
+void Systray::deleteDone(ApiDel *del) {
+    if (del->allData() != 0) {
+        trayIcon->showMessage(tr("Error!"), tr("Something went wrong deleteing the file!"), QSystemTrayIcon::Critical);
+    } else {
+        // regenerate history on next lookup
+        history->setDirty();
+    }
+}
+
+/**
+ * Update the history object due to outside changes, like api url changes.
+ * We could create a new history every time in updateHistoryMenu,
+ * but then we loose the chaching aspect.
+ * @brief Systray::updateHistory
+ */
+void Systray::updateHistory() {
+    delete history;
+
+    history = new History();
+
+    connect(history, SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
+            SLOT(updateHistoryMenu(QList<ApiHist::HistData>)));
+
+    historyPlaceholder();
+}
+
+void Systray::historyPlaceholder() {
+    historyMenu->clear();
+
+    // Just put something in the history menu in case the menu doesn't get updated.
+    QAction *none = new QAction();
+    if (isLoggedIn(false))
+        none->setText("Not fetched... Try left clicking the tray icon.");
+    else
+        none->setText("Not logged in...");
+    none->setEnabled(false);
+    historyMenu->addAction(none);
+}
+
 /**
  * Notify the user when the upload to Puush has been completed.
  * @brief Systray::puushDone
@@ -437,6 +535,7 @@ void Systray::puushDone(QString output) {
     }
 
     lastUrl = QUrl(url);
+    history->setDirty();
 
     if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
         QApplication::clipboard()->setText(url);

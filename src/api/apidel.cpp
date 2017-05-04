@@ -1,13 +1,7 @@
 #include "apidel.h"
 
-#include <iostream>
-#include <QByteArray>
-#include <QDataStream>
-#include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QStringList>
-#include <QString>
 
 const QString ApiDel::errorStrings[] = {
     [ApiDel::Error::NoError] = "No Error",
@@ -15,9 +9,13 @@ const QString ApiDel::errorStrings[] = {
     [ApiDel::Error::InvalidResponse] = "Invalid response from puush",
 };
 
-ApiDel::ApiDel(const QString &apikey, const QString &id):
+ApiDel::ApiDel(const QString &apiurl, const QString &apikey, const QString &id):
     ApiRequest()
 {
+    qDebug() << "ApiDel::ApiDel()";
+
+    url = apiurl;
+
     data.addQueryItem("k", QUrl::toPercentEncoding(apikey));
     data.addQueryItem("i", QUrl::toPercentEncoding(id));
 }
@@ -27,8 +25,12 @@ const QString ApiDel::urlext(){
 }
 
 void ApiDel::handleResponse(){
-    std::cout << "ApiDel::handleResponse()" << std::endl;
+    qDebug() << "ApiDel::handleResponse(): " << response;
     // nothing to actually handle. the response code is enough.
+}
+
+int ApiDel::allData(){
+    return response.toInt();
 }
 
 void ApiDel::done(){

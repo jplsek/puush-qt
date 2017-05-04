@@ -20,6 +20,9 @@ const QString Settings::setting_names[] = {
 
     [Settings::Setting::ACCOUNT_API_KEY] = "key",
     [Settings::Setting::ACCOUNT_EMAIL] = "email",
+    [Settings::Setting::ACCOUNT_PREMIUM] = "premium",
+    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = "premium-expiry",
+    [Settings::Setting::ACCOUNT_DISK_USAGE] = "disk-usage",
 
     [Settings::Setting::ON_PUUSH_SOUND] = "sound-on-puush",
     [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = "copy-link-to-clipboard",
@@ -51,10 +54,13 @@ const QString Settings::setting_names[] = {
 const QString Settings::default_values[] = {
     [Settings::Setting::NO_SETTING] = "",
 
-    [Settings::Setting::SETTINGS_VERSION] = "2017-20-4-00", // YYYY-MM-DD-revision
+    [Settings::Setting::SETTINGS_VERSION] = "2017-05-02-00", // YYYY-MM-DD-revision
 
     [Settings::Setting::ACCOUNT_API_KEY] = "",
     [Settings::Setting::ACCOUNT_EMAIL] = "",
+    [Settings::Setting::ACCOUNT_PREMIUM] = "",
+    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = "",
+    [Settings::Setting::ACCOUNT_DISK_USAGE] = "",
 
     [Settings::Setting::ON_PUUSH_SOUND] = "false",
     [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = "true",
@@ -90,6 +96,9 @@ const QString Settings::groups[] = {
 
     [Settings::Setting::ACCOUNT_API_KEY] = Settings::USER_INFO_GROUP_NAME,
     [Settings::Setting::ACCOUNT_EMAIL] = Settings::USER_INFO_GROUP_NAME,
+    [Settings::Setting::ACCOUNT_PREMIUM] = Settings::USER_INFO_GROUP_NAME,
+    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = Settings::USER_INFO_GROUP_NAME,
+    [Settings::Setting::ACCOUNT_DISK_USAGE] = Settings::USER_INFO_GROUP_NAME,
 
     [Settings::Setting::ON_PUUSH_SOUND] = Settings::GENERAL_GROUP_NAME,
     [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = Settings::GENERAL_GROUP_NAME,
@@ -279,6 +288,12 @@ void Settings::setEmptyToDefaults(){
         setValue(ACCOUNT_EMAIL, default_values[ACCOUNT_EMAIL]);
     if(!contains(ACCOUNT_API_KEY))
         setValue(ACCOUNT_API_KEY, default_values[ACCOUNT_API_KEY]);
+    if(!contains(ACCOUNT_PREMIUM))
+        setValue(ACCOUNT_PREMIUM, default_values[ACCOUNT_PREMIUM]);
+    if(!contains(ACCOUNT_PREMIUM_EXPIRY))
+        setValue(ACCOUNT_PREMIUM_EXPIRY, default_values[ACCOUNT_PREMIUM_EXPIRY]);
+    if(!contains(ACCOUNT_DISK_USAGE))
+        setValue(ACCOUNT_DISK_USAGE, default_values[ACCOUNT_DISK_USAGE]);
 
     // Key bindings
 

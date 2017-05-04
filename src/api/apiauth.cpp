@@ -2,12 +2,9 @@
 
 #include <iostream>
 #include <QByteArray>
-#include <QDataStream>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QStringList>
-#include <QString>
 
 #include <time.h>
 
@@ -17,10 +14,12 @@ const QString ApiAuth::errorStrings[] = {
     [ApiAuth::Error::InvalidResponse] = "Invalid response from puush",
 };
 
-ApiAuth::ApiAuth(const QString &email, const QString &password):
+ApiAuth::ApiAuth(const QString &apiurl, const QString &email, const QString &password):
     ApiRequest()
 {
-    std::cout << "ApiAuth::ApiAuth(e, p)" << std::endl;
+    qDebug() << "ApiAuth::ApiAuth(e, p)";
+
+    url = apiurl;
 
     data.addQueryItem("e", QUrl::toPercentEncoding(email));
     data.addQueryItem("p", QUrl::toPercentEncoding(password));
@@ -30,12 +29,13 @@ ApiAuth::ApiAuth(const QString &email, const QString &password):
     auth.expiry    = 0;
     auth.diskUsage = 0;
 
-    std::cout << "ApiAuth::ApiAuth() status == " << status << std::endl;
+    qDebug() << "ApiAuth::ApiAuth() status == " << status;
 }
 
-ApiAuth::ApiAuth(const QString &apikey):
+ApiAuth::ApiAuth(const QString &apiurl, const QString &apikey):
     ApiRequest()
 {
+    url = apiurl;
     data.addQueryItem("k", QUrl::toPercentEncoding(apikey));
 
     auth.premium   = 0;
@@ -49,7 +49,7 @@ const QString ApiAuth::urlext(){
 }
 
 void ApiAuth::handleResponse(){
-    std::cout << "ApiAuth::handleResponse()" << std::endl;
+    qDebug() << "ApiAuth::handleResponse()";
 
     QList<QByteArray> pieces = response.split(',');
     if(pieces.length() != 4){

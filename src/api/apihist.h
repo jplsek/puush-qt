@@ -28,7 +28,7 @@ public:
     const static QString errorStrings[];
 
 public:
-    ApiHist(const QString &apikey);
+    ApiHist(const QString &apiurl, const QString &apikey);
 
     const QString urlext();
 

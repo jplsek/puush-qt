@@ -90,7 +90,10 @@ Item {
 
                     TextField {
                         text: information.settingGetPuushUrl()
-                        onTextChanged: information.settingSetPuushUrl(text)
+                        onTextChanged: {
+                            information.settingSetPuushUrl(text)
+                            systemTray.updateHistory()
+                        }
                     }
 
                     Text {
@@ -99,7 +102,10 @@ Item {
 
                     TextField {
                         text: information.settingGetPuushApiUrl()
-                        onTextChanged: information.settingSetPuushApiUrl(text)
+                        onTextChanged: {
+                            information.settingSetPuushApiUrl(text)
+                            systemTray.updateHistory()
+                        }
                     }
                 }
             }

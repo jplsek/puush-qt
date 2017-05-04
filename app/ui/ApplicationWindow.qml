@@ -16,11 +16,8 @@ ApplicationWindow {
         target: systemTray
 
         onSignalOpenSettings: {
-            if(root.visibility === Window.Hidden) {
-                root.show()
-            } else {
-                root.hide()
-            }
+            root.show()
+            bar.currentIndex = tab
         }
     }
 
@@ -41,14 +38,11 @@ ApplicationWindow {
 
         TabButton {
             text: qsTr("Account")
+            onClicked: account.updateAccountInformation()
         }
 
         TabButton {
             text: qsTr("Advanced")
-        }
-
-        TabButton {
-            text: qsTr("History")
         }
 
         TabButton {
@@ -67,11 +61,11 @@ ApplicationWindow {
 
         KeyBindings { }
 
-        Account { }
+        Account {
+            id: account
+        }
 
         Advanced { }
-
-        History { }
 
         About { }
     }

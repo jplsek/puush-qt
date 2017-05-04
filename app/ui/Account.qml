@@ -13,9 +13,12 @@ Item {
             password.text = ""
             loggedInEmail.text = information.getEmail()
             apiKey.text = information.getApiKey()
-            accountType.text = qsTr("Not Implemented")
-            expiryDate.text = qsTr("Not Implemented")
-            diskUsage.text = qsTr("Not Implemented")
+            if (information.isPremium())
+                accountType.text = qsTr("Premium")
+            else
+                accountType.text = qsTr("Free")
+            expiryDate.text = information.getPremiumExpire()
+            diskUsage.text = information.getDiskUsage()
         } else {
             loggedInEmail.text = ""
             apiKey.text = ""
@@ -23,6 +26,11 @@ Item {
             expiryDate.text = ""
             diskUsage.text = ""
         }
+    }
+
+    function updateAccountInformation() {
+        if (authentication.isLoggedIn())
+            authentication.update()
     }
 
     Component.onCompleted: setAccountPage(authentication.isLoggedIn())
@@ -38,6 +46,7 @@ Item {
         onAuthChange: {
             setAccountPage(loggedIn)
             loginIndicator.running = false
+            systemTray.updateHistory()
         }
     }
 

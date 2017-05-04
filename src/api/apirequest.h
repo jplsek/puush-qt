@@ -17,8 +17,6 @@ protected:
 public:
     ~ApiRequest();
 
-    const QString PUUSH_API_URL_BASE = "https://puush.me/api/";
-
     // returns the api extension specific to the api call
     virtual const QString urlext() = 0;
 
@@ -44,6 +42,7 @@ protected:
     virtual void handleResponse() = 0;
 
 protected:
+    QString url;
     QUrlQuery data;
 
     QNetworkRequest *qnr;

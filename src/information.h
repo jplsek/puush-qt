@@ -67,6 +67,9 @@ public:
 
     Q_INVOKABLE QString getEmail();
     Q_INVOKABLE QString getApiKey();
+    Q_INVOKABLE bool isPremium();
+    Q_INVOKABLE int getPremiumExpire();
+    Q_INVOKABLE int getDiskUsage();
 
 private:
     Settings s;
