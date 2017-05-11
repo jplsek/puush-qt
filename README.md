@@ -6,7 +6,10 @@ A GUI frontend for puush on Linux. This will create a system tray icon and conta
 
 ## Installing
 Arch Linux users can install this from the AUR with `puush-qt`.  
-If you aren't on Arch, see [Compiling](#compiling) below.
+
+Windows user can grab the latest installer [here](https://github.com/jplsek/puush-qt/releases).
+
+For now, if you aren't on Arch Linux, see [Compiling](#compiling) below.
 
 ## Dependencies
 `scrot qt5-base`
