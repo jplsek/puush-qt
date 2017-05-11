@@ -106,6 +106,7 @@ private:
     QString getSavePath();
 
     void historyPlaceholder();
+    void updateHistoryAfterTimeout();
 
     int defaultSelectionTimeout = 5;
     int numTime = 0;

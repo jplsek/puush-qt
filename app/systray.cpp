@@ -26,10 +26,17 @@ Systray::Systray(QObject *parent) : QObject(parent) {
 
     trayIcon->show();
 
+    trayIcon->setToolTip("puush-qt");
+
     history = new History();
 
     connect(history, SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
             SLOT(updateHistoryMenu(QList<ApiHist::HistData>)));
+
+    // Get the history after the app starts. For some reason the context
+    // menu hangs when getting the history, even though it's asynchronous.
+    // So just call it soon (waiting for wifi or something to come up after starting on boot...).
+    updateHistoryAfterTimeout();
 }
 
 /**
@@ -464,7 +471,20 @@ void Systray::deleteDone(ApiDel *del) {
     } else {
         // regenerate history on next lookup
         history->setDirty();
+        updateHistoryAfterTimeout();
     }
+}
+
+
+/**
+ * @brief Systray::updateHistoryAfterTimeout
+ * After x seconds, just get the history to avoid the delay when opening up the context menu.
+ * We wait a certain amount of time to just let the server catch up on things.
+ */
+void Systray::updateHistoryAfterTimeout() {
+    QTimer *historyTimer = new QTimer(this);
+    connect(historyTimer, &QTimer::timeout, [=](){ history->getHistory(); });
+    historyTimer->start(5000);
 }
 
 /**
@@ -547,4 +567,6 @@ void Systray::puushDone(QString output) {
     if (s.value(Settings::ON_PUUSH_OPEN_LINK_IN_BROWSER).toBool()) {
         openUrl(url);
     }
+
+    updateHistoryAfterTimeout();
 }
