@@ -17,6 +17,8 @@ isEmpty(PREFIX) {
 RESOURCES += \
     ../resources.qrc
 
+RC_FILE = puush-qt.rc
+
 INSTALLS += target desktop icon
 
 target.path = $$PREFIX/bin
