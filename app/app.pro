@@ -29,7 +29,7 @@ desktop.files = $$PWD/puush-qt.desktop
 icon.path = /usr/share/icons/hicolor/scalable/apps
 icon.files += $$PWD/../resources/images/puush-qt.svg
 # mostly optional, update icon cache
-unix:icon.extra += gtk-update-icon-cache /usr/share/icons/hicolor
+unix:icon.extra += $$PWD/updateIconCache.sh
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../src/release/ -lpuush-qt
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../src/debug/ -lpuush-qt

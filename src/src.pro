@@ -44,9 +44,8 @@ isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
 
-INSTALLS += target script
+INSTALLS += target
 
 target.path = $$PREFIX/lib
 
-script.path = $$PWD
-unix:script.commands = $$PWD/checkShared.sh
+QMAKE_POST_LINK += $$PWD/checkShared.sh
