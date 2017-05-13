@@ -42,9 +42,14 @@ RESOURCES += \
 
 INSTALLS += target
 
-target.path = $$PREFIX/lib
-
 isEmpty(PREFIX) {
     PREFIX = /usr/local
-    target.extra = $$PWD/checkShared.sh
+
+    # can't do target.extra or target.commands because it will no longer
+    # "auto populate" target.files with the shared libraries.
+    # so this is my work-around.
+    target.depends = check
+    check.commands = $$PWD/checkShared.sh
 }
+
+target.path = $$PREFIX/lib
