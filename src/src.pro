@@ -40,12 +40,11 @@ OTHER_FILES += settings
 RESOURCES += \
     ../resources.qrc
 
-isEmpty(PREFIX) {
-    PREFIX = /usr/local
-}
-
 INSTALLS += target
 
 target.path = $$PREFIX/lib
 
-QMAKE_POST_LINK += $$PWD/checkShared.sh
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+    target.extra = $$PWD/checkShared.sh
+}
