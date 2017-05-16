@@ -110,33 +110,33 @@ void Systray::openUrl(QUrl url) {
 }
 
 void Systray::createActions() {
-    myAccountAction = new QAction(tr("&My Account"), this);
+    myAccountAction = new QAction(tr("&My Account"));
     connect(myAccountAction, SIGNAL(triggered()), this, SLOT(openAccount()));
 
-    uploadFileAction = new QAction(tr("Upload &File..."), this);
+    uploadFileAction = new QAction(tr("Upload &File..."));
     connect(uploadFileAction, SIGNAL(triggered()), this, SLOT(uploadFile()));
 
-    uploadClipboardAction = new QAction(tr("Upload &Clipboard"), this);
+    uploadClipboardAction = new QAction(tr("Upload &Clipboard"));
     connect(uploadClipboardAction, SIGNAL(triggered()), this, SLOT(uploadClipboard()));
 
-    fullScreenAction = new QAction(tr("Capture &Desktop"), this);
+    fullScreenAction = new QAction(tr("Capture &Desktop"));
     connect(fullScreenAction, SIGNAL(triggered()), this, SLOT(fullScreenScreenshot()));
 
-    selectAreaAction = new QAction(tr("Capture &Area"), this);
+    selectAreaAction = new QAction(tr("Capture &Area"));
     connect(selectAreaAction, SIGNAL(triggered()), this, SLOT(selectAreaScreenshot()));
 
-    activeAction = new QAction(tr("Capture Current &Window"), this);
+    activeAction = new QAction(tr("Capture Current &Window"));
     connect(activeAction, SIGNAL(triggered()), this, SLOT(activeWindowScreenshotTimed()));
 
     historyMenu = new QMenu(tr("&History"));
 
-    settingsAction = new QAction(tr("&Settings..."), this);
+    settingsAction = new QAction(tr("&Settings..."));
     connect(settingsAction, SIGNAL(triggered()), this, SLOT(openSettings()));
 
-    quitAction = new QAction(tr("&Quit"), this);
+    quitAction = new QAction(tr("&Quit"));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-    openSaveDirectoryAction = new QAction(tr("&Open Screenshot Directory"), this);
+    openSaveDirectoryAction = new QAction(tr("&Open Screenshot Directory"));
     connect(openSaveDirectoryAction, SIGNAL(triggered()), this, SLOT(openSaveDirectory()));
 }
 
@@ -457,7 +457,7 @@ void Systray::updateHistoryMenu(QList<ApiHist::HistData> historyList) {
         connect(copy, &QAction::triggered, [=](){ QApplication::clipboard()->setText(data.url); });
         menu->addAction(copy);
 
-        QAction *del = new QAction("Delete");
+        QAction *del = new QAction(tr("Delete"));
         ApiDel *api = new ApiDel(s.value(Settings::API_URL).toString(), s.value(Settings::ACCOUNT_API_KEY).toString(), data.id);
         connect(api, SIGNAL(done(ApiDel *)), this, SLOT(deleteDone(ApiDel *)));
         connect(del, &QAction::triggered, [=](){ api->start(); });

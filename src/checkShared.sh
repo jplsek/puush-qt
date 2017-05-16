@@ -11,6 +11,11 @@ if [[ $EUID == 0 ]] && [[ ! "$LD_LIBRARY_PATH:" = *libfakeroot:* ]]; then
     if [ $? != 0 ]; then
         mkdir -p /etc/ld.so.conf.d
         echo "/usr/local/lib" > /etc/ld.so.conf.d/puush-qt.conf
-        ldconfig
     fi
+
+    # always update the cache. I'm not sure if necessary but I experienced an
+    # issue with ubuntu where the libraries weren't loaded even though
+    # /usr/local/lib was already in the search path. I guess it always relies
+    # on the cache.
+    ldconfig
 fi

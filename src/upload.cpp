@@ -37,7 +37,7 @@ Upload::Upload(QString fileName) {
     postData.append("Content-Disposition: form-data; name=\"f\"; filename=\"");
     postData.append(fileName);
     postData.append("\"\r\n");
-    postData.append("Content-Type: text/xml\r\n\r\n"); //data type
+    postData.append("Content-Type: multipart/form-data\r\n\r\n");
     postData.append(file->readAll());
     postData.append("\r\n");
     postData.append("--" + bound + "--\r\n");
