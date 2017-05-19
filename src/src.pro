@@ -48,8 +48,11 @@ isEmpty(PREFIX) {
     # can't do target.extra or target.commands because it will no longer
     # "auto populate" target.files with the shared libraries.
     # so this is my work-around.
-    target.depends = check
+    INSTALLS += check
+    check.depends = target
     check.commands = $$PWD/checkShared.sh
+    # also necessary
+    check.path = /
 }
 
 target.path = $$PREFIX/lib
