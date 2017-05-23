@@ -482,9 +482,7 @@ void Systray::deleteDone(ApiDel *del) {
  * We wait a certain amount of time to just let the server catch up on things.
  */
 void Systray::updateHistoryAfterTimeout() {
-    QTimer *historyTimer = new QTimer(this);
-    connect(historyTimer, &QTimer::timeout, [=](){ history->getHistory(); });
-    historyTimer->start(5000);
+    QTimer::singleShot(5000, [=](){ history->getHistory(); });
 }
 
 /**

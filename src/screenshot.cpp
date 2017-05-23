@@ -93,13 +93,14 @@ void Screenshot::fullScreenAfterTimer() {
             }
         }
 
-        message = tr("Screen not found within cursor!");
+        if (screenshot.width() == 0 && screenshot.height() == 0)
+            message = tr("Screen not found within cursor!");
     } else {
         message = tr("Option not recognized!");
     }
 
     if (screenshot.width() == 0 && screenshot.height() == 0) {
-        message = message + "Taking a screenshot of the whole desktop instead...";
+        message = message + tr("\nTaking a screenshot of the whole desktop instead...");
         qDebug() << message;
         screenshot = desktop();
     }
