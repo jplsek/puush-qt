@@ -22,11 +22,13 @@ ApiHist::ApiHist(const QString &apiurl, const QString &apikey):
     data.addQueryItem("k", QUrl::toPercentEncoding(apikey));
 }
 
-const QString ApiHist::urlext(){
+const QString ApiHist::urlext()
+{
     return "hist";
 }
 
-void ApiHist::handleResponse(){
+void ApiHist::handleResponse()
+{
     qDebug() << "ApiHist::handleResponse()";
 
     QList<QByteArray> lines = response.split('\n');
@@ -35,10 +37,10 @@ void ApiHist::handleResponse(){
         return;
 
     // skip response number
-    for(int i = 1; i < lines.length(); i++) {
+    for (int i = 1; i < lines.length(); i++) {
         QList<QByteArray> pieces = lines.at(i).split(',');
 
-        if(pieces.length() != 6){
+        if (pieces.length() != 6) {
             status = InvalidResponse;
             return;
         }
@@ -47,29 +49,33 @@ void ApiHist::handleResponse(){
     }
 
     //for(HistData &h : hist)
-        //std::cout << h;
+    //std::cout << h;
 }
 
-void ApiHist::done(){
+void ApiHist::done()
+{
     qDebug() << "emit apihist done()";
     emit done(this);
 }
 
-const QString ApiHist::errorStr(){
-    if(reply->error() != QNetworkReply::NoError){
+const QString ApiHist::errorStr()
+{
+    if (reply->error() != QNetworkReply::NoError) {
         return reply->errorString();
     }
     return errorStrings[status];
 }
 
-const QList<ApiHist::HistData> ApiHist::allData(){
+const QList<ApiHist::HistData> ApiHist::allData()
+{
     return hist;
 }
 
-ApiHist::HistData::HistData(const QString &s){
+ApiHist::HistData::HistData(const QString &s)
+{
     QStringList l = s.split(',');
-    if(l.length() != 6) return;
-    
+    if (l.length() != 6) return;
+
     id       = l[0];
     date     = l[1];
     url      = l[2];
@@ -78,7 +84,8 @@ ApiHist::HistData::HistData(const QString &s){
     unknown  = l[5];
 }
 
-std::ostream &operator<<(std::ostream &s, const ApiHist::HistData &d){
+std::ostream &operator<<(std::ostream &s, const ApiHist::HistData &d)
+{
     qDebug() << "id: "       << d.id;
     qDebug() << "date: "     << d.date;
     qDebug() << "url: "      << d.url;

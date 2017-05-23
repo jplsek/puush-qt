@@ -20,25 +20,30 @@ ApiDel::ApiDel(const QString &apiurl, const QString &apikey, const QString &id):
     data.addQueryItem("i", QUrl::toPercentEncoding(id));
 }
 
-const QString ApiDel::urlext(){
+const QString ApiDel::urlext()
+{
     return "del";
 }
 
-void ApiDel::handleResponse(){
+void ApiDel::handleResponse()
+{
     qDebug() << "ApiDel::handleResponse(): " << response;
     // nothing to actually handle. the response code is enough.
 }
 
-int ApiDel::allData(){
+int ApiDel::allData()
+{
     return response.toInt();
 }
 
-void ApiDel::done(){
+void ApiDel::done()
+{
     emit done(this);
 }
 
-const QString ApiDel::errorStr(){
-    if(reply->error() != QNetworkReply::NoError){
+const QString ApiDel::errorStr()
+{
+    if (reply->error() != QNetworkReply::NoError) {
         return reply->errorString();
     }
     return errorStrings[status];

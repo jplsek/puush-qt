@@ -44,15 +44,17 @@ ApiAuth::ApiAuth(const QString &apiurl, const QString &apikey):
     auth.diskUsage = 0;
 }
 
-const QString ApiAuth::urlext(){
+const QString ApiAuth::urlext()
+{
     return "auth";
 }
 
-void ApiAuth::handleResponse(){
+void ApiAuth::handleResponse()
+{
     qDebug() << "ApiAuth::handleResponse()";
 
     QList<QByteArray> pieces = response.split(',');
-    if(pieces.length() != 4){
+    if (pieces.length() != 4) {
         status = InvalidResponse;
         return;
     }
@@ -61,7 +63,7 @@ void ApiAuth::handleResponse(){
     auth.apikey    = pieces[1];
     auth.diskUsage = pieces[3].toInt();
 
-    if(pieces[2].isEmpty()){
+    if (pieces[2].isEmpty()) {
         auth.expiry = 0;
     } else {
         auth.expiry = pieces[2].toInt();
@@ -70,39 +72,46 @@ void ApiAuth::handleResponse(){
     std::cout << auth;
 }
 
-void ApiAuth::done(){
+void ApiAuth::done()
+{
     emit done(this);
 }
 
-const QString ApiAuth::errorStr(){
-    if(reply->error() != QNetworkReply::NoError){
+const QString ApiAuth::errorStr()
+{
+    if (reply->error() != QNetworkReply::NoError)
         return reply->errorString();
-    }
     return errorStrings[status];
 }
 
-const ApiAuth::AuthData ApiAuth::allData(){
+const ApiAuth::AuthData ApiAuth::allData()
+{
     return auth;
 }
 
-bool ApiAuth::hasPremium(){
+bool ApiAuth::hasPremium()
+{
     return auth.premium;
 }
 
-const QString ApiAuth::apikey(){
+const QString ApiAuth::apikey()
+{
     return auth.apikey;
 }
 
-int ApiAuth::expiry(){
+int ApiAuth::expiry()
+{
     return auth.expiry;
 }
 
-const QString ApiAuth::expiryString(){
+const QString ApiAuth::expiryString()
+{
     return ApiAuth::expiryReadableString(auth.expiry);
 }
 
-const QString ApiAuth::expiryReadableString(int expiry){
-    if(expiry <= 0){
+const QString ApiAuth::expiryReadableString(int expiry)
+{
+    if (expiry <= 0) {
         return "Never";
     } else if (expiry > 1471070929L) {
         // since this is a pretty big number, assume that the unit is
@@ -116,12 +125,14 @@ const QString ApiAuth::expiryReadableString(int expiry){
     }
 }
 
-int ApiAuth::diskUsage(){
+int ApiAuth::diskUsage()
+{
     return auth.diskUsage;
 }
 
 
-std::ostream &operator<<(std::ostream &s, ApiAuth::AuthData &d){
+std::ostream &operator<<(std::ostream &s, ApiAuth::AuthData &d)
+{
     s << "premium:   " << d.premium   << std::endl;
     s << "apikey:    " << d.apikey.toStdString() << std::endl;
     s << "expiry:    " << d.expiry    << std::endl;

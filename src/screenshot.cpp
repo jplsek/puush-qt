@@ -16,7 +16,8 @@
 #include "screenshot.h"
 #include "transparentwindow.h"
 
-Screenshot::Screenshot(QString fileName) {
+Screenshot::Screenshot(QString fileName)
+{
     fn = fileName;
     quality = s.value(Settings::IMAGE_QUALITY).toString();
 }
@@ -25,25 +26,27 @@ Screenshot::Screenshot(QString fileName) {
  * Take a selected area screenshot
  * @brief Screenshot::selectArea
  */
-void Screenshot::selectArea() {
+void Screenshot::selectArea()
+{
     // even though the "transparent window" is "cross platform" some desktop environments don't allow windows to cover their panels, so we will just use scrot
-    #if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX)
 
     screenshotProcess = new QProcess();
     screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-s" << fn);
 
     connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
 
-    #else
+#else
 
     tw = new TransparentWindow();
     connect(tw, SIGNAL(finished(QRect, QPoint, QPoint)), this, SLOT(selectionDone(QRect)));
 
-    #endif
+#endif
 }
 
-void Screenshot::selectionDone(QRect selection) {
-    delete(tw);
+void Screenshot::selectionDone(QRect selection)
+{
+    delete (tw);
     croppedScreenshot(selection);
 }
 
@@ -52,7 +55,8 @@ void Screenshot::selectionDone(QRect selection) {
  * @brief Screenshot::croppedScreenshot
  * @param selection
  */
-void Screenshot::croppedScreenshot(QRect selection) {
+void Screenshot::croppedScreenshot(QRect selection)
+{
     QPixmap screenshot = desktop();
     screenshot = screenshot.copy(selection);
 
@@ -63,14 +67,16 @@ void Screenshot::croppedScreenshot(QRect selection) {
  * Take a fullscreen screenshot
  * @brief Screenshot::fullScreen
  */
-void Screenshot::fullScreen() {
+void Screenshot::fullScreen()
+{
     // TODO check settings to take a screenshot a screen or the whole desktop
 
     // wait 1 second before taking a screenshot because of desktop animations, etc
     QTimer::singleShot(1000, this, SLOT(fullScreenAfterTimer()));
 }
 
-void Screenshot::fullScreenAfterTimer() {
+void Screenshot::fullScreenAfterTimer()
+{
     // if this is still 0, 0 by the end, we just take a screenshot of the whole desktop
     QPixmap screenshot(0, 0);
     QString message = "";
@@ -108,7 +114,8 @@ void Screenshot::fullScreenAfterTimer() {
     save(screenshot, message);
 }
 
-void Screenshot::save(QPixmap screenshot, QString message) {
+void Screenshot::save(QPixmap screenshot, QString message)
+{
     // TODO we can now tell whether to use PNG or JPEG with save(filename, filetype) (our advanced settings).
     // By default, it uses the suffix of the file name.
     if (!screenshot.save(fn)) {
@@ -121,7 +128,8 @@ void Screenshot::save(QPixmap screenshot, QString message) {
     finished(0, fn, message);
 }
 
-QPixmap Screenshot::desktop() {
+QPixmap Screenshot::desktop()
+{
     // TODO fix deprecated error
     // We can use our screen() to loop through them, and somehow combine the qpixmaps into 1 (QDesktopWidget::screenCount()).
     // We may also have to take into account the screen locations.
@@ -129,12 +137,14 @@ QPixmap Screenshot::desktop() {
     return QPixmap::grabWindow(desktop->winId(), 0, 0, desktop->width(), desktop->height());
 }
 
-QPixmap Screenshot::primaryScreen() {
+QPixmap Screenshot::primaryScreen()
+{
     QScreen *screen = QApplication::primaryScreen();
     return screen->grabWindow(0);
 }
 
-QPixmap Screenshot::screen(QScreen *screen) {
+QPixmap Screenshot::screen(QScreen *screen)
+{
     if (!screen) {
         finished(-1, fn, tr("Can't find a screen!"));
         return QPixmap(0, 0);
@@ -143,7 +153,8 @@ QPixmap Screenshot::screen(QScreen *screen) {
     return screen->grabWindow(0);
 }
 
-QPixmap Screenshot::screen(int i) {
+QPixmap Screenshot::screen(int i)
+{
     QScreen *s = QGuiApplication::screens()[i];
     return screen(s);
 }
@@ -154,8 +165,9 @@ QPixmap Screenshot::screen(int i) {
  * ATM we'll be lazy, and use "scrot" for Linux users.
  * @brief Screenshot::activeWindow
  */
-void Screenshot::activeWindow() {
-    #if defined(Q_OS_WIN)
+void Screenshot::activeWindow()
+{
+#if defined(Q_OS_WIN)
 
     HWND hwnd = GetForegroundWindow();
     RECT r;
@@ -164,21 +176,22 @@ void Screenshot::activeWindow() {
     QRect qr(r.left, r.top, r.right - r.left, r.bottom - r.top);
     croppedScreenshot(qr);
 
-    #elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX)
 
     screenshotProcess = new QProcess();
     screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-u" << fn);
 
     connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
 
-    #else
+#else
 
     finished(-1, fn, tr("Your operating system is not supported!"));
 
-    #endif
+#endif
 }
 
-void Screenshot::screenshotDone(int returnCode) {
+void Screenshot::screenshotDone(int returnCode)
+{
     QString output = screenshotProcess->readAllStandardOutput();
     QString error = screenshotProcess->readAllStandardError();
     QString all = output + error;

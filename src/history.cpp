@@ -4,22 +4,26 @@
 
 #include "api/apihist.h"
 
-History::History(QObject *parent) : QObject(parent) {
+History::History(QObject *parent) : QObject(parent)
+{
     dirty = true;
 }
 
-void History::getHistory(){
-    if(s.value(Settings::ACCOUNT_API_KEY).toString() == "" || !dirty)
+void History::getHistory()
+{
+    if (s.value(Settings::ACCOUNT_API_KEY).toString() == "" || !dirty)
         return;
 
     qDebug() << "getting history";
 
-    ApiHist *api = new ApiHist(s.value(Settings::API_URL).toString(), s.value(Settings::ACCOUNT_API_KEY).toString());
+    ApiHist *api = new ApiHist(s.value(Settings::API_URL).toString(),
+                               s.value(Settings::ACCOUNT_API_KEY).toString());
     connect(api, SIGNAL(done(ApiHist *)), this, SLOT(getHistoryDone(ApiHist *)));
     api->start();
 }
 
-void History::getHistoryDone(ApiHist *results){
+void History::getHistoryDone(ApiHist *results)
+{
     historyList = results->allData();
 
     // set dirty to false only in a valid response. Keep dirty true when there
@@ -35,6 +39,7 @@ void History::getHistoryDone(ApiHist *results){
     emit historyDone(historyList);
 }
 
-void History::setDirty() {
+void History::setDirty()
+{
     dirty = true;
 }

@@ -8,7 +8,8 @@
 
 Authentication::Authentication(QObject *parent) : QObject(parent) {  }
 
-void Authentication::submitLogin(QString email, QString password) {
+void Authentication::submitLogin(QString email, QString password)
+{
     s.setValue(Settings::ACCOUNT_EMAIL, email);
     ApiAuth *api = new ApiAuth(s.value(Settings::API_URL).toString(), email, password);
     QMetaObject::Connection r = connect(api, SIGNAL(done(ApiAuth *)), this, SLOT(authDone(ApiAuth *)));
@@ -16,10 +17,11 @@ void Authentication::submitLogin(QString email, QString password) {
     api->start();
 }
 
-void Authentication::authDone(ApiAuth *req) {
+void Authentication::authDone(ApiAuth *req)
+{
     qDebug() << "authDone()";
 
-    if(req->failed()){
+    if (req->failed()) {
         // we don't need to reset the email. There could be offline issues
         // which would reset the email, and having the email stored isn't really a problem.
         emit authMessage(req->errorStr());
@@ -42,21 +44,25 @@ void Authentication::authDone(ApiAuth *req) {
     delete req;
 }
 
-void Authentication::logout(){
+void Authentication::logout()
+{
     s.setValue(Settings::ACCOUNT_EMAIL, "");
     s.setValue(Settings::ACCOUNT_API_KEY, "");
     emit authChange(isLoggedIn());
 }
 
-bool Authentication::isLoggedIn() {
+bool Authentication::isLoggedIn()
+{
     return s.value(Settings::ACCOUNT_API_KEY).toString() != "";
 }
 
-void Authentication::update() {
+void Authentication::update()
+{
     if (!isLoggedIn())
         return;
 
-    ApiAuth *api = new ApiAuth(s.value(Settings::API_URL).toString(), s.value(Settings::ACCOUNT_API_KEY).toString());
+    ApiAuth *api = new ApiAuth(s.value(Settings::API_URL).toString(),
+                               s.value(Settings::ACCOUNT_API_KEY).toString());
     QMetaObject::Connection r = connect(api, SIGNAL(done(ApiAuth *)), this, SLOT(authDone(ApiAuth *)));
     api->start();
 }

@@ -21,29 +21,34 @@ ApiThumb::ApiThumb(const QString &apiurl, const QString &apikey, const QString &
     data.addQueryItem("i", QUrl::toPercentEncoding(id));
 }
 
-const QString ApiThumb::urlext(){
+const QString ApiThumb::urlext()
+{
     return "thumb";
 }
 
-void ApiThumb::handleResponse(){
+void ApiThumb::handleResponse()
+{
     qDebug() << "ApiThumb::handleResponse()";
-    if(!image.loadFromData(response, "png")){
+    if (!image.loadFromData(response, "png")) {
         status = ImageLoadFailed;
     }
 }
 
-void ApiThumb::done(){
+void ApiThumb::done()
+{
     emit done(this);
 }
 
-const QString ApiThumb::errorStr(){
-    if(reply->error() != QNetworkReply::NoError){
+const QString ApiThumb::errorStr()
+{
+    if (reply->error() != QNetworkReply::NoError) {
         return reply->errorString();
     }
     return errorStrings[status];
 }
 
-const QImage ApiThumb::thumb(){
+const QImage ApiThumb::thumb()
+{
     return image;
 }
 

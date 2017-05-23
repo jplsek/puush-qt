@@ -7,7 +7,8 @@
 
 #include "transparentwindow.h"
 
-TransparentWindow::TransparentWindow(QWidget *parent) : QDialog(parent) {
+TransparentWindow::TransparentWindow(QWidget *parent) : QDialog(parent)
+{
     setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     setParent(0); // Create TopLevel-Widget
 
@@ -36,7 +37,8 @@ TransparentWindow::TransparentWindow(QWidget *parent) : QDialog(parent) {
 }
 
 
-void TransparentWindow::mousePressEvent(QMouseEvent *event) {
+void TransparentWindow::mousePressEvent(QMouseEvent *event)
+{
     origin = event->pos();
 
     if (!rubberBand)
@@ -46,11 +48,13 @@ void TransparentWindow::mousePressEvent(QMouseEvent *event) {
     rubberBand->show();
 }
 
-void TransparentWindow::mouseMoveEvent(QMouseEvent *event) {
+void TransparentWindow::mouseMoveEvent(QMouseEvent *event)
+{
     rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
 }
 
-void TransparentWindow::mouseReleaseEvent(QMouseEvent *event) {
+void TransparentWindow::mouseReleaseEvent(QMouseEvent *event)
+{
     rubberBand->hide();
     this->hide();
     finished(rubberBand->geometry(), origin, event->pos());

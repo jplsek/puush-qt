@@ -5,7 +5,8 @@
 #include <QString>
 #include <QVariant>
 
-const QString Settings::GENERAL_GROUP_NAME   = "basic"; // [general] -> [basic] because it was conflicting with QSettings [general]
+// [general] -> [basic] because it was conflicting with QSettings [general]
+const QString Settings::GENERAL_GROUP_NAME   = "basic";
 const QString Settings::ADVANCED_GROUP_NAME  = "advanced";
 const QString Settings::EXTRA_GROUP_NAME     = "extra";
 const QString Settings::USER_INFO_GROUP_NAME = "user-info";
@@ -146,8 +147,9 @@ const QString Settings::radio_values[] = {
     [Settings::RadioValue::PRIMARY_DESKTOP] = "primary-desktop",
 };
 
-Settings::Settings(){
-    if(s.value(setting_names[SETTINGS_VERSION]).toString() != default_values[SETTINGS_VERSION]){
+Settings::Settings()
+{
+    if (s.value(setting_names[SETTINGS_VERSION]).toString() != default_values[SETTINGS_VERSION]) {
         // FIXME: show 'popup' saying some settings may have been reset due to settings key/value changes
         // <ok ill check> <bother me later>
         // if they say ok, then update the settings version. otherwise dont so this will be run again.
@@ -158,37 +160,43 @@ Settings::Settings(){
 }
 
 
-QVariant Settings::value(Setting s){
+QVariant Settings::value(Setting s)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     return this->s.value(setting_names[s]);
 }
 
-bool Settings::contains(Setting s){
+bool Settings::contains(Setting s)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     return this->s.contains(setting_names[s]);
 }
 
-void Settings::setValue(Setting s, QVariant val){
+void Settings::setValue(Setting s, QVariant val)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     this->s.setValue(setting_names[s], val);
 }
 
-void Settings::setRadioValue(Setting s, RadioValue val){
+void Settings::setRadioValue(Setting s, RadioValue val)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     this->s.setValue(setting_names[s], radio_values[val]);
 }
 
-bool Settings::radioValueIs(Setting s, RadioValue v){
+bool Settings::radioValueIs(Setting s, RadioValue v)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     return this->s.value(setting_names[s]).toString() == radio_values[v];
 }
 
-void Settings::resetGeneralSettings(){
+void Settings::resetGeneralSettings()
+{
     setValue(ON_PUUSH_SOUND, default_values[ON_PUUSH_SOUND]);
     setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, default_values[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]);
     setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, default_values[ON_PUUSH_OPEN_LINK_IN_BROWSER]);
@@ -200,7 +208,8 @@ void Settings::resetGeneralSettings(){
     setRadioValue(TRAY_CLICK_ACTION, OPEN_SETTINGS);
 }
 
-void Settings::resetAdvancedSettings(){
+void Settings::resetAdvancedSettings()
+{
     setRadioValue(COMPRESSION_PHILOSOPHY, PNG_ALWAYS);
 
     setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
@@ -208,7 +217,8 @@ void Settings::resetAdvancedSettings(){
     setValue(IMAGE_QUALITY, default_values[IMAGE_QUALITY]);
 }
 
-void Settings::resetExtraSettings(){
+void Settings::resetExtraSettings()
+{
     s.endGroup();
     s.beginGroup(EXTRA_GROUP_NAME);
     s.setValue(setting_names[BASE_URL], default_values[BASE_URL]);
@@ -216,14 +226,16 @@ void Settings::resetExtraSettings(){
     s.setValue(setting_names[SETTINGS_VERSION], default_values[SETTINGS_VERSION]);
 }
 
-void Settings::resetUserInfoSettings(){
+void Settings::resetUserInfoSettings()
+{
     s.endGroup();
     s.beginGroup(USER_INFO_GROUP_NAME);
     s.setValue(setting_names[ACCOUNT_EMAIL],   default_values[ACCOUNT_EMAIL]);
     s.setValue(setting_names[ACCOUNT_API_KEY], default_values[ACCOUNT_API_KEY]);
 }
 
-void Settings::resetBindingsSettings(){
+void Settings::resetBindingsSettings()
+{
     s.endGroup();
     s.beginGroup(BINDINGS_GROUP_NAME);
     s.setValue(setting_names[BINDING_UPLOAD_FILE],      default_values[BINDING_UPLOAD_FILE]);
@@ -234,79 +246,81 @@ void Settings::resetBindingsSettings(){
     s.setValue(setting_names[BINDING_TOGGLE_PUUSH],     default_values[BINDING_TOGGLE_PUUSH]);
 }
 
-QVariant Settings::resetValue(Setting s){
+QVariant Settings::resetValue(Setting s)
+{
     this->s.endGroup();
     this->s.beginGroup(groups[s]);
     this->s.setValue(setting_names[s], default_values[s]);
     return value(s);
 }
 
-void Settings::setEmptyToDefaults(){
+void Settings::setEmptyToDefaults()
+{
     // General
 
-    if(!contains(ON_PUUSH_SOUND))
+    if (!contains(ON_PUUSH_SOUND))
         setValue(ON_PUUSH_SOUND, default_values[ON_PUUSH_SOUND]);
-    if(!contains(ON_PUUSH_COPY_LINK_TO_CLIPBOARD))
+    if (!contains(ON_PUUSH_COPY_LINK_TO_CLIPBOARD))
         setValue(ON_PUUSH_COPY_LINK_TO_CLIPBOARD, default_values[ON_PUUSH_COPY_LINK_TO_CLIPBOARD]);
-    if(!contains(ON_PUUSH_OPEN_LINK_IN_BROWSER))
+    if (!contains(ON_PUUSH_OPEN_LINK_IN_BROWSER))
         setValue(ON_PUUSH_OPEN_LINK_IN_BROWSER, default_values[ON_PUUSH_OPEN_LINK_IN_BROWSER]);
 
-    if(!contains(LOCAL_SAVE_ENABLED))
+    if (!contains(LOCAL_SAVE_ENABLED))
         setValue(LOCAL_SAVE_ENABLED, default_values[LOCAL_SAVE_ENABLED]);
-    if(!contains(LOCAL_SAVE_PATH) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
+    if (!contains(LOCAL_SAVE_PATH) || s.value(setting_names[LOCAL_SAVE_PATH]).toString() == "")
         setValue(LOCAL_SAVE_PATH, default_values[LOCAL_SAVE_PATH]);
-    if(!contains(LOCAL_SAVE_NAME))
+    if (!contains(LOCAL_SAVE_NAME))
         setValue(LOCAL_SAVE_NAME, default_values[LOCAL_SAVE_NAME]);
 
-    if(!contains(TRAY_CLICK_ACTION))
+    if (!contains(TRAY_CLICK_ACTION))
         setRadioValue(TRAY_CLICK_ACTION, OPEN_SETTINGS);
 
     // Advanced
 
-    if(!contains(COMPRESSION_PHILOSOPHY))
+    if (!contains(COMPRESSION_PHILOSOPHY))
         setRadioValue(COMPRESSION_PHILOSOPHY, PNG_ALWAYS);
 
-    if(!contains(FULLSCREEN_CAPTURE_MODE))
+    if (!contains(FULLSCREEN_CAPTURE_MODE))
         setRadioValue(FULLSCREEN_CAPTURE_MODE, ALL_DESKTOPS);
 
-    if(!contains(IMAGE_QUALITY))
+    if (!contains(IMAGE_QUALITY))
         setValue(IMAGE_QUALITY, default_values[IMAGE_QUALITY]);
 
     // Extra
 
-    if(!contains(SETTINGS_VERSION))
+    if (!contains(SETTINGS_VERSION))
         setValue(SETTINGS_VERSION, default_values[SETTINGS_VERSION]);
 
-    if(!contains(BASE_URL))
+    if (!contains(BASE_URL))
         setValue(BASE_URL, default_values[BASE_URL]);
-    if(!contains(API_URL))
+    if (!contains(API_URL))
         setValue(API_URL,  default_values[API_URL]);
 
     // User info
 
-    if(!contains(ACCOUNT_EMAIL))
+    if (!contains(ACCOUNT_EMAIL))
         setValue(ACCOUNT_EMAIL, default_values[ACCOUNT_EMAIL]);
-    if(!contains(ACCOUNT_API_KEY))
+    if (!contains(ACCOUNT_API_KEY))
         setValue(ACCOUNT_API_KEY, default_values[ACCOUNT_API_KEY]);
-    if(!contains(ACCOUNT_PREMIUM))
+    if (!contains(ACCOUNT_PREMIUM))
         setValue(ACCOUNT_PREMIUM, default_values[ACCOUNT_PREMIUM]);
-    if(!contains(ACCOUNT_PREMIUM_EXPIRY))
+    if (!contains(ACCOUNT_PREMIUM_EXPIRY))
         setValue(ACCOUNT_PREMIUM_EXPIRY, default_values[ACCOUNT_PREMIUM_EXPIRY]);
-    if(!contains(ACCOUNT_DISK_USAGE))
+    if (!contains(ACCOUNT_DISK_USAGE))
         setValue(ACCOUNT_DISK_USAGE, default_values[ACCOUNT_DISK_USAGE]);
 
     // Key bindings
 
-    if(!contains(BINDING_UPLOAD_FILE))
+    if (!contains(BINDING_UPLOAD_FILE))
         setValue(BINDING_UPLOAD_FILE, default_values[BINDING_UPLOAD_FILE]);
-    if(!contains(BINDING_CAPTURE_DESKTOP))
+    if (!contains(BINDING_CAPTURE_DESKTOP))
         setValue(BINDING_CAPTURE_DESKTOP, default_values[BINDING_CAPTURE_DESKTOP]);
-    if(!contains(BINDING_CAPTURE_AREA))
+    if (!contains(BINDING_CAPTURE_AREA))
         setValue(BINDING_CAPTURE_AREA, default_values[BINDING_CAPTURE_AREA]);
-    if(!contains(BINDING_CAPTURE_WINDOW))
+    if (!contains(BINDING_CAPTURE_WINDOW))
         setValue(BINDING_CAPTURE_WINDOW, default_values[BINDING_CAPTURE_WINDOW]);
-    if(!contains(BINDING_UPLOAD_CLIPBOARD))
+    if (!contains(BINDING_UPLOAD_CLIPBOARD))
         setValue(BINDING_UPLOAD_CLIPBOARD, default_values[BINDING_UPLOAD_CLIPBOARD]);
-    if(!contains(BINDING_TOGGLE_PUUSH))
+    if (!contains(BINDING_TOGGLE_PUUSH))
         setValue(BINDING_TOGGLE_PUUSH, default_values[BINDING_TOGGLE_PUUSH]);
 }

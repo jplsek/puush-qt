@@ -9,7 +9,8 @@
 
 #include "settings.h"
 
-Upload::Upload(QString fileName) {
+Upload::Upload(QString fileName)
+{
     Settings s;
 
     QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
@@ -18,7 +19,7 @@ Upload::Upload(QString fileName) {
     fileName = fileName.remove("file://");
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
 
     QNetworkRequest request;
     request.setUrl(QUrl(s.value(Settings::API_URL).toString() + "up"));
@@ -26,7 +27,7 @@ Upload::Upload(QString fileName) {
     QFile *file = new QFile(fileName);
     file->open(QIODevice::ReadOnly);
 
-    QString bound="puushqtboundaryapirequest";
+    QString bound = "puushqtboundaryapirequest";
     QByteArray postData(QString("--" + bound + "\r\n").toUtf8());
     postData.append("Content-Disposition: form-data; name=\"k\"\r\n\r\n");
     postData.append(key + "\r\n");
@@ -50,10 +51,12 @@ Upload::Upload(QString fileName) {
     manager->post(request, postData);
 }
 
-void Upload::uploadStarted() {
+void Upload::uploadStarted()
+{
     started();
 }
 
-void Upload::replyFinished(QNetworkReply *reply) {
+void Upload::replyFinished(QNetworkReply *reply)
+{
     finished(reply->readAll());
 }

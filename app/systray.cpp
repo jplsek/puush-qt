@@ -12,15 +12,17 @@
 #include "upload.h"
 #include "history.h"
 
-Systray::Systray(QObject *parent) : QObject(parent) {
+Systray::Systray(QObject *parent) : QObject(parent)
+{
     s.setEmptyToDefaults();
 
     createActions();
     createTrayIcon();
 
     connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(messageClicked()));
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(trayIcon,
+            SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+            SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
     setTrayIcon(":/images/puush-qt.png");
 
@@ -30,7 +32,8 @@ Systray::Systray(QObject *parent) : QObject(parent) {
 
     history = new History();
 
-    connect(history, SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
+    connect(history,
+            SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
             SLOT(updateHistoryMenu(QList<ApiHist::HistData>)));
 
     // Get the history after the app starts. For some reason the context
@@ -44,12 +47,14 @@ Systray::Systray(QObject *parent) : QObject(parent) {
  * @brief Systray::setTrayIcon
  * @param image
  */
-void Systray::setTrayIcon(QString image) {
+void Systray::setTrayIcon(QString image)
+{
     QIcon icon = QIcon(image), tr("Icon");
     trayIcon->setIcon(icon);
 }
 
-void Systray::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+void Systray::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
     //qDebug() << "icon activated";
     switch (reason) {
     // left click (and right click? doesn't work on linux?)
@@ -67,7 +72,8 @@ void Systray::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
-void Systray::doDoubleClickAction() {
+void Systray::doDoubleClickAction()
+{
     if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_UPLOADS)) {
         openSaveDirectory();
     } else if (s.radioValueIs(Settings::TRAY_CLICK_ACTION, Settings::OPEN_SETTINGS)) {
@@ -91,7 +97,8 @@ void Systray::doDoubleClickAction() {
  * Event used when clicking the message window
  * @brief Systray::messageClicked
  */
-void Systray::messageClicked() {
+void Systray::messageClicked()
+{
     if (lastUrl == QUrl(""))
         return;
 
@@ -101,15 +108,18 @@ void Systray::messageClicked() {
     lastUrl = QUrl("");
 }
 
-void Systray::openUrl(QUrl url) {
+void Systray::openUrl(QUrl url)
+{
     bool response = QDesktopServices::openUrl(url);
 
     if (!response) {
-        trayIcon->showMessage(tr("Error!"), tr("There was an issue opening the URL. Is your default browser set?"), QSystemTrayIcon::Warning);
+        trayIcon->showMessage(tr("Error!"),
+                              tr("There was an issue opening the URL. Is your default browser set?"), QSystemTrayIcon::Warning);
     }
 }
 
-void Systray::createActions() {
+void Systray::createActions()
+{
     myAccountAction = new QAction(tr("&My Account"));
     connect(myAccountAction, SIGNAL(triggered()), this, SLOT(openAccount()));
 
@@ -140,7 +150,8 @@ void Systray::createActions() {
     connect(openSaveDirectoryAction, SIGNAL(triggered()), this, SLOT(openSaveDirectory()));
 }
 
-void Systray::createTrayIcon() {
+void Systray::createTrayIcon()
+{
     trayIconMenu = new QMenu();
     trayIconMenu->addAction(myAccountAction);
     trayIconMenu->addSeparator();
@@ -177,11 +188,13 @@ void Systray::createTrayIcon() {
  * Show the application window
  * @brief Systray::openSettings
  */
-void Systray::openSettings(int tab) {
+void Systray::openSettings(int tab)
+{
     emit signalOpenSettings(tab);
 }
 
-void Systray::openSaveDirectorySetEnabled(bool enabled) {
+void Systray::openSaveDirectorySetEnabled(bool enabled)
+{
     openSaveDirectoryAction->setEnabled(enabled);
 }
 
@@ -190,7 +203,8 @@ void Systray::openSaveDirectorySetEnabled(bool enabled) {
  * @brief Systray::isLoggedIn
  * @return
  */
-bool Systray::isLoggedIn(bool msg = true) {
+bool Systray::isLoggedIn(bool msg = true)
+{
     if (s.value(Settings::ACCOUNT_API_KEY) != "")
         return true;
 
@@ -202,8 +216,10 @@ bool Systray::isLoggedIn(bool msg = true) {
     return false;
 }
 
-void Systray::openAccount() {
-    if (!isLoggedIn()) return;
+void Systray::openAccount()
+{
+    if (!isLoggedIn())
+        return;
 
     QString key = s.value(Settings::ACCOUNT_API_KEY).toString();
     openUrl(QUrl(s.value(Settings::BASE_URL).toString() + "login/go/?k=" + key));
@@ -213,12 +229,15 @@ void Systray::openAccount() {
  * Puush upload a file via the open file dialog.
  * @brief Systray::uploadFile
  */
-void Systray::uploadFile() {
-    if (!isLoggedIn()) return;
+void Systray::uploadFile()
+{
+    if (!isLoggedIn())
+        return;
 
     QString fileName = QFileDialog::getOpenFileName(NULL, tr("Upload file"));
 
-    if (fileName == "") return;
+    if (fileName == "")
+        return;
 
     Upload *u = new Upload(fileName);
 
@@ -230,8 +249,10 @@ void Systray::uploadFile() {
  * Puush upload the clipboard
  * @brief Systray::uploadClipboard
  */
-void Systray::uploadClipboard() {
-    if (!isLoggedIn()) return;
+void Systray::uploadClipboard()
+{
+    if (!isLoggedIn())
+        return;
 
     QString text = QApplication::clipboard()->text();
 
@@ -257,7 +278,8 @@ void Systray::uploadClipboard() {
             connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
             connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
         } else {
-            trayIcon->showMessage("puush-qt", tr("Error opening temporary file for writing!"), QSystemTrayIcon::Critical);
+            trayIcon->showMessage("puush-qt", tr("Error opening temporary file for writing!"),
+                                  QSystemTrayIcon::Critical);
         }
     }
 }
@@ -266,12 +288,16 @@ void Systray::uploadClipboard() {
  * Puush capture desktop screenshot.
  * @brief Systray::fullScreenScreenshot
  */
-void Systray::fullScreenScreenshot() {
-    if (!isLoggedIn()) return;
+void Systray::fullScreenScreenshot()
+{
+    if (!isLoggedIn())
+        return;
 
     QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
-    connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
+    connect(ss,
+            SIGNAL(finished(int, QString, QString)), this,
+            SLOT(screenshotDone(int, QString, QString)));
     ss->fullScreen();
 }
 
@@ -279,17 +305,22 @@ void Systray::fullScreenScreenshot() {
  * Puush capture area screenshot.
  * @brief Systray::selectAreaScreenshot
  */
-void Systray::selectAreaScreenshot() {
-    if (!isLoggedIn()) return;
+void Systray::selectAreaScreenshot()
+{
+    if (!isLoggedIn())
+        return;
 
     QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
-    connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
+    connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString,
+                                                                                   QString)));
     ss->selectArea();
 }
 
-void Systray::activeWindowScreenshotTimed() {
-    if (!isLoggedIn()) return;
+void Systray::activeWindowScreenshotTimed()
+{
+    if (!isLoggedIn())
+        return;
 
     trayIcon->showMessage(tr("Select a window"),
                           tr("Taking a screenshot in ") + QString::number(defaultSelectionTimeout) + tr(" seconds..."),
@@ -305,12 +336,16 @@ void Systray::activeWindowScreenshotTimed() {
  * Initiate the Puush current window screenshot.
  * @brief Systray::activeSystrayScreenshot
  */
-void Systray::activeWindowScreenshot() {
-    if (!isLoggedIn()) return;
+void Systray::activeWindowScreenshot()
+{
+    if (!isLoggedIn())
+        return;
 
     QString fileName = getTempPath();
     Screenshot *ss = new Screenshot(fileName);
-    connect(ss, SIGNAL(finished(int, QString, QString)), this, SLOT(screenshotDone(int, QString, QString)));
+    connect(ss,
+            SIGNAL(finished(int, QString, QString)), this,
+            SLOT(screenshotDone(int, QString, QString)));
     ss->activeWindow();
 }
 
@@ -318,7 +353,8 @@ void Systray::activeWindowScreenshot() {
  * Toggle puush functionality
  * @brief Systray::togglePuush
  */
-void Systray::togglePuush() {
+void Systray::togglePuush()
+{
     trayIcon->showMessage("puush-qt", tr("Not implemented"), QSystemTrayIcon::Information);
 }
 
@@ -327,7 +363,8 @@ void Systray::togglePuush() {
  * Once it is done, it will create the Puush current window screenshot.
  * @brief Systray::updateActiveMessage
  */
-void Systray::updateActiveMessage() {
+void Systray::updateActiveMessage()
+{
     if (numTime < 1) {
         timer->stop();
         activeWindowScreenshot();
@@ -341,7 +378,8 @@ void Systray::updateActiveMessage() {
  * Notify the user when a Puush upload has started.
  * @brief Systray::puushStarted
  */
-void Systray::puushStarted() {
+void Systray::puushStarted()
+{
     setTrayIcon(":/images/puush-qt-uploading.png");
 }
 
@@ -352,7 +390,8 @@ void Systray::puushStarted() {
  * @param fileName
  * @param output
  */
-void Systray::screenshotDone(int returnCode, QString fileName, QString output) {
+void Systray::screenshotDone(int returnCode, QString fileName, QString output)
+{
     if (returnCode != 0) {
         trayIcon->showMessage(tr("Error!"), output, QSystemTrayIcon::Warning);
         return;
@@ -363,7 +402,7 @@ void Systray::screenshotDone(int returnCode, QString fileName, QString output) {
     connect(u, SIGNAL(started()), this, SLOT(puushStarted()));
     connect(u, SIGNAL(finished(QString)), this, SLOT(puushDone(QString)));
 
-    if(s.value(Settings::LOCAL_SAVE_ENABLED).toBool()){
+    if (s.value(Settings::LOCAL_SAVE_ENABLED).toBool()) {
         QDir root = QDir::root();
         root.mkpath(getSaveDirectory());
         QFile::copy(fileName, getSavePath());
@@ -375,7 +414,8 @@ void Systray::screenshotDone(int returnCode, QString fileName, QString output) {
  * @brief Systray::getTempPath
  * @return
  */
-QString Systray::getTempPath() {
+QString Systray::getTempPath()
+{
     return QDir::tempPath() + QDir::separator() + getFileName();
 }
 
@@ -384,10 +424,11 @@ QString Systray::getTempPath() {
  * @brief Systray::getSaveDirectory
  * @return
  */
-QString Systray::getSaveDirectory(){
+QString Systray::getSaveDirectory()
+{
     QString path = s.value(Settings::LOCAL_SAVE_PATH).toString();
 
-    if(path.startsWith("~/")){
+    if (path.startsWith("~/")) {
         path.remove(0, 1); // remove "~"
         path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + path; // add "/home/user"
     }
@@ -400,8 +441,10 @@ QString Systray::getSaveDirectory(){
  * @brief Systray::getFileName
  * @return
  */
-QString Systray::getFileName() {
-    return QDateTime::currentDateTime().toString(s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
+QString Systray::getFileName()
+{
+    return QDateTime::currentDateTime().toString(
+                s.value(Settings::LOCAL_SAVE_NAME).toString()) + ".png";
 }
 
 /**
@@ -409,7 +452,8 @@ QString Systray::getFileName() {
  * @brief Systray::getSavePath
  * @return
  */
-QString Systray::getSavePath() {
+QString Systray::getSavePath()
+{
     return getSaveDirectory() + "/" + getFileName();
 }
 
@@ -417,7 +461,8 @@ QString Systray::getSavePath() {
  * Opens the screenshot directory if the user has enabled saving local screenshots.
  * @brief Systray::openSaveDirectory
  */
-void Systray::openSaveDirectory() {
+void Systray::openSaveDirectory()
+{
     QString path = getSaveDirectory();
 
     bool response = QDesktopServices::openUrl(QUrl::fromLocalFile(path));
@@ -427,7 +472,8 @@ void Systray::openSaveDirectory() {
     }
 }
 
-void Systray::updateHistoryMenu(QList<ApiHist::HistData> historyList) {
+void Systray::updateHistoryMenu(QList<ApiHist::HistData> historyList)
+{
     qDebug() << "updateHistoryMenu";
 
     historyMenu->clear();
@@ -450,24 +496,33 @@ void Systray::updateHistoryMenu(QList<ApiHist::HistData> historyList) {
         menu->addAction(views);
 
         QAction *open = new QAction(tr("Open in browser"));
-        connect(open, &QAction::triggered, [=](){ openUrl(data.url); });
+        connect(open, &QAction::triggered, [=]() {
+            openUrl(data.url);
+        });
         menu->addAction(open);
 
         QAction *copy = new QAction(tr("Copy link to clipboard"));
-        connect(copy, &QAction::triggered, [=](){ QApplication::clipboard()->setText(data.url); });
+        connect(copy, &QAction::triggered, [=]() {
+            QApplication::clipboard()->setText(data.url);
+        });
         menu->addAction(copy);
 
         QAction *del = new QAction(tr("Delete"));
-        ApiDel *api = new ApiDel(s.value(Settings::API_URL).toString(), s.value(Settings::ACCOUNT_API_KEY).toString(), data.id);
+        ApiDel *api = new ApiDel(s.value(Settings::API_URL).toString(),
+                                 s.value(Settings::ACCOUNT_API_KEY).toString(), data.id);
         connect(api, SIGNAL(done(ApiDel *)), this, SLOT(deleteDone(ApiDel *)));
-        connect(del, &QAction::triggered, [=](){ api->start(); });
+        connect(del, &QAction::triggered, [=]() {
+            api->start();
+        });
         menu->addAction(del);
     }
 }
 
-void Systray::deleteDone(ApiDel *del) {
+void Systray::deleteDone(ApiDel *del)
+{
     if (del->allData() != 0) {
-        trayIcon->showMessage(tr("Error!"), tr("Something went wrong deleteing the file!"), QSystemTrayIcon::Critical);
+        trayIcon->showMessage(tr("Error!"), tr("Something went wrong deleteing the file!"),
+                              QSystemTrayIcon::Critical);
     } else {
         // regenerate history on next lookup
         history->setDirty();
@@ -481,8 +536,11 @@ void Systray::deleteDone(ApiDel *del) {
  * After x seconds, just get the history to avoid the delay when opening up the context menu.
  * We wait a certain amount of time to just let the server catch up on things.
  */
-void Systray::updateHistoryAfterTimeout() {
-    QTimer::singleShot(5000, [=](){ history->getHistory(); });
+void Systray::updateHistoryAfterTimeout()
+{
+    QTimer::singleShot(5000, [=]() {
+        history->getHistory();
+    });
 }
 
 /**
@@ -491,26 +549,31 @@ void Systray::updateHistoryAfterTimeout() {
  * but then we loose the chaching aspect.
  * @brief Systray::updateHistory
  */
-void Systray::updateHistory() {
+void Systray::updateHistory()
+{
     delete history;
 
     history = new History();
 
-    connect(history, SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
+    connect(history,
+            SIGNAL(historyDone(QList<ApiHist::HistData>)), this,
             SLOT(updateHistoryMenu(QList<ApiHist::HistData>)));
 
     historyPlaceholder();
 }
 
-void Systray::historyPlaceholder() {
+void Systray::historyPlaceholder()
+{
     historyMenu->clear();
 
     // Just put something in the history menu in case the menu doesn't get updated.
     QAction *none = new QAction();
+
     if (isLoggedIn(false))
         none->setText("Not fetched... Try left clicking the tray icon.");
     else
         none->setText("Not logged in...");
+
     none->setEnabled(false);
     historyMenu->addAction(none);
 }
@@ -521,11 +584,13 @@ void Systray::historyPlaceholder() {
  * @param returnCode
  * @param output
  */
-void Systray::puushDone(QString output) {
+void Systray::puushDone(QString output)
+{
     setTrayIcon(":/images/puush-qt.png");
 
     if (output.isEmpty() || !output.contains(",")) {
-        trayIcon->showMessage(tr("Error!"), tr("Something went wrong. Wrong URL? No internet connection?"), QSystemTrayIcon::Critical);
+        trayIcon->showMessage(tr("Error!"), tr("Something went wrong. Wrong URL? No internet connection?"),
+                              QSystemTrayIcon::Critical);
         qDebug() << "puushDone error: " << output;
         return;
     }
@@ -545,9 +610,10 @@ void Systray::puushDone(QString output) {
         trayIcon->showMessage(tr("Error!"), tr("Uploading failed. Have you authenticated?"), warningIcon);
         return;
     } else if (code == "-2") {
-        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."), warningIcon);
+        trayIcon->showMessage(tr("Error!"), tr("Uploading failed. This might be a bug with puush-qt."),
+                              warningIcon);
         return;
-    } else if(code == "-3"){
+    } else if (code == "-3") {
         trayIcon->showMessage(tr("Error!"), tr("Uploading failed due invalid md5."), warningIcon);
         return;
     }
@@ -557,7 +623,8 @@ void Systray::puushDone(QString output) {
 
     if (s.value(Settings::ON_PUUSH_COPY_LINK_TO_CLIPBOARD).toBool()) {
         QApplication::clipboard()->setText(url);
-        trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"), infoIcon);
+        trayIcon->showMessage(tr("Success!"), url + tr("\nThe url was copied to your clipboard!"),
+                              infoIcon);
     } else {
         trayIcon->showMessage(tr("Success!"), url, infoIcon);
     }

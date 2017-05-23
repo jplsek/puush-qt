@@ -15,14 +15,16 @@ ApiRequest::ApiRequest():
     qDebug() << "ApiRequest::ApiRequest() generate status == " << status;
 }
 
-ApiRequest::~ApiRequest(){
-    if(reply)
+ApiRequest::~ApiRequest()
+{
+    if (reply)
         delete reply;
-    if(qnr)
+    if (qnr)
         delete qnr;
 }
 
-void ApiRequest::start(){
+void ApiRequest::start()
+{
     qDebug() << "ApiRequest::start()";
 
     QNetworkAccessManager *nm = new QNetworkAccessManager();
@@ -34,19 +36,20 @@ void ApiRequest::start(){
     connect(reply, SIGNAL(finished()), this, SLOT(readResponse()));
 }
 
-void ApiRequest::readResponse(){
+void ApiRequest::readResponse()
+{
     response = reply->readAll();
 
     qDebug() << "R: " << response;
 
     // this can only happen on a failed request.
-    if(response.length() == 0){
+    if (response.length() == 0) {
         status = 1;
         done();
         return;
     }
 
-    if(response.length() < 4){ // assume we've got a number back.
+    if (response.length() < 4) { // assume we've got a number back.
         status = response.toInt();
     } else {
         status = 0;
@@ -55,7 +58,7 @@ void ApiRequest::readResponse(){
     qDebug() << "status == " << status;
 
     // anything that gets parsed to a 0 is the result of a successful command. (excluding an empty case that is handled above)
-    if(status != 0){
+    if (status != 0) {
         status = abs(status); // convert from negative to a positive non-zero error index
         qDebug() << "status now " << status;
         done();
@@ -67,6 +70,7 @@ void ApiRequest::readResponse(){
 }
 
 
-bool ApiRequest::failed(){
+bool ApiRequest::failed()
+{
     return reply->error() != QNetworkReply::NoError || status != 0;
 }
