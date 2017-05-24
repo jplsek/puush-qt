@@ -12,7 +12,7 @@ Windows user can grab the latest installer [here](https://github.com/jplsek/puus
 For now, if you aren't on Arch Linux, see [Compiling](#compiling) below.
 
 ## Dependencies
-Arch: `scrot qt5-base`  
+Arch: `scrot qt5-base qt5-declarative qt5-quickcontrols qt5-quickcontrols2`  
 Ubuntu: `scrot qt5-default qml-module-qtquick-{controls,controls2,templates2,dialogs}`
 
 ## Compiling
