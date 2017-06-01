@@ -32,7 +32,8 @@ void Screenshot::selectArea()
 #if defined(Q_OS_LINUX)
 
     screenshotProcess = new QProcess();
-    screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-s" << fn);
+    // -b: grab border, -z: silent
+    screenshotProcess->start("scrot", QStringList() << "-b" << "-z" << "-q" << quality << "-s" << fn);
 
     connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
 
@@ -69,8 +70,6 @@ void Screenshot::croppedScreenshot(QRect selection)
  */
 void Screenshot::fullScreen()
 {
-    // TODO check settings to take a screenshot a screen or the whole desktop
-
     // wait 1 second before taking a screenshot because of desktop animations, etc
     QTimer::singleShot(1000, this, SLOT(fullScreenAfterTimer()));
 }
@@ -161,7 +160,8 @@ QPixmap Screenshot::screen(int i)
 
 /**
  * Take a screenshot of the active window.
- * There is no support to do this with QT, so here we go.
+ * There is no support to do this with QT (QApplication::activeWindow() is referring to the
+ * this application itself, not all windows unrelated to this application), so here we go.
  * ATM we'll be lazy, and use "scrot" for Linux users.
  * @brief Screenshot::activeWindow
  */
@@ -179,7 +179,8 @@ void Screenshot::activeWindow()
 #elif defined(Q_OS_LINUX)
 
     screenshotProcess = new QProcess();
-    screenshotProcess->start("scrot", QStringList() << "-b" << "-q" << quality << "-u" << fn);
+    // -b: grab border, -z: silent
+    screenshotProcess->start("scrot", QStringList() << "-b" << "-z" << "-q" << quality << "-u" << fn);
 
     connect(screenshotProcess, SIGNAL(finished(int)), this, SLOT(screenshotDone(int)));
 

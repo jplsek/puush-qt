@@ -49,5 +49,7 @@ There are a few quirks with this application.
 
 Passwords are not stored. They are forgotten after getting the api key from Puush.
 
+* Mac is not supported only because I don't own a Mac. Everything should compile, but OS specific screenshot stuff may not be implemented (I'm not sure how the "select area" will work, and "select window" is definitely not implemented. Fullscreen screenshots should work fine.). This is because qt does not support certain desktop features like detecting the current active window. See src/screenshot.cpp. Contributions are welcome. Eventually, I may borrow a laptop from a friend, or some other means, to get feature and build parity implemented.
+
 ## License
 BSD Clause 3
