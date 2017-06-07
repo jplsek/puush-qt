@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
     QApplication::setApplicationName("puush-qt");
-    QApplication::setApplicationVersion("0.2");
+    QApplication::setApplicationVersion("0.2.1");
 
     // TODO
     // keep only one instance of the application up at a time
