@@ -38,7 +38,7 @@ Item {
                     }
 
                     Row {
-                        Text {
+                        Label {
                             text: qsTr("Quality: ")
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -84,7 +84,7 @@ Item {
                 GridLayout {
                     columns: 2
 
-                    Text {
+                    Label {
                         text: qsTr("Puush URL: ")
                     }
 
@@ -96,7 +96,7 @@ Item {
                         }
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("Puush API URL: ")
                     }
 

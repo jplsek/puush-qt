@@ -12,7 +12,7 @@ Item {
         anchors.top: parent.top
     }
 
-    Text {
+    Label {
         id: title
         padding: 50
         text: qsTr("puush-qt")
@@ -24,7 +24,7 @@ Item {
         width: parent.width - logo.width
     }
 
-    Text {
+    Label {
         id: version
         text: qsTr("Version ") + information.getVersion()
         horizontalAlignment: Text.AlignHCenter

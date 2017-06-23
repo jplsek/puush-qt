@@ -164,7 +164,7 @@ Item {
                     }
                 }
 
-                Text {
+                Label {
                     width: parent.width
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     text: qsTr("If the key combination does not get activated (or does not get accepted when changing the combination), it may mean that another application is using that key combination.")

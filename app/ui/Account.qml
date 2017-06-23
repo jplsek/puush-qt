@@ -72,7 +72,7 @@ Item {
                     spacing: 10
                     id: notLoggedIn
 
-                    Text {
+                    Label {
                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                         width: parent.width
                         text: qsTr("You must login to use Puush. If you don't already have an account, you can register for an account below.")
@@ -99,7 +99,7 @@ Item {
                         }
                     }
 
-                    Text {
+                    Label {
                         text: "<a href='" + information.settingGetPuushUrl() + "reset_password'>" + qsTr("Forgot password?") + "</a>"
                         onLinkActivated: Qt.openUrlExternally(information.settingGetPuushUrl() + "reset_password")
 
@@ -126,7 +126,7 @@ Item {
                         }
                     }
 
-                    Text {
+                    Label {
                         text: "<a href='" + information.settingGetPuushUrl() + "register'>" + qsTr("Register...") + "</a>"
                         onLinkActivated: Qt.openUrlExternally(information.settingGetPuushUrl() + "register")
 
@@ -137,7 +137,7 @@ Item {
                         }
                     }
 
-                    Text {
+                    Label {
                         id: authMessage
                     }
                 }
@@ -146,43 +146,43 @@ Item {
                     columns: 2
                     id: isLoggedIn
 
-                    Text {
+                    Label {
                         text: qsTr("Logged in as: ")
                     }
 
-                    Text {
+                    Label {
                         id: loggedInEmail
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("API key: ")
                     }
 
-                    Text {
+                    Label {
                         id: apiKey
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("Account type: ")
                     }
 
-                    Text {
+                    Label {
                         id: accountType
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("Expiry date: ")
                     }
 
-                    Text {
+                    Label {
                         id: expiryDate
                     }
 
-                    Text {
+                    Label {
                         text: qsTr("Disk usage: ")
                     }
 
-                    Text {
+                    Label {
                         id: diskUsage
                     }
 
