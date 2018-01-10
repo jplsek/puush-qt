@@ -1,0 +1,1 @@
+binarycreator.exe -c puush-qt/config/config.xml -p puush-qt/packages --offline-only puush-qt-installer

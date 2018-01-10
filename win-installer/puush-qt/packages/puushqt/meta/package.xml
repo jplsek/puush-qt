@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>puush-qt application</DisplayName>
+    <Description>The puush-qt executable.</Description>
+    <Version>0.1</Version>
+    <ReleaseDate>2017-04-28</ReleaseDate>
+	<ProductUrl>https://github.com/jplsek/puush-qt</ProductUrl>
+    <Licenses>
+        <License name="BSD Clause 3 License Agreement" file="license.txt" />
+    </Licenses>
+	<Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>finishform.ui</UserInterface>
+    </UserInterfaces>
+	<ForcedInstallation>true</ForcedInstallation>
+</Package>
