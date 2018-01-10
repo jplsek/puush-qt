@@ -66,6 +66,7 @@ Item {
         GroupBox {
             id: accountBox
             title: qsTr("Account Details")
+            width: root.width
 
             Column {
                 Column {

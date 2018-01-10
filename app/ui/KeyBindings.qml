@@ -48,9 +48,11 @@ Item {
         GroupBox {
             id: keyBindingsBox
             title: qsTr("Key Bindings")
+            width: root.width
 
             Column {
                 spacing: 10
+                width: parent.width
 
                 GridLayout {
                     columns: 3

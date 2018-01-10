@@ -21,6 +21,7 @@ Item {
 
             GroupBox {
                 title: qsTr("Screen Capture Quality")
+                width: root.width
 
                 Column {
                     RadioButton {
@@ -57,6 +58,7 @@ Item {
 
             GroupBox {
                 title: qsTr("Fullscreen Capture")
+                width: root.width
 
                 Column {
                     RadioButton {
@@ -80,6 +82,7 @@ Item {
             }
             GroupBox {
                 title: "API Location"
+                width: root.width
 
                 GridLayout {
                     columns: 2

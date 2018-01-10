@@ -1,6 +1,6 @@
 include($$PWD/../puush-qt.pri)
 
-QT += core network widgets qml quick
+QT += core network widgets qml quick quickcontrols2
 
 TEMPLATE = app
 TARGET = puush-qt

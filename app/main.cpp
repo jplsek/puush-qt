@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
+#include <QQuickStyle>
 
 #include "systray.h"
 #include "information.h"
@@ -16,7 +17,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
     QApplication::setApplicationName("puush-qt");
-    QApplication::setApplicationVersion("0.2.1");
+    QApplication::setApplicationVersion("0.2.2");
 
     // TODO
     // keep only one instance of the application up at a time
@@ -35,6 +36,10 @@ int main(int argc, char *argv[])
 
     QApplication::setQuitOnLastWindowClosed(false);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    // Linux desktops (particularly Plasma) may have pre-built styles,
+    // so we will set the fallback to Fusion until native styles are one day implemented (please?)
+    QQuickStyle::setFallbackStyle("Fusion");
 
     Systray *systray = new Systray();
     Information *information = new Information();

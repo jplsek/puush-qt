@@ -30,6 +30,7 @@ Item {
 
             GroupBox {
                 title: qsTr("On Successful Puush")
+                width: root.width
 
                 Column {
                     CheckBox {
@@ -80,6 +81,7 @@ Item {
 
             GroupBox {
                 title: qsTr("Tray Icon Behavior on Double Click")
+                width: root.width
 
                 Column {
                     RadioButton {
