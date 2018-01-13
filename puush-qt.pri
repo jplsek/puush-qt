@@ -1,11 +1,12 @@
 # qt-5.7 is needed because of "qt-quick control 2".
-# qt-5.8 is needed for QQuickStyle::setFallbackStyle()
+# qt-5.8 is optional for QQuickStyle::setFallbackStyle()
+# qt-5.10 is optional for QQuickWindow::setTextRenderType()
 # can't use QT_VERSION, because lessThan is for integers
-MIN_MESSAGE = "This application requires a minimum verion of Qt 5.8"
+MIN_MESSAGE = "This application requires a minimum verion of Qt 5.7"
 lessThan(QT_MAJOR_VERSION, 5) {
     error($${MIN_MESSAGE})
 }
-equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 8) {
+equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 7) {
     error($${MIN_MESSAGE})
 }
 

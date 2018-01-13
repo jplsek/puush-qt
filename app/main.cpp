@@ -2,7 +2,9 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <QQuickStyle>
+#endif
 
 #include "systray.h"
 #include "information.h"
@@ -17,7 +19,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
     QApplication::setApplicationName("puush-qt");
-    QApplication::setApplicationVersion("0.2.2");
+    QApplication::setApplicationVersion("0.2.3");
 
     // TODO
     // keep only one instance of the application up at a time
@@ -39,7 +41,12 @@ int main(int argc, char *argv[])
 
     // Linux desktops (particularly Plasma) may have pre-built styles,
     // so we will set the fallback to Fusion until native styles are one day implemented (please?)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QQuickStyle::setFallbackStyle("Fusion");
+    // Removes the "blurry" text for windows, and based on the doc's, this is preferred
+    // for my case since this app is not doing anything special with text.
+    QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering);
+#endif
 
     Systray *systray = new Systray();
     Information *information = new Information();
