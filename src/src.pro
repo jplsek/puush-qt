@@ -18,7 +18,8 @@ SOURCES += \
     information.cpp \
     authentication.cpp \
     history.cpp \
-    keybindings.cpp
+    keybindings.cpp \
+    general.cpp
 
 HEADERS  += \
     screenshot.h \
@@ -33,7 +34,8 @@ HEADERS  += \
     information.h \
     authentication.h \
     history.h \
-    keybindings.h
+    keybindings.h \
+    general.h
 
 OTHER_FILES += settings
 

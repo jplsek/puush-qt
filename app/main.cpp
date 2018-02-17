@@ -7,6 +7,7 @@
 #endif
 
 #include "systray.h"
+#include "general.h"
 #include "information.h"
 #include "authentication.h"
 #include "history.h"
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
     QApplication::setApplicationName("puush-qt");
-    QApplication::setApplicationVersion("0.2.3");
+    QApplication::setApplicationVersion("0.2.4");
 
     // TODO
     // keep only one instance of the application up at a time
@@ -39,9 +40,9 @@ int main(int argc, char *argv[])
     QApplication::setQuitOnLastWindowClosed(false);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     // Linux desktops (particularly Plasma) may have pre-built styles,
     // so we will set the fallback to Fusion until native styles are one day implemented (please?)
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     QQuickStyle::setFallbackStyle("Fusion");
     // Removes the "blurry" text for windows, and based on the doc's, this is preferred
     // for my case since this app is not doing anything special with text.
@@ -49,11 +50,13 @@ int main(int argc, char *argv[])
 #endif
 
     Systray *systray = new Systray();
+    General *general = new General();
     Information *information = new Information();
     Authentication *authentication = new Authentication();
     KeyBindings *keybindings = new KeyBindings();
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("general", general);
     engine.rootContext()->setContextProperty("information", information);
     engine.rootContext()->setContextProperty("systemTray", systray);
     engine.rootContext()->setContextProperty("authentication", authentication);
