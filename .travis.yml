@@ -1,10 +1,7 @@
 language: cpp
-
 dist: trusty
-
 compiler:
   - gcc
-
 os:
   - linux
 
@@ -16,5 +13,7 @@ before_install:
 script:
   - source /opt/qt57/bin/qt57-env.sh
   - qmake -v
-  - qmake puush-qt.pro
+  - mkdir build
+  - cd build
+  - qmake PREFIX=/usr ..
   - make
