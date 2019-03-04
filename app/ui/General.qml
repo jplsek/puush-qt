@@ -8,8 +8,7 @@ Item {
         title: "Please choose a location"
         folder: shortcuts.pictures
         selectFolder: true
-        // remove the "file://" from the url
-        onAccepted: localFileLocation.text = fileUrl.toString().replace("file://", "")
+        onAccepted: localFileLocation.text = general.removeScheme(fileUrl)
     }
 
     Flickable {
