@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <DisplayName>puush-qt application</DisplayName>
-    <Description>The puush-qt executable.</Description>
-    <Version>0.1</Version>
-    <ReleaseDate>2017-04-28</ReleaseDate>
+    <Description>A GUI frontend for puush on Windows. This will create a system tray icon and contains similar options to the original puush application before moving to ShareX.</Description>
+    <Version>0.2.4</Version>
+    <ReleaseDate>2019-03-03</ReleaseDate>
 	<ProductUrl>https://github.com/jplsek/puush-qt</ProductUrl>
     <Licenses>
         <License name="BSD Clause 3 License Agreement" file="license.txt" />
     </Licenses>
-	<Script>installscript.qs</Script>
-    <UserInterfaces>
-        <UserInterface>finishform.ui</UserInterface>
-    </UserInterfaces>
 	<ForcedInstallation>true</ForcedInstallation>
 </Package>
