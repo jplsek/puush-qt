@@ -2,6 +2,7 @@
 #include <QSettings>
 
 #include "settings.h"
+#include "general.h"
 #include "keybindings.h"
 
 class Test: public QObject {
@@ -11,6 +12,7 @@ private slots:
     void properKeybindings();
     //void fullscreenScreenshot();
     //void screenshotDoneOk(int, QString, QString);
+    void removeScheme();
 };
 
 void Test::radioSettings() {
@@ -30,6 +32,11 @@ void Test::properKeybindings() {
     // CTRL+S
     QVERIFY(kb->isProperBinding(67108864, Qt::Key_S));
     delete kb;
+}
+
+void Test::removeScheme() {
+    General *general = new General();
+    QVERIFY(QString("/home/foo") == general->removeScheme(QUrl("file:///home/foo")));
 }
 
 //void Test::fullscreenScreenshot() {

@@ -17,15 +17,15 @@ Ubuntu: `scrot qt5-default qml-module-qtquick-{controls,controls2,templates2,dia
 
 ## Compiling
 ### Extra Build Dependencies
-Ubuntu 17.04 or newer: `qtbase5-private-dev libxcb-keysyms1-dev qtdeclarative5-dev`  
-For other Ubuntu versions, you will need qt5.7 or newer. PPA's are available [here](https://launchpad.net/~beineri/+ppa-packages).  
-This is an example for 16.04 with qt5.7:
+Ubuntu 18.04 or newer: `qtbase5-private-dev libxcb-keysyms1-dev qtdeclarative5-dev`  
+For other Ubuntu versions, you will need qt5.10 or newer. PPA's are available [here](https://launchpad.net/~beineri/+ppa-packages).
+This is an example for 16.04 with qt5.10:
 
 ```
-sudo add-apt-repository ppa:beineri/opt-qt571-xenial
-sudo apt-get install qt57-meta-minimal qt57quickcontrols2 qt57quickcontrols
-qtchooser -install qt5.7 /opt/qt57/bin/qmake
-export QT_SELECT=qt5.7
+sudo add-apt-repository ppa:beineri/opt-qt-5.10.0-xenial
+sudo apt-get install qt510{-meta-minimal,quickcontrols2,quickcontrols}
+qtchooser -install qt5.10 /opt/qt510/bin/qmake
+export QT_SELECT=qt5.10
 ```
 
 ### Building

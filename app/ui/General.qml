@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 
 Item {
@@ -11,18 +11,10 @@ Item {
         onAccepted: localFileLocation.text = general.removeScheme(fileUrl)
     }
 
-    Flickable {
+    ScrollView {
         anchors.fill: parent
         contentHeight: generalBox.height
         contentWidth: generalBox.width
-
-        ScrollBar.vertical: ScrollBar {
-            hoverEnabled: true
-        }
-
-        ScrollBar.horizontal: ScrollBar {
-            hoverEnabled: true
-        }
 
         Column {
             id: generalBox

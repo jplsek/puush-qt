@@ -6,12 +6,12 @@ os:
   - linux
 
 before_install:
-  - sudo add-apt-repository -y ppa:beineri/opt-qt571-trusty
+  - sudo add-apt-repository -y ppa:beineri/opt-qt591-trusty
   - sudo apt-get -qq update
-  - sudo apt-get install -qy libxcb-keysyms1-dev qt57-meta-minimal qt57quickcontrols2 qt57quickcontrols
+  - sudo apt-get install -qy libxcb-keysyms1-dev qt59-meta-minimal qt59quickcontrols2 qt59quickcontrols
 
 script:
-  - source /opt/qt57/bin/qt57-env.sh
+  - source /opt/qt59/bin/qt59-env.sh
   - qmake -v
   - mkdir build
   - cd build
