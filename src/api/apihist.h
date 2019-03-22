@@ -25,8 +25,6 @@ public:
         InvalidResponse = 2,
     };
 
-    const static QString errorStrings[];
-
 public:
     ApiHist(const QString &apiurl, const QString &apikey);
 

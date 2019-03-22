@@ -18,8 +18,6 @@ public:
         ImageLoadFailed = 2,
     };
 
-    const static QString errorStrings[];
-
 public:
     ApiThumb(const QString &apiurl, const QString &apikey, const QString &id);
 

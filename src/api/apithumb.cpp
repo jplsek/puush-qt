@@ -6,10 +6,10 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-const QString ApiThumb::errorStrings[] = {
-    [ApiThumb::Error::NoError] = "No Error",
-    [ApiThumb::Error::Failure] = "Request Failed",
-    [ApiThumb::Error::ImageLoadFailed] = "Failed to read image from returned data",
+static std::map<qint32, QString> errorStrings = {
+    {ApiThumb::Error::NoError, "No Error"},
+    {ApiThumb::Error::Failure, "Request failed"},
+    {ApiThumb::Error::ImageLoadFailed, "Failed to read image from returned data"}
 };
 
 ApiThumb::ApiThumb(const QString &apiurl, const QString &apikey, const QString &id):

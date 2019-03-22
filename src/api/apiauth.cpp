@@ -6,12 +6,12 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-#include <time.h>
+#include <ctime>
 
-const QString ApiAuth::errorStrings[] = {
-    [ApiAuth::Error::NoError] = "No Error",
-    [ApiAuth::Error::InvaildCredentials] = "Invalid Username or Password",
-    [ApiAuth::Error::InvalidResponse] = "Invalid response from puush",
+static std::map<qint32, QString> errorStrings = {
+    {ApiAuth::Error::NoError, "No Error"},
+    {ApiAuth::Error::InvaildCredentials, "Invalid Username or Password"},
+    {ApiAuth::Error::InvalidResponse, "Invalid response from puush"}
 };
 
 ApiAuth::ApiAuth(const QString &apiurl, const QString &email, const QString &password):
@@ -116,9 +116,9 @@ const QString ApiAuth::expiryReadableString(int expiry)
     } else if (expiry > 1471070929L) {
         // since this is a pretty big number, assume that the unit is
         // seconds since the epoch. We'll just convert it to days.
-        int diff = expiry - time(NULL);
+        long diff = expiry - time(nullptr);
         diff = diff / (60 * 60 * 24); // seconds per day
-        return QString(diff) + " Days";
+        return QString::number(diff) + " Days";
     } else {
         // Welp, its maybe days...
         return QString(expiry) + " Days";

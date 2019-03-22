@@ -5,10 +5,10 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-const QString ApiHist::errorStrings[] = {
-    [ApiHist::Error::NoError] = "No Error",
-    [ApiHist::Error::Failure] = "Request Failed",
-    [ApiHist::Error::InvalidResponse] = "Invalid response from puush",
+static std::map<qint32, QString> errorStrings = {
+    {ApiHist::Error::NoError, "No Error"},
+    {ApiHist::Error::Failure, "Request failed"},
+    {ApiHist::Error::InvalidResponse, "Invalid response from puush"}
 };
 
 ApiHist::ApiHist(const QString &apiurl, const QString &apikey):

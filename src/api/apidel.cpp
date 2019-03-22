@@ -3,10 +3,10 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-const QString ApiDel::errorStrings[] = {
-    [ApiDel::Error::NoError] = "No Error",
-    [ApiDel::Error::Failure] = "Request failed",
-    [ApiDel::Error::InvalidResponse] = "Invalid response from puush",
+static std::map<qint32, QString> errorStrings = {
+    {ApiDel::Error::NoError, "No Error"},
+    {ApiDel::Error::Failure, "Request failed"},
+    {ApiDel::Error::InvalidResponse, "Invalid response from puush"}
 };
 
 ApiDel::ApiDel(const QString &apiurl, const QString &apikey, const QString &id):

@@ -100,10 +100,10 @@ public:
 private:
     QSettings s;
 
-    const static QString setting_names[];
-    const static QString radio_values[];
-    const static QString groups[];
-    const static QString default_values[];
+    static std::map<Settings::Setting, QString> setting_names;
+    static std::map<Settings::RadioValue, QString> radio_values;
+    static std::map<Settings::Setting, QString> groups;
+    static std::map<Settings::Setting, QString> default_values;
 };
 
 #endif // SETTINGS_H

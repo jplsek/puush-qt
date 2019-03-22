@@ -14,137 +14,138 @@ const QString Settings::BINDINGS_GROUP_NAME  = "key-bindings";
 
 // generic format of this is <option what/when> <value>
 // These values should not change; as it will break peoples saved settings.
-const QString Settings::setting_names[] = {
-    [Settings::Setting::NO_SETTING] = "",
+std::map<Settings::Setting, QString> Settings::setting_names = {
+    {NO_SETTING, ""},
 
-    [Settings::Setting::SETTINGS_VERSION] = "settings-version",
+    {SETTINGS_VERSION, "settings-version"},
 
-    [Settings::Setting::ACCOUNT_API_KEY] = "key",
-    [Settings::Setting::ACCOUNT_EMAIL] = "email",
-    [Settings::Setting::ACCOUNT_PREMIUM] = "premium",
-    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = "premium-expiry",
-    [Settings::Setting::ACCOUNT_DISK_USAGE] = "disk-usage",
+    {ACCOUNT_API_KEY, "key"},
+    {ACCOUNT_EMAIL, "email"},
+    {ACCOUNT_PREMIUM, "premium"},
+    {ACCOUNT_PREMIUM_EXPIRY, "premium-expiry"},
+    {ACCOUNT_DISK_USAGE, "disk-usage"},
 
-    [Settings::Setting::ON_PUUSH_SOUND] = "sound-on-puush",
-    [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = "copy-link-to-clipboard",
-    [Settings::Setting::ON_PUUSH_OPEN_LINK_IN_BROWSER] = "open-link-in-browser",
+    {ON_PUUSH_SOUND, "sound-on-puush"},
+    {ON_PUUSH_COPY_LINK_TO_CLIPBOARD, "copy-link-to-clipboard"},
+    {ON_PUUSH_OPEN_LINK_IN_BROWSER, "open-link-in-browser"},
 
-    [Settings::Setting::LOCAL_SAVE_ENABLED] = "local-save-enabled",
-    [Settings::Setting::LOCAL_SAVE_PATH]    = "local-save-path",
-    [Settings::Setting::LOCAL_SAVE_NAME]    = "local-save-name",
+    {LOCAL_SAVE_ENABLED, "local-save-enabled"},
+    {LOCAL_SAVE_PATH, "local-save-path"},
+    {LOCAL_SAVE_NAME, "local-save-name"},
 
-    [Settings::Setting::TRAY_CLICK_ACTION] = "tray-click-action",
+    {TRAY_CLICK_ACTION, "tray-click-action"},
 
-    [Settings::Setting::COMPRESSION_PHILOSOPHY] = "compression-philosophy",
+    {COMPRESSION_PHILOSOPHY, "compression-philosophy"},
 
-    [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = "fullscreen-capture-mode",
+    {FULLSCREEN_CAPTURE_MODE, "fullscreen-capture-mode"},
 
-    [Settings::Setting::IMAGE_QUALITY] = "quality",
+    {IMAGE_QUALITY, "quality"},
 
-    [Settings::Setting::BASE_URL] = "base-url",
-    [Settings::Setting::API_URL]  = "api-url",
+    {BASE_URL, "base-url"},
+    {API_URL, "api-url"},
 
-    [Settings::Settings::BINDING_UPLOAD_FILE] = "upload-file-key-binding",
-    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = "capture-desktop-key-binding",
-    [Settings::Settings::BINDING_CAPTURE_AREA] = "capture-area-key-binding",
-    [Settings::Settings::BINDING_CAPTURE_WINDOW] = "capture-window-key-binding",
-    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = "upload-clipboard-key-binding",
-    [Settings::Settings::BINDING_TOGGLE_PUUSH] = "toggle-puush-key-binding",
+    {BINDING_UPLOAD_FILE, "upload-file-key-binding"},
+    {BINDING_CAPTURE_DESKTOP, "capture-desktop-key-binding"},
+    {BINDING_CAPTURE_AREA, "capture-area-key-binding"},
+    {BINDING_CAPTURE_WINDOW, "capture-window-key-binding"},
+    {BINDING_UPLOAD_CLIPBOARD, "upload-clipboard-key-binding"},
+    {BINDING_TOGGLE_PUUSH, "toggle-puush-key-binding"},
 };
 
-const QString Settings::default_values[] = {
-    [Settings::Setting::NO_SETTING] = "",
+std::map<Settings::Setting, QString> Settings::default_values = {
+    {NO_SETTING, ""},
 
-    [Settings::Setting::SETTINGS_VERSION] = "2017-05-02-00", // YYYY-MM-DD-revision
+    // YYYY-MM-DD-revision
+    {SETTINGS_VERSION, "2017-05-02-00"},
 
-    [Settings::Setting::ACCOUNT_API_KEY] = "",
-    [Settings::Setting::ACCOUNT_EMAIL] = "",
-    [Settings::Setting::ACCOUNT_PREMIUM] = "",
-    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = "",
-    [Settings::Setting::ACCOUNT_DISK_USAGE] = "",
+    {ACCOUNT_API_KEY, ""},
+    {ACCOUNT_EMAIL, ""},
+    {ACCOUNT_PREMIUM, ""},
+    {ACCOUNT_PREMIUM_EXPIRY, ""},
+    {ACCOUNT_DISK_USAGE, ""},
 
-    [Settings::Setting::ON_PUUSH_SOUND] = "false",
-    [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = "true",
-    [Settings::Setting::ON_PUUSH_OPEN_LINK_IN_BROWSER] = "false",
+    {ON_PUUSH_SOUND, "false"},
+    {ON_PUUSH_COPY_LINK_TO_CLIPBOARD, "true"},
+    {ON_PUUSH_OPEN_LINK_IN_BROWSER, "false"},
 
-    [Settings::Setting::LOCAL_SAVE_ENABLED] = "true",
-    [Settings::Setting::LOCAL_SAVE_PATH]    = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-    [Settings::Setting::LOCAL_SAVE_NAME]    = "'ss' (yyyy-MM-dd 'at' hh.mm.ss)",
+    {LOCAL_SAVE_ENABLED, "true"},
+    {LOCAL_SAVE_PATH, QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)},
+    {LOCAL_SAVE_NAME, "'ss' (yyyy-MM-dd 'at' hh.mm.ss)"},
 
-    [Settings::Setting::TRAY_CLICK_ACTION] = "",
+    {TRAY_CLICK_ACTION, ""},
 
-    [Settings::Setting::COMPRESSION_PHILOSOPHY] = "",
+    {COMPRESSION_PHILOSOPHY, ""},
 
-    [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = "",
+    {FULLSCREEN_CAPTURE_MODE, ""},
 
-    [Settings::Setting::IMAGE_QUALITY] = "90",
+    {IMAGE_QUALITY, "90"},
 
-    [Settings::Setting::BASE_URL] = "https://puush.me/",
-    [Settings::Setting::API_URL]  = "https://puush.me/api/",
+    {BASE_URL, "https://puush.me/"},
+    {API_URL, "https://puush.me/api/"},
 
-    [Settings::Settings::BINDING_UPLOAD_FILE] = "Ctrl+Shift+F1",
-    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = "Ctrl+Shift+F3",
-    [Settings::Settings::BINDING_CAPTURE_AREA] = "Ctrl+Shift+F4",
-    [Settings::Settings::BINDING_CAPTURE_WINDOW] = "Ctrl+Shift+F2",
-    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = "Ctrl+Shift+F5",
-    [Settings::Settings::BINDING_TOGGLE_PUUSH] = "Ctrl+Shift+F6",
+    {BINDING_UPLOAD_FILE, "Ctrl+Shift+F1"},
+    {BINDING_CAPTURE_DESKTOP, "Ctrl+Shift+F3"},
+    {BINDING_CAPTURE_AREA, "Ctrl+Shift+F4"},
+    {BINDING_CAPTURE_WINDOW, "Ctrl+Shift+F2"},
+    {BINDING_UPLOAD_CLIPBOARD, "Ctrl+Shift+F5"},
+    {BINDING_TOGGLE_PUUSH, "Ctrl+Shift+F6"},
 };
 
-const QString Settings::groups[] = {
-    [Settings::Setting::NO_SETTING] = Settings::EXTRA_GROUP_NAME,
+std::map<Settings::Setting, QString> Settings::groups = {
+    {NO_SETTING, Settings::EXTRA_GROUP_NAME},
 
-    [Settings::Setting::SETTINGS_VERSION] = Settings::EXTRA_GROUP_NAME,
+    {SETTINGS_VERSION, Settings::EXTRA_GROUP_NAME},
 
-    [Settings::Setting::ACCOUNT_API_KEY] = Settings::USER_INFO_GROUP_NAME,
-    [Settings::Setting::ACCOUNT_EMAIL] = Settings::USER_INFO_GROUP_NAME,
-    [Settings::Setting::ACCOUNT_PREMIUM] = Settings::USER_INFO_GROUP_NAME,
-    [Settings::Setting::ACCOUNT_PREMIUM_EXPIRY] = Settings::USER_INFO_GROUP_NAME,
-    [Settings::Setting::ACCOUNT_DISK_USAGE] = Settings::USER_INFO_GROUP_NAME,
+    {ACCOUNT_API_KEY, Settings::USER_INFO_GROUP_NAME},
+    {ACCOUNT_EMAIL, Settings::USER_INFO_GROUP_NAME},
+    {ACCOUNT_PREMIUM, Settings::USER_INFO_GROUP_NAME},
+    {ACCOUNT_PREMIUM_EXPIRY, Settings::USER_INFO_GROUP_NAME},
+    {ACCOUNT_DISK_USAGE, Settings::USER_INFO_GROUP_NAME},
 
-    [Settings::Setting::ON_PUUSH_SOUND] = Settings::GENERAL_GROUP_NAME,
-    [Settings::Setting::ON_PUUSH_COPY_LINK_TO_CLIPBOARD] = Settings::GENERAL_GROUP_NAME,
-    [Settings::Setting::ON_PUUSH_OPEN_LINK_IN_BROWSER] = Settings::GENERAL_GROUP_NAME,
+    {ON_PUUSH_SOUND, Settings::GENERAL_GROUP_NAME},
+    {ON_PUUSH_COPY_LINK_TO_CLIPBOARD, Settings::GENERAL_GROUP_NAME},
+    {ON_PUUSH_OPEN_LINK_IN_BROWSER, Settings::GENERAL_GROUP_NAME},
 
-    [Settings::Setting::LOCAL_SAVE_ENABLED] = Settings::GENERAL_GROUP_NAME,
-    [Settings::Setting::LOCAL_SAVE_PATH]    = Settings::GENERAL_GROUP_NAME,
-    [Settings::Setting::LOCAL_SAVE_NAME]    = Settings::GENERAL_GROUP_NAME,
+    {LOCAL_SAVE_ENABLED, Settings::GENERAL_GROUP_NAME},
+    {LOCAL_SAVE_PATH, Settings::GENERAL_GROUP_NAME},
+    {LOCAL_SAVE_NAME, Settings::GENERAL_GROUP_NAME},
 
-    [Settings::Setting::TRAY_CLICK_ACTION] = Settings::GENERAL_GROUP_NAME,
+    {TRAY_CLICK_ACTION, Settings::GENERAL_GROUP_NAME},
 
-    [Settings::Setting::COMPRESSION_PHILOSOPHY] = Settings::ADVANCED_GROUP_NAME,
+    {COMPRESSION_PHILOSOPHY, Settings::ADVANCED_GROUP_NAME},
 
-    [Settings::Setting::FULLSCREEN_CAPTURE_MODE] = Settings::ADVANCED_GROUP_NAME,
+    {FULLSCREEN_CAPTURE_MODE, Settings::ADVANCED_GROUP_NAME},
 
-    [Settings::Setting::IMAGE_QUALITY] = Settings::ADVANCED_GROUP_NAME,
+    {IMAGE_QUALITY, Settings::ADVANCED_GROUP_NAME},
 
-    [Settings::Setting::BASE_URL] = Settings::EXTRA_GROUP_NAME,
-    [Settings::Setting::API_URL]  = Settings::EXTRA_GROUP_NAME,
+    {BASE_URL, Settings::EXTRA_GROUP_NAME},
+    {API_URL, Settings::EXTRA_GROUP_NAME},
 
-    [Settings::Settings::BINDING_UPLOAD_FILE] = Settings::BINDINGS_GROUP_NAME,
-    [Settings::Settings::BINDING_CAPTURE_DESKTOP] = Settings::BINDINGS_GROUP_NAME,
-    [Settings::Settings::BINDING_CAPTURE_AREA] = Settings::BINDINGS_GROUP_NAME,
-    [Settings::Settings::BINDING_CAPTURE_WINDOW] = Settings::BINDINGS_GROUP_NAME,
-    [Settings::Settings::BINDING_UPLOAD_CLIPBOARD] = Settings::BINDINGS_GROUP_NAME,
-    [Settings::Settings::BINDING_TOGGLE_PUUSH] = Settings::BINDINGS_GROUP_NAME,
+    {BINDING_UPLOAD_FILE, Settings::BINDINGS_GROUP_NAME},
+    {BINDING_CAPTURE_DESKTOP, Settings::BINDINGS_GROUP_NAME},
+    {BINDING_CAPTURE_AREA, Settings::BINDINGS_GROUP_NAME},
+    {BINDING_CAPTURE_WINDOW, Settings::BINDINGS_GROUP_NAME},
+    {BINDING_UPLOAD_CLIPBOARD, Settings::BINDINGS_GROUP_NAME},
+    {BINDING_TOGGLE_PUUSH, Settings::BINDINGS_GROUP_NAME},
 };
 
-const QString Settings::radio_values[] = {
-    [Settings::RadioValue::OPEN_SETTINGS]    = "open-settings",
-    [Settings::RadioValue::OPEN_UPLOADS]     = "open-uploads",
-    [Settings::RadioValue::UPLOAD_FILE]      = "upload-file",
-    [Settings::RadioValue::UPLOAD_CLIPBOARD] = "upload-clipboard",
-    [Settings::RadioValue::CAPTURE_DESKTOP]  = "capture-desktop",
-    [Settings::RadioValue::CAPTURE_AREA]     = "capture-screen",
-    [Settings::RadioValue::CAPTURE_WINDOW]   = "capture-window",
-    [Settings::RadioValue::OPEN_ACCOUNT]     = "open-account",
+std::map<Settings::RadioValue, QString> Settings::radio_values = {
+    {OPEN_SETTINGS, "open-settings"},
+    {OPEN_UPLOADS, "open-uploads"},
+    {UPLOAD_FILE, "upload-file"},
+    {UPLOAD_CLIPBOARD, "upload-clipboard"},
+    {CAPTURE_DESKTOP, "capture-desktop"},
+    {CAPTURE_AREA, "capture-screen"},
+    {CAPTURE_WINDOW, "capture-window"},
+    {OPEN_ACCOUNT, "open-account"},
 
-    [Settings::RadioValue::PNG_ALWAYS]         = "png-always",
-    [Settings::RadioValue::JPG_ALWAYS]         = "jpg-always",
-    [Settings::RadioValue::IMAGE_TYPE_SMALLER] = "smart",
+    {PNG_ALWAYS, "png-always"},
+    {JPG_ALWAYS, "jpg-always"},
+    {IMAGE_TYPE_SMALLER, "smart"},
 
-    [Settings::RadioValue::ALL_DESKTOPS]    = "all-desktops",
-    [Settings::RadioValue::CURRENT_DESKTOP] = "current-desktop",
-    [Settings::RadioValue::PRIMARY_DESKTOP] = "primary-desktop",
+    {ALL_DESKTOPS, "all-desktops"},
+    {CURRENT_DESKTOP, "current-desktop"},
+    {PRIMARY_DESKTOP, "primary-desktop"},
 };
 
 Settings::Settings()
