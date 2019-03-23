@@ -12,8 +12,8 @@ before_install:
 
 script:
   - source /opt/qt59/bin/qt59-env.sh
-  - qmake -v
+  - cmake --version
   - mkdir build
   - cd build
-  - qmake PREFIX=/usr ..
+  - cmake ..
   - make
