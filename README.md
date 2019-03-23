@@ -9,7 +9,7 @@ Arch Linux users can install this from the AUR with `puush-qt`.
 
 Windows user can grab the latest installer [here](https://github.com/jplsek/puush-qt/releases).
 
-For now, if you aren't on Arch Linux, see [Compiling](#compiling) below.
+Other distros can use see the [releases page](https://github.com/jplsek/puush-qt/releases) for an AppImage (recommended), a Tarball, and a Self Extracting shell script.
 
 ## Dependencies
 Arch: `scrot qt5-{base,declarative,quickcontrols,quickcontrols2}`  
@@ -30,13 +30,13 @@ export QT_SELECT=qt5.10
 
 ### Building
 
-* Open puush-qt.pro file with qt-creator, else you can compile via command line:
+* Open CMakeLists.txt file with qt-creator, else you can compile via command line:
 
 ```
 git clone --recursive https://github.com/jplsek/puush-qt  
 cd puush-qt  
 mkdir build && cd build  
-qmake ../puush-qt.pro  
+cmake ..
 make  
 sudo make install
 ```

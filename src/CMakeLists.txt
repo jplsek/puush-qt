@@ -1,28 +1,26 @@
-cmake_minimum_required(VERSION 3.0)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 COMPONENTS Core Network Widgets QuickWidgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Network Widgets REQUIRED)
 
 set(SRC
+    general.cpp
     general.h
-    information.cpp
-    keybindings.h
-    upload.cpp
     authentication.cpp
+    authentication.h
     history.cpp
+    history.h
+    information.cpp
     information.h
     screenshot.cpp
-    settings.cpp
-    transparentwindow.cpp
-    upload.h
-    authentication.h
-    general.cpp
-    history.h
-    keybindings.cpp
     screenshot.h
+    upload.cpp
+    upload.h
+    keybindings.cpp
+    keybindings.h
+    settings.cpp
     settings.h
+    transparentwindow.cpp
     transparentwindow.h
     api/apiauth.cpp
     api/apiauth.h
@@ -45,4 +43,4 @@ include_directories(
 add_library(puush-qt-lib STATIC ${SRC})
 
 set_property(TARGET puush-qt-lib PROPERTY CXX_STANDARD 11)
-target_link_libraries(puush-qt-lib uglobalhotkey Qt5::Widgets Qt5::QuickWidgets Qt5::Network)
+target_link_libraries(puush-qt-lib uglobalhotkey Qt5::Widgets Qt5::Network)

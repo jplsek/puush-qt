@@ -1,7 +1,13 @@
 #!/bin/bash
-# create_deb.sh must be ran first.
+# Run in this directory!
+source /opt/qt57/bin/qt591-env.sh
+
+mkdir ../build
 cd ../build
-source /opt/qt57/bin/qt57-env.sh
+cmake -DMakeDeb=On ..
+make
+cpack
+
 dpkg -x puush-qt*.deb root
 
 wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"

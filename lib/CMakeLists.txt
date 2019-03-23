@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.0)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+
+if (UNIX)
+    include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
+endif()
 
 set(SRC
     uglobalhotkey/hotkeymap.h
