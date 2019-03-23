@@ -1,0 +1,26 @@
+version: build{build}
+image: Visual Studio 2017
+
+init:
+  - set PATH=C:\Qt\5.12\msvc2017_64\bin;%PATH%
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+before_build:
+  - cd C:\projects\puush-qt
+  - git submodule update --init
+  - md build
+
+build_script:
+  - cd C:\projects\puush-qt\build
+  - cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+  - nmake
+
+after_build:
+  - cd C:\projects\puush-qt\build
+  - nmake package
+
+artifacts:
+  - path: build\puush-qt-*-win64.zip
+    name: zip
+  - path: build\puush-qt-*-win64.exe
+    name: installer
