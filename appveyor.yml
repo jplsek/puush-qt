@@ -29,6 +29,17 @@ build_script:
 after_build:
   - cmd: nmake package
   - sh: make package
+  # Appimage setup
+  - sh: make DESTDIR=root install
+  - sh: wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  - sh: chmod +x linuxdeployqt*.AppImage
+  - sh: unset QTDIR; unset QT_PLUGIN_PATH; unset LD_LIBRARY_PATH
+  # Add some libraries that don't get detected
+  - sh: mkdir -p root/usr/local/{qml/QtQuick,plugins}
+  - sh: cp -r /opt/qt510/qml/QtQuick/Dialogs root/usr/local/qml/QtQuick
+  - sh: cp -r /opt/qt510/plugins/xcbglintegrations root/usr/local/plugins
+  # Run linuxdeployqt to find libaries and make appimage
+  - sh: ./linuxdeployqt*.AppImage root/usr/local/share/applications/puush-qt.desktop -qmldir=/opt/qt510/qml -bundle-non-qt-libs -appimage
 
 artifacts:
   - path: build\puush-qt-*-win64.zip
@@ -41,3 +52,5 @@ artifacts:
     name: self extracting shell script
   - path: build\puush-qt-*-Linux.deb
     name: debian package
+  - path: build\puush-qt*.Appimage
+    name: appimage
