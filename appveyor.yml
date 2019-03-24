@@ -1,26 +1,43 @@
 version: build{build}
-image: Visual Studio 2017
+
+image:
+  - Visual Studio 2017
+  - Ubuntu
 
 init:
-  - set PATH=C:\Qt\5.12\msvc2017_64\bin;%PATH%
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - cmd: set PATH=C:\Qt\5.12\msvc2017_64\bin;%PATH%
+  - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+install:
+  - sh: sudo add-apt-repository -y ppa:beineri/opt-qt-5.10.1-xenial
+  - sh: sudo apt-get -qq update
+  - sh: sudo apt-get -qqy install mesa-common-dev libxcb-keysyms1-dev qt510{-meta-minimal,quickcontrols2,quickcontrols} > /dev/null
+  - sh: source /opt/qt510/bin/qt510-env.sh
 
 before_build:
-  - cd C:\projects\puush-qt
+  - cmd: cd C:\projects\puush-qt
   - git submodule update --init
-  - md build
+  - mkdir build
 
 build_script:
-  - cd C:\projects\puush-qt\build
-  - cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-  - nmake
+  - cd build
+  - cmd: cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+  - sh: cmake -DMakeDeb=On -DCMAKE_BUILD_TYPE=Release ..
+  - cmd: nmake
+  - sh: make
 
 after_build:
-  - cd C:\projects\puush-qt\build
-  - nmake package
+  - cmd: nmake package
+  - sh: make package
 
 artifacts:
   - path: build\puush-qt-*-win64.zip
     name: zip
   - path: build\puush-qt-*-win64.exe
     name: installer
+  - path: build\puush-qt-*-Linux.tar.gz
+    name: tarball
+  - path: build\puush-qt-*-Linux.sh
+    name: self extracting shell script
+  - path: build\puush-qt-*-Linux.deb
+    name: debian package
