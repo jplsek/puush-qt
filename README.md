@@ -11,6 +11,8 @@ Windows user can grab the latest installer [here](https://github.com/jplsek/puus
 
 Other distros can use see the [releases page](https://github.com/jplsek/puush-qt/releases) for an AppImage (recommended), a Tarball, and a Self Extracting shell script.
 
+There may also be some useful builds on [Appveyor](https://ci.appveyor.com/project/jplsek/puush-qt).
+
 ## Dependencies
 Arch: `scrot qt5-{base,declarative,quickcontrols,quickcontrols2}`  
 Ubuntu: `scrot qt5-default qml-module-qtquick-{controls,controls2,templates2,dialogs}`
@@ -21,7 +23,7 @@ Ubuntu 18.04 or newer: `qtbase5-private-dev libxcb-keysyms1-dev qtdeclarative5-d
 For other Ubuntu versions, you will need qt5.10 or newer. PPA's are available [here](https://launchpad.net/~beineri/+ppa-packages).
 This is an example for 16.04 with qt5.10:
 
-```
+```sh
 sudo add-apt-repository ppa:beineri/opt-qt-5.10.0-xenial
 sudo apt-get install qt510{-meta-minimal,quickcontrols2,quickcontrols}
 qtchooser -install qt5.10 /opt/qt510/bin/qmake
@@ -29,10 +31,9 @@ export QT_SELECT=qt5.10
 ```
 
 ### Building
+Open CMakeLists.txt file with qt-creator, else you can compile via command line:
 
-* Open CMakeLists.txt file with qt-creator, else you can compile via command line:
-
-```
+```sh
 git clone --recursive https://github.com/jplsek/puush-qt  
 cd puush-qt  
 mkdir build && cd build  
@@ -44,7 +45,7 @@ sudo make install
 ## Other Information
 There are a few quirks with this application.  
 1. You must manually select a window after clicking the "screenshot active window" button.  
-2. For GNOME users, the active window screenshot may include extra "padding" and contain the backgroud.  
+2. For GNOME users, the active window screenshot may include extra "padding" and contain the background.  
 3. The cursor may not change when clicking "select area screenshot", just  click and drag, and it should work.
 
 Passwords are not stored. They are forgotten after getting the api key from Puush.
