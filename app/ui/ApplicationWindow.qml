@@ -25,7 +25,6 @@ ApplicationWindow {
         id: bar
         x: 0
         y: 0
-        z: 10
         width: root.width
 
         TabButton {
@@ -56,6 +55,7 @@ ApplicationWindow {
         height: parent.height - bar.height
         currentIndex: bar.currentIndex
         anchors.top: bar.bottom
+        clip: true
 
         General { }
 
