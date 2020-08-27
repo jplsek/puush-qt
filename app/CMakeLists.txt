@@ -1,9 +1,10 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+cmake_policy(SET CMP0071 NEW)
 
-find_package(Qt5 COMPONENTS Core Gui Qml Widgets QuickControls2 REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Qml Widgets QuickControls2 QuickCompiler REQUIRED)
 
-qt5_add_resources(RC_SRC
+qtquick_compiler_add_resources(RC_SRC
     ../resources.qrc
 )
 
