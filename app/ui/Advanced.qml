@@ -12,43 +12,6 @@ Item {
             id: advancedBox
 
             GroupBox {
-                title: qsTr("Screen Capture Quality")
-                width: root.width
-
-                Column {
-                    RadioButton {
-                        enabled: false
-                        text: qsTr("Always use PNG (no lossy compression)")
-                        checked: information.settingIsCompressionPng()
-                        onClicked: information.settingSetCompressionPng(checked)
-                    }
-
-                    RadioButton {
-                        enabled: false
-                        text: qsTr("Smart (use JPG unless PNG is smaller)")
-                        checked: information.settingIsCompressionSmaller()
-                        onClicked: information.settingSetCompressionSmaller(checked)
-                    }
-
-                    Row {
-                        Label {
-                            text: qsTr("Quality: ")
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Slider {
-                            enabled: false
-                            from: 0
-                            to: 100
-                            stepSize: 1
-                            value: information.getQuality()
-                            onValueChanged: information.setQuality(value)
-                        }
-                    }
-                }
-            }
-
-            GroupBox {
                 title: qsTr("Fullscreen Capture")
                 width: root.width
 

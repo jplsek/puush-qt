@@ -25,13 +25,6 @@ Item {
 
                 Column {
                     CheckBox {
-                        text: qsTr("Play a sound")
-                        checked: information.settingIsOnPuushSound()
-                        onClicked: information.settingSetOnPuushSound(checked)
-                        enabled: false
-                    }
-
-                    CheckBox {
                         id: localSaveCheckBox
                         text: qsTr("Enable local save")
                         checked: information.settingIsLocalSaveEnabled()

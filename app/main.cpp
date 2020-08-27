@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QApplication::setOrganizationName("puush-qt");
     QApplication::setApplicationName("puush-qt");
-    QApplication::setApplicationVersion("0.2.5");
+    QApplication::setApplicationVersion("0.2.6");
 
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
         QMessageBox::critical(0, "puush-qt",
